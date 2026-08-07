@@ -42,6 +42,7 @@
 		3BC7C1D5657B4965A31EE0A6 /* ExtensionStoreManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC2983D70BB96CE8A3518A6F /* ExtensionStoreManager.swift */; };
 		3CE670D0ECABE0A84A554A8F /* PaletteFooterControls.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9B3D242D623DF0D7B1A8C778 /* PaletteFooterControls.swift */; };
 		3FEE0F26FAD5FD4371A8CE29 /* SystemCommand.swift in Sources */ = {isa = PBXBuildFile; fileRef = C99B26D7288D08EEEB08AECF /* SystemCommand.swift */; };
+		42FBE731682681251121D21F /* QuicklinkPaletteScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = C30F6729865EB380623B6909 /* QuicklinkPaletteScreen.swift */; };
 		44911DD7FF60104FEEF86BB4 /* DoubleCommandDetector.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7E58607752279AAB6E1A87AB /* DoubleCommandDetector.swift */; };
 		4BE8F596C87E28C20A958FBF /* ClipboardSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6D2CEC6B747A3F7FDA120991 /* ClipboardSettingsView.swift */; };
 		4E2EC633D4F6C9D1EB5EDED6 /* PaletteRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = E9D9691579AB0672585FEABB /* PaletteRow.swift */; };
@@ -54,6 +55,7 @@
 		575FFC5E74A97CD36BFBE214 /* UninstallView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 07FD0F81328FD899D97306F5 /* UninstallView.swift */; };
 		57E9B7D889342FD708DD5B06 /* ToastWindowController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2353AC86F3DE1C1E355785AD /* ToastWindowController.swift */; };
 		58949640CE888D2C72C0B96B /* CommandRegistry.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4DEF47A59B3327DC1643DCE /* CommandRegistry.swift */; };
+		593A4F7AC765D56925A91D77 /* PaletteScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7DD5666C3807997825DD2C57 /* PaletteScreen.swift */; };
 		5F5CA7F40954BD868D149F28 /* HotKeyManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 921F4FD1DAC16E63203F4FF2 /* HotKeyManager.swift */; };
 		5FEC9C9BB6C1A52EE9CAE203 /* ClipboardStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A9F4C5BEB9EAB57292AE8D9 /* ClipboardStore.swift */; };
 		610B3B527018E48C36B8FA4A /* KeyShortcut.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57BB05E1B378781256276460 /* KeyShortcut.swift */; };
@@ -77,6 +79,7 @@
 		8CE14BEFCAC47A650F5E8904 /* PaletteListLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA205250C2E4CA9E959796DB /* PaletteListLayout.swift */; };
 		8D1F63DBBFA004AB085AF480 /* ExtensionViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = 62D9228980985408B825D1BD /* ExtensionViews.swift */; };
 		905502935B2CD9EA857150CB /* EmojiIndex.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4051408FA502B8509D8A13ED /* EmojiIndex.swift */; };
+		9494037D81736229E0E92BA1 /* EmojiPaletteScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 68466DCC9DE38D272F199629 /* EmojiPaletteScreen.swift */; };
 		95175FCB7DDB0AD3C034E730 /* LauncherRankingStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 585D8A95AAAFB112BFCDD37D /* LauncherRankingStore.swift */; };
 		96E19E542511ACA9C67A1C1E /* LaunchAtLogin.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2B6CFFBE87EEEB6D08F894AF /* LaunchAtLogin.swift */; };
 		9A6A061C34FA2DD929208371 /* main.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8EAC85B27764DF6B1230DE9B /* main.swift */; };
@@ -98,6 +101,7 @@
 		B44E27277F670BE00904D3AE /* CurrencyRateStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = F327E0F08227DB802364EF47 /* CurrencyRateStore.swift */; };
 		B659734D816ECE369DE31936 /* CalcUnits.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11AE15ECC1A9ACB8AE8A8DE3 /* CalcUnits.swift */; };
 		B6B0FAF91DA60650E1BE0A71 /* Memo.swift in Sources */ = {isa = PBXBuildFile; fileRef = B02FFB0AEFE588A952231BDE /* Memo.swift */; };
+		BB252D9F556C5906392D15C9 /* UninstallPaletteScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 872EB9C1E78314EC5D47B785 /* UninstallPaletteScreen.swift */; };
 		BCB7E0E9854BA25046D9EB54 /* Paster.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E2FC873E8D2002ED435AC90 /* Paster.swift */; };
 		BD0F053A81DE8E0CD0D9DABA /* AppCore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 084DC160FDE00DC0FD6EC764 /* AppCore.swift */; };
 		BEABF0E6BFF1455FC2EAC728 /* opencast.icon in Resources */ = {isa = PBXBuildFile; fileRef = EF13092E0848178BCF935120 /* opencast.icon */; };
@@ -203,6 +207,7 @@
 		6611BAE04ECE3A8A6B2E742B /* SettingsComponents.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsComponents.swift; sourceTree = "<group>"; };
 		66DE7F5A23C81E47A0DFA6B2 /* OnboardingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingView.swift; sourceTree = "<group>"; };
 		671AAC20B63D46404D59C6F2 /* ClipboardPaletteScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClipboardPaletteScreen.swift; sourceTree = "<group>"; };
+		68466DCC9DE38D272F199629 /* EmojiPaletteScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmojiPaletteScreen.swift; sourceTree = "<group>"; };
 		69114A38446C22E17D9A3E8F /* PalettePanel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PalettePanel.swift; sourceTree = "<group>"; };
 		69ED5119B575C4630F695E10 /* CalcCurrency.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CalcCurrency.swift; sourceTree = "<group>"; };
 		6CBDBDA7A914809B55FF32FE /* EmojiSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmojiSettingsView.swift; sourceTree = "<group>"; };
@@ -216,9 +221,11 @@
 		76039AA68B80956493E3A313 /* Permissions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Permissions.swift; sourceTree = "<group>"; };
 		76ADE3404D990B7BB714E5DA /* UninstallSession.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UninstallSession.swift; sourceTree = "<group>"; };
 		7C5A706F2C69F0D59AF36CAA /* FrequentEmojiStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FrequentEmojiStore.swift; sourceTree = "<group>"; };
+		7DD5666C3807997825DD2C57 /* PaletteScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PaletteScreen.swift; sourceTree = "<group>"; };
 		7E58607752279AAB6E1A87AB /* DoubleCommandDetector.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DoubleCommandDetector.swift; sourceTree = "<group>"; };
 		83B5C981664479903CC8DA57 /* ExtensionProcessJobManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExtensionProcessJobManager.swift; sourceTree = "<group>"; };
 		86CA50815B0C56B0AE46C351 /* CalcDateTime.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CalcDateTime.swift; sourceTree = "<group>"; };
+		872EB9C1E78314EC5D47B785 /* UninstallPaletteScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UninstallPaletteScreen.swift; sourceTree = "<group>"; };
 		875391F4D0BC13ECB4B3D591 /* SnippetViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SnippetViews.swift; sourceTree = "<group>"; };
 		88FD40DBA985BAEDEA6CB70B /* ExtensionHostRuntime.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExtensionHostRuntime.swift; sourceTree = "<group>"; };
 		8EAC85B27764DF6B1230DE9B /* main.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = main.swift; sourceTree = "<group>"; };
@@ -252,6 +259,7 @@
 		BEAE804EA9078EB30594C959 /* OnboardingState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingState.swift; sourceTree = "<group>"; };
 		BF2C2438BF265801370AA7B9 /* AppSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppSettings.swift; sourceTree = "<group>"; };
 		BF9CFC02CA375AA38898D7CD /* SearchScopes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchScopes.swift; sourceTree = "<group>"; };
+		C30F6729865EB380623B6909 /* QuicklinkPaletteScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuicklinkPaletteScreen.swift; sourceTree = "<group>"; };
 		C4DEF47A59B3327DC1643DCE /* CommandRegistry.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommandRegistry.swift; sourceTree = "<group>"; };
 		C5C1F0D91AD655A596A4F605 /* QuicklinkActionsMenu.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuicklinkActionsMenu.swift; sourceTree = "<group>"; };
 		C7EEAF97942C5BB5D4A5B075 /* QuicklinkStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuicklinkStore.swift; sourceTree = "<group>"; };
@@ -304,6 +312,7 @@
 			isa = PBXGroup;
 			children = (
 				FFFDB5FB4C753F6AEDC7F91A /* EmojiGridView.swift */,
+				68466DCC9DE38D272F199629 /* EmojiPaletteScreen.swift */,
 			);
 			path = Emoji;
 			sourceTree = "<group>";
@@ -484,6 +493,7 @@
 			isa = PBXGroup;
 			children = (
 				C5C1F0D91AD655A596A4F605 /* QuicklinkActionsMenu.swift */,
+				C30F6729865EB380623B6909 /* QuicklinkPaletteScreen.swift */,
 				5AC3C9115B942FC4E9128168 /* QuicklinkViews.swift */,
 			);
 			path = Quicklinks;
@@ -571,6 +581,7 @@
 				494FFCFEEE0503D3191481D1 /* PaletteInlineArguments.swift */,
 				FA205250C2E4CA9E959796DB /* PaletteListLayout.swift */,
 				E9D9691579AB0672585FEABB /* PaletteRow.swift */,
+				7DD5666C3807997825DD2C57 /* PaletteScreen.swift */,
 				DAF0CF3416ECDC07F197F4F0 /* PopoverMenu.swift */,
 				B151ADB1745C55478B2669EA /* RootPaletteView.swift */,
 			);
@@ -619,6 +630,7 @@
 		FDF61DB80286EDCAFE6E1F3E /* Uninstall */ = {
 			isa = PBXGroup;
 			children = (
+				872EB9C1E78314EC5D47B785 /* UninstallPaletteScreen.swift */,
 				07FD0F81328FD899D97306F5 /* UninstallView.swift */,
 			);
 			path = Uninstall;
@@ -792,6 +804,7 @@
 				F6F0940BA37796914D5F6CEC /* EmojiGridGeometry.swift in Sources */,
 				28918546E9AE109851807DA8 /* EmojiGridView.swift in Sources */,
 				905502935B2CD9EA857150CB /* EmojiIndex.swift in Sources */,
+				9494037D81736229E0E92BA1 /* EmojiPaletteScreen.swift in Sources */,
 				23E5DB23DDFA2DC54550D828 /* EmojiSettingsView.swift in Sources */,
 				03C2586620B6484E4EDB75A6 /* ExtensionCapabilityBroker.swift in Sources */,
 				C6AC764BFFE78D1DB30E4D70 /* ExtensionCatalog.swift in Sources */,
@@ -838,6 +851,7 @@
 				8CE14BEFCAC47A650F5E8904 /* PaletteListLayout.swift in Sources */,
 				2722F0176A2EFEE7ECE85A8E /* PalettePanel.swift in Sources */,
 				4E2EC633D4F6C9D1EB5EDED6 /* PaletteRow.swift in Sources */,
+				593A4F7AC765D56925A91D77 /* PaletteScreen.swift in Sources */,
 				C54F90649E3649D4B41F94E9 /* PaletteSelectionIndex.swift in Sources */,
 				2F98EEC320827C6A1F25FA53 /* PaletteWindowController.swift in Sources */,
 				BCB7E0E9854BA25046D9EB54 /* Paster.swift in Sources */,
@@ -845,6 +859,7 @@
 				AC956878D84A9A8572B36B8E /* PermissionsSettingsView.swift in Sources */,
 				DD2E0E5179C7156129437F47 /* PopoverMenu.swift in Sources */,
 				E2ADFB0AF6E92866E8EF5BE3 /* QuicklinkActionsMenu.swift in Sources */,
+				42FBE731682681251121D21F /* QuicklinkPaletteScreen.swift in Sources */,
 				7EC5DB64F545071ED8804B9A /* QuicklinkSettingsView.swift in Sources */,
 				8C8A498904E450870C2FBAE4 /* QuicklinkStore.swift in Sources */,
 				8752558F201BD5E1E51E6335 /* QuicklinkViews.swift in Sources */,
@@ -871,6 +886,7 @@
 				2A1AD8900FBB3E8643E82377 /* Theme.swift in Sources */,
 				30C8F07C5742A2CE2A55A398 /* ThinScrollbar.swift in Sources */,
 				57E9B7D889342FD708DD5B06 /* ToastWindowController.swift in Sources */,
+				BB252D9F556C5906392D15C9 /* UninstallPaletteScreen.swift in Sources */,
 				D4401BC0B07BCE4E86F33F01 /* UninstallSession.swift in Sources */,
 				575FFC5E74A97CD36BFBE214 /* UninstallView.swift in Sources */,
 				D4CC0FDE6B3199D8C12BD081 /* UpdateStore.swift in Sources */,

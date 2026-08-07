@@ -160,9 +160,6 @@ struct RootPaletteView: View {
         let index = selection - calcCount - appResults.count
         return launcherQuicklinkResults.indices.contains(index) ? launcherQuicklinkResults[index] : nil
     }
-    private var selectedEmojiEntry: EmojiEntry? {
-        emojiResults.indices.contains(selection) ? emojiResults[selection] : nil
-    }
     private var selectedSnippet: Snippet? {
         snippetResults.indices.contains(selection) ? snippetResults[selection] : nil
     }
@@ -269,11 +266,7 @@ struct RootPaletteView: View {
         case .clipboard:
             return clipboardScreen(items: clipResults, selection: selection).actionsContent
         case .emoji:
-            if let emoji = selectedEmojiEntry {
-                return EmojiActionsMenu.content(
-                    entry: emoji, core: core, target: vm.pasteTarget)
-            }
-            return nil
+            return emojiScreen(sections: emojiSections, selection: selection).actionsContent
         case .snippets:
             if let snippet = selectedSnippet {
                 return SnippetActionsMenu.content(
@@ -284,19 +277,11 @@ struct RootPaletteView: View {
         case .snippetEditor:
             return nil
         case .quicklinks:
-            if let quicklink = selectedQuicklink {
-                return QuicklinkActionsMenu.content(
-                    quicklink: quicklink, core: core, favorites: favorites,
-                    onToggleFavorite: { toggleFavorite(quicklink) },
-                    onTogglePinned: { togglePinnedQuicklink(quicklink) })
-            }
-            return nil
+            return quicklinkScreen(items: quicklinkResults, selection: selection).actionsContent
         case .quicklinkEditor:
             return nil
         case .uninstall:
-            guard uninstall.phase == .selecting, !uninstallResults.isEmpty else { return nil }
-            return UninstallActionsMenu.content(
-                session: uninstall, visible: uninstallResults, selection: selection, core: core)
+            return uninstallScreen(items: uninstallResults, selection: selection).actionsContent
         case .extensionCommand:
             guard let item = selectedExtensionItem else { return nil }
             return ExtensionActionsMenu.content(item: item, host: extensionHost)
@@ -882,6 +867,52 @@ struct RootPaletteView: View {
         )
     }
 
+    private func quicklinkScreen(
+        items: [Quicklink], selection: Int
+    ) -> QuicklinkPaletteScreen {
+        QuicklinkPaletteScreen(
+            items: items,
+            selection: selection,
+            scrollIntent: listScroll,
+            core: core,
+            favorites: favorites,
+            onSelect: { vm.selection = $0 },
+            onOpenActions: openActions,
+            onToggleFavorite: toggleFavorite,
+            onTogglePinned: togglePinnedQuicklink
+        )
+    }
+
+    private func emojiScreen(
+        sections: [EmojiGridSection], selection: Int
+    ) -> EmojiPaletteScreen {
+        EmojiPaletteScreen(
+            sections: sections,
+            selection: selection,
+            tone: settings.emojiSkinTone,
+            scroll: emojiScroll,
+            isLoaded: emojiIndex.isLoaded,
+            core: core,
+            pasteTarget: vm.pasteTarget,
+            onSelect: { vm.selection = $0 },
+            onOpenActions: openActions
+        )
+    }
+
+    private func uninstallScreen(
+        items: [LeftoverItem], selection: Int
+    ) -> UninstallPaletteScreen {
+        UninstallPaletteScreen(
+            items: items,
+            selection: selection,
+            scrollIntent: listScroll,
+            session: uninstall,
+            core: core,
+            onSelect: { vm.selection = $0 },
+            onOpenActions: openActions
+        )
+    }
+
     @ViewBuilder
     private func content(
         apps: [AppEntry], launcherQuicklinks: [Quicklink], clips: [ClipboardItem],
@@ -963,81 +994,16 @@ struct RootPaletteView: View {
                 onSave: saveSnippet
             )
         case .quicklinks:
-            QuicklinkSearchView(
-                results: quicklinks,
-                selectedID: selectedQuicklink?.id,
-                scrollIntent: listScroll,
-                onSelect: { quicklink in vm.selection = quicklinks.firstIndex(of: quicklink) ?? 0 },
-                onActivate: { quicklink in
-                    if let index = quicklinks.firstIndex(of: quicklink) { vm.selection = index }
-                    activateSelection()
-                },
-                onActions: { quicklink in
-                    if let index = quicklinks.firstIndex(of: quicklink) { vm.selection = index }
-                    openActions()
-                }
-            )
+            quicklinkScreen(items: quicklinks, selection: selection)
         case .quicklinkEditor:
             QuicklinkEditorView(
                 quicklink: quicklinkStore.quicklink(for: vm.quicklinkEditingID),
                 onSave: saveQuicklink
             )
         case .emoji:
-            if !emojiIndex.isLoaded {
-                EmptyResults(text: "Loading emoji…")
-            } else if emojiSections.isEmpty {
-                EmptyResults(text: "No emoji found")
-            } else {
-                EmojiGridView(
-                    sections: emojiSections,
-                    selection: selection,
-                    tone: settings.emojiSkinTone,
-                    scroll: emojiScroll,
-                    onSelect: { vm.selection = $0 },
-                    onActivate: activateSelection,
-                    onActions: { flat in
-                        vm.selection = flat
-                        openActions()
-                    }
-                )
-            }
+            emojiScreen(sections: emojiSections, selection: selection)
         case .uninstall:
-            switch uninstall.phase {
-            case .removing(let permanently):
-                UninstallProgressView(
-                    name: uninstall.target?.name ?? "Application", permanently: permanently)
-            case .done(let outcome):
-                UninstallSummaryView(
-                    name: uninstall.target?.name ?? "Application", outcome: outcome)
-            case .selecting:
-                if uninstall.items.isEmpty {
-                    EmptyResults(
-                        text: uninstall.isScanning ? "Looking for files to remove…" : "Nothing found to remove")
-                } else if uninstallItems.isEmpty {
-                    EmptyResults(text: "No files match")
-                } else {
-                    VStack(spacing: 0) {
-                        UninstallStatusLine(
-                            checkedCount: uninstall.checkedItems.count,
-                            totalCount: uninstall.items.count,
-                            checkedSize: uninstall.checkedSize
-                        )
-                        UninstallList(
-                            items: uninstallItems,
-                            selection: selection,
-                            isChecked: uninstall.isChecked,
-                            appIcon: uninstall.target.flatMap { IconCache.cached(forFile: $0.url.path) },
-                            scroll: listScroll ?? ListScrollIntent(kind: .top),
-                            onSelect: { vm.selection = $0 },
-                            onToggle: { uninstall.toggle(uninstallItems[$0]) },
-                            onActions: { index in
-                                vm.selection = index
-                                openActions()
-                            }
-                        )
-                    }
-                }
-            }
+            uninstallScreen(items: uninstallItems, selection: selection)
         case .extensionCommand:
             ExtensionSessionView(
                 command: vm.extensionCommand
@@ -1308,13 +1274,8 @@ struct RootPaletteView: View {
         guard command || option else { return false }
         switch vm.mode {
         case .emoji:
-            guard emojiResults.indices.contains(selection) else { return false }
-            let emoji = emojiResults[selection]
-            if command {
-                core.copyEmoji(emoji)
-            } else {
-                core.pasteEmojiKeepingWindowOpen(emoji)
-            }
+            let screen = emojiScreen(sections: emojiSections, selection: selection)
+            return command ? screen.copy() : screen.pasteKeepingOpen()
         case .clipboard:
             guard command else { return false }
             return clipboardScreen(items: clipResults, selection: selection).copy()
@@ -1322,8 +1283,8 @@ struct RootPaletteView: View {
             guard command, snippetResults.indices.contains(selection) else { return false }
             core.copySnippet(snippetResults[selection])
         case .quicklinks:
-            guard command, quicklinkResults.indices.contains(selection) else { return false }
-            core.copyQuicklink(quicklinkResults[selection])
+            guard command else { return false }
+            return quicklinkScreen(items: quicklinkResults, selection: selection).copy()
         case .snippetEditor, .quicklinkEditor:
             return false
         case .launcher:
@@ -1332,8 +1293,8 @@ struct RootPaletteView: View {
             guard canShowInFinder else { return false }
             core.showInFinder(app)
         case .uninstall:
-            guard command, uninstallResults.indices.contains(selection) else { return false }
-            core.showLeftoverInFinder(uninstallResults[selection])
+            guard command else { return false }
+            return uninstallScreen(items: uninstallResults, selection: selection).reveal()
         case .extensionCommand:
             return false
         case .store:
@@ -1456,10 +1417,9 @@ struct RootPaletteView: View {
 
     /// Vertical grid move: one visual row within a section, spilling into the neighbor while keeping the column.
     private func moveEmojiRow(_ delta: Int) {
-        let geometry = EmojiGridGeometry(
-            counts: emojiSections.map(\.entries.count), columns: EmojiGrid.columns)
         guard resultCount > 0 else { return }
-        vm.selection = delta > 0 ? geometry.down(from: selection) : geometry.up(from: selection)
+        vm.selection = emojiScreen(sections: emojiSections, selection: selection)
+            .selectionAfterMovingRow(delta)
         emojiScroll = EmojiScrollIntent(kind: .follow)
     }
 
@@ -1632,20 +1592,11 @@ struct RootPaletteView: View {
         case .snippetEditor, .quicklinkEditor:
             return
         case .quicklinks:
-            guard quicklinkResults.indices.contains(selection) else {
-                core.createQuicklink()
-                return
-            }
-            core.openQuicklink(quicklinkResults[selection])
+            quicklinkScreen(items: quicklinkResults, selection: selection).activate()
         case .emoji:
-            guard emojiResults.indices.contains(selection) else { return }
-            core.pasteEmoji(emojiResults[selection])
+            emojiScreen(sections: emojiSections, selection: selection).activate()
         case .uninstall:
-            switch uninstall.phase {
-            case .selecting: core.confirmUninstall()
-            case .removing: break
-            case .done: core.finishUninstall()
-            }
+            uninstallScreen(items: uninstallResults, selection: selection).activate()
         case .extensionCommand:
             guard let item = selectedExtensionItem else { return }
             if let action = item.primaryAction {

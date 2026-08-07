@@ -6,7 +6,7 @@ struct ClipFollowKey: Equatable {
 }
 
 @MainActor
-struct ClipboardPaletteScreen: View {
+struct ClipboardPaletteScreen: PaletteScreen {
     let items: [ClipboardItem]
     let selection: Int
     let scrollIntent: ListScrollIntent?
@@ -23,6 +23,8 @@ struct ClipboardPaletteScreen: View {
     var selectedItem: ClipboardItem? {
         items.indices.contains(selection) ? items[selection] : nil
     }
+
+    var itemCount: Int { items.count }
 
     var actionsContent: PopoverMenuContent? {
         guard let selectedItem else { return nil }
