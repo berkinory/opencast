@@ -1,6 +1,6 @@
 # Inline calculator
 
-`Core/Calculator/` is a **Foundation-only** engine (no AppKit / SwiftUI imports) fronted by
+`Features/Calculator/` is a **Foundation-only** engine (no AppKit / SwiftUI imports) fronted by
 `CalcMemo`, a one-deep memo mirroring `AppIndex`'s. It must stay Foundation-only because the
 `Tools/calc-test.swift` harness compiles the real engine sources — including `CalcDateTime`. It is
 also **pure**: the one input it can't compute, the FX rate table, is passed in (see Currency below).
@@ -97,7 +97,7 @@ second copy in the on-disk `URLCache` that deleting `currency-rates.json` doesn'
 
 Settings shows the last fiat and crypto sync independently. Manual rate refresh is not exposed; the store refreshes automatically on its three-hour cadence. When crypto is disabled, its sync remains `Never` and CoinGecko is not contacted.
 
-Rates come from `CurrencyRateStore` (`Core/`, owned by `AppCore`). Fiat rates come from
+Rates come from `CurrencyRateStore` (`Features/Calculator/`, owned by `AppCore`). Fiat rates come from
 [Frankfurter](https://frankfurter.dev) — open source, no key, no account, no quota, rates blended
 from 84 central banks. Crypto rates are optional and come from [CoinGecko](https://www.coingecko.com).
 When crypto is off, Opencast does not contact CoinGecko. Fiat uses one `GET api.frankfurter.dev/v2/rates?base=USD`, ~1.4 KB gzipped. v2 answers

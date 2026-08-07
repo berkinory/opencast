@@ -1,4 +1,4 @@
-// Standalone test for launcher matching and adaptive ordering (run: swift Tools/fuzz-test.swift); keep FuzzyMatch in sync with Opencast/Core/AppIndex.swift.
+// Standalone test for launcher matching and adaptive ordering (run: swift Tools/fuzz-test.swift); keep FuzzyMatch in sync with Opencast/Features/Launcher/AppIndex.swift.
 
 import Foundation
 

@@ -1,5 +1,5 @@
 // Standalone test for the clipboard store — compiles the *real* source (no copy to sync):
-// swiftc -swift-version 6 Opencast/Core/ClipboardStore.swift Tools/clipboard-test.swift -o /tmp/clipboard-test && /tmp/clipboard-test
+// swiftc -swift-version 6 Opencast/Features/Clipboard/ClipboardStore.swift Tools/clipboard-test.swift -o /tmp/clipboard-test && /tmp/clipboard-test
 //
 // Every store here is built on a throwaway directory under the system temp dir, so a run can never
 // see or touch a real clipboard history.

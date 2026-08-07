@@ -46,29 +46,29 @@ unsigned-dmg:
 test: tools
 	@mkdir -p $(TEST_BIN_DIR)
 	cp Tools/fuzz-test.swift $(TEST_BIN_DIR)/main.swift
-	swiftc -swift-version 6 Opencast/Core/Romanization.swift $(TEST_BIN_DIR)/main.swift -o $(TEST_BIN_DIR)/fuzz-test
+	swiftc -swift-version 6 Opencast/Features/Launcher/Romanization.swift $(TEST_BIN_DIR)/main.swift -o $(TEST_BIN_DIR)/fuzz-test
 	$(TEST_BIN_DIR)/fuzz-test
-	swiftc -swift-version 6 Opencast/Core/SettingsSearchIndex.swift Tools/settings-search-test.swift -o $(TEST_BIN_DIR)/settings-search-test
+	swiftc -swift-version 6 Opencast/Features/Settings/SettingsSearchIndex.swift Tools/settings-search-test.swift -o $(TEST_BIN_DIR)/settings-search-test
 	$(TEST_BIN_DIR)/settings-search-test
-	swiftc -swift-version 6 Opencast/Core/LauncherRankingStore.swift Tools/ranking-test.swift -o $(TEST_BIN_DIR)/ranking-test
+	swiftc -swift-version 6 Opencast/Features/Launcher/LauncherRankingStore.swift Tools/ranking-test.swift -o $(TEST_BIN_DIR)/ranking-test
 	$(TEST_BIN_DIR)/ranking-test
-	swiftc -swift-version 6 Opencast/Core/SearchScopes.swift Tools/scopes-test.swift -o $(TEST_BIN_DIR)/scopes-test
+	swiftc -swift-version 6 Opencast/Features/Launcher/SearchScopes.swift Tools/scopes-test.swift -o $(TEST_BIN_DIR)/scopes-test
 	$(TEST_BIN_DIR)/scopes-test
-	swiftc Opencast/Core/Calculator/*.swift Tools/calc-test.swift -o $(TEST_BIN_DIR)/calc-test
+	swiftc Opencast/Features/Calculator/*.swift Tools/calc-test.swift -o $(TEST_BIN_DIR)/calc-test
 	$(TEST_BIN_DIR)/calc-test
-	swiftc -swift-version 6 Opencast/Core/ClipboardStore.swift Tools/clipboard-test.swift -o $(TEST_BIN_DIR)/clipboard-test
+	swiftc -swift-version 6 Opencast/Features/Clipboard/ClipboardStore.swift Tools/clipboard-test.swift -o $(TEST_BIN_DIR)/clipboard-test
 	$(TEST_BIN_DIR)/clipboard-test
-	swiftc Opencast/Core/Emoji/EmojiCatalog.swift Opencast/Core/Emoji/EmojiGridGeometry.swift Opencast/Core/Emoji/EmojiData.generated.swift Tools/emoji-test.swift -o $(TEST_BIN_DIR)/emoji-test
+	swiftc Opencast/Features/Emoji/EmojiCatalog.swift Opencast/Features/Emoji/EmojiGridGeometry.swift Opencast/Features/Emoji/EmojiData.generated.swift Tools/emoji-test.swift -o $(TEST_BIN_DIR)/emoji-test
 	$(TEST_BIN_DIR)/emoji-test
-	swiftc -swift-version 6 Opencast/Core/SystemCommand.swift Tools/system-command-test.swift -o $(TEST_BIN_DIR)/system-command-test
+	swiftc -swift-version 6 Opencast/Features/SystemCommands/SystemCommand.swift Tools/system-command-test.swift -o $(TEST_BIN_DIR)/system-command-test
 	$(TEST_BIN_DIR)/system-command-test
 	swiftc -swift-version 6 \
-		Opencast/Core/WindowManagement/WindowCommand.swift \
-		Opencast/Core/WindowManagement/WindowLayout.swift \
-		Opencast/Core/WindowManagement/WindowActionMemory.swift \
+		Opencast/Features/WindowManagement/WindowCommand.swift \
+		Opencast/Features/WindowManagement/WindowLayout.swift \
+		Opencast/Features/WindowManagement/WindowActionMemory.swift \
 		Tools/window-command-test.swift -o $(TEST_BIN_DIR)/window-command-test
 	$(TEST_BIN_DIR)/window-command-test
-	swiftc -swift-version 6 Opencast/Core/HotKey/DoubleCommandDetector.swift Tools/hotkey-test.swift -o $(TEST_BIN_DIR)/hotkey-test
+	swiftc -swift-version 6 Opencast/Features/HotKeys/DoubleCommandDetector.swift Tools/hotkey-test.swift -o $(TEST_BIN_DIR)/hotkey-test
 	$(TEST_BIN_DIR)/hotkey-test
 
 extensions-test: extension-host-build
@@ -84,11 +84,11 @@ extensions-test: extension-host-build
 extension-provider-test: tools
 	@mkdir -p $(TEST_BIN_DIR)
 	swiftc -swift-version 6 \
-		Opencast/Core/Extensions/ExtensionSystemCommand.swift \
-		Opencast/Core/Extensions/ExtensionProcessProvider.swift \
-		Opencast/Core/Extensions/ExtensionPortProvider.swift \
-		Opencast/Core/Extensions/ExtensionSystemMetricsProvider.swift \
-		Opencast/Core/Extensions/ExtensionProcessJobManager.swift \
+		Opencast/Features/Extensions/ExtensionSystemCommand.swift \
+		Opencast/Features/Extensions/ExtensionProcessProvider.swift \
+		Opencast/Features/Extensions/ExtensionPortProvider.swift \
+		Opencast/Features/Extensions/ExtensionSystemMetricsProvider.swift \
+		Opencast/Features/Extensions/ExtensionProcessJobManager.swift \
 		Tools/extensions/provider-test.swift \
 		-o $(TEST_BIN_DIR)/extension-provider-test
 	$(TEST_BIN_DIR)/extension-provider-test
@@ -103,7 +103,7 @@ extension-store-test: extension-host-build
 	node Tools/extensions/build-extension.js --package Extensions/Packages/system-monitor --out build/extensions/system-monitor.ocx
 	@mkdir -p $(TEST_BIN_DIR)
 	cp Tools/extensions/store-test.swift $(TEST_BIN_DIR)/main.swift
-	swiftc -swift-version 6 Opencast/Core/Extensions/ExtensionModels.swift Opencast/Core/Extensions/ExtensionPackageValidator.swift $(TEST_BIN_DIR)/main.swift -o $(TEST_BIN_DIR)/extension-store-test
+	swiftc -swift-version 6 Opencast/Features/Extensions/ExtensionModels.swift Opencast/Features/Extensions/ExtensionPackageValidator.swift $(TEST_BIN_DIR)/main.swift -o $(TEST_BIN_DIR)/extension-store-test
 	$(TEST_BIN_DIR)/extension-store-test build/extensions/kill-process.ocx
 	$(TEST_BIN_DIR)/extension-store-test build/extensions/port-manager.ocx
 	$(TEST_BIN_DIR)/extension-store-test build/extensions/system-monitor.ocx

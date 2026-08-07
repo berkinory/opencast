@@ -109,7 +109,7 @@ the dark surface). **Selection always beats hover** when a row is both.
 
 ---
 
-## Panel structure — `Core/PalettePanel.swift`, `Features/RootPaletteView.swift`
+## Panel structure — `Features/Palette/PalettePanel.swift`, `Features/Palette/RootPaletteView.swift`
 
 - **`PalettePanel`** is a borderless `NSPanel`: `isOpaque = false`, `backgroundColor = .clear`, `.floating` level, `hasShadow`, `animationBehavior = .none`. It hosts SwiftUI via `NSHostingView`. `PaletteWindowController` centers it slightly above screen center (`+8%`) and dismisses it on `windowDidResignKey`.
 - **The results layer fills the whole panel.** The header and bottom bar attach via `.safeAreaInset(edge: .top/.bottom)` as transparent overlays that float _over_ the list. The list underlaps them and dissolves at the edges.

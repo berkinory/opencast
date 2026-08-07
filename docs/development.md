@@ -91,26 +91,26 @@ There's no XCTest target. Standalone harnesses:
 
 ```sh
 swift Tools/fuzz-test.swift                                        # launcher fuzzy matcher
-swiftc -swift-version 6 Opencast/Core/LauncherRankingStore.swift Tools/ranking-test.swift \
+swiftc -swift-version 6 Opencast/Features/Launcher/LauncherRankingStore.swift Tools/ranking-test.swift \
     -o /tmp/ranking-test && /tmp/ranking-test                      # learned launcher ranking
-swiftc -swift-version 6 Opencast/Core/SearchScopes.swift Tools/scopes-test.swift \
+swiftc -swift-version 6 Opencast/Features/Launcher/SearchScopes.swift Tools/scopes-test.swift \
     -o /tmp/scopes-test && /tmp/scopes-test                       # launcher search scopes
-swiftc Opencast/Core/Calculator/*.swift Tools/calc-test.swift \
+swiftc Opencast/Features/Calculator/*.swift Tools/calc-test.swift \
     -o /tmp/calc-test && /tmp/calc-test                           # calculator engine
-swiftc -swift-version 6 Opencast/Core/ClipboardStore.swift Tools/clipboard-test.swift \
+swiftc -swift-version 6 Opencast/Features/Clipboard/ClipboardStore.swift Tools/clipboard-test.swift \
     -o /tmp/clipboard-test && /tmp/clipboard-test                 # clipboard store
-swiftc -swift-version 6 Opencast/Core/WindowManagement/WindowCommand.swift \
-    Opencast/Core/WindowManagement/WindowLayout.swift \
-    Opencast/Core/WindowManagement/WindowActionMemory.swift Tools/window-command-test.swift \
+swiftc -swift-version 6 Opencast/Features/WindowManagement/WindowCommand.swift \
+    Opencast/Features/WindowManagement/WindowLayout.swift \
+    Opencast/Features/WindowManagement/WindowActionMemory.swift Tools/window-command-test.swift \
     -o /tmp/window-command-test && /tmp/window-command-test        # window geometry
-swiftc -swift-version 6 Opencast/Core/PaletteSelectionIndex.swift \
+swiftc -swift-version 6 Opencast/Features/Palette/PaletteSelectionIndex.swift \
     Tools/palette-selection-test.swift \
     -o /tmp/palette-selection-test && /tmp/palette-selection-test  # palette selection geometry
 ```
 
-`Tools/fuzz-test.swift` holds a **copy** of `FuzzyMatch` from `Opencast/Core/AppIndex.swift` —
+`Tools/fuzz-test.swift` holds a **copy** of `FuzzyMatch` from `Opencast/Features/Launcher/AppIndex.swift` —
 change the scoring in one and mirror it in the other. The calc harness compiles the real engine
-sources, which is why `Opencast/Core/Calculator/` must stay Foundation-only.
+sources, which is why `Opencast/Features/Calculator/` must stay Foundation-only.
 
 The clipboard harness likewise compiles the real `ClipboardStore.swift`, so that file must keep to
 Foundation + SQLite3 and depend on no other app source. Each case drives a store rooted in a
@@ -122,8 +122,8 @@ Two Swift files are emitted by scripts and must never be hand-edited. Both downl
 run them online, then commit the result:
 
 ```sh
-node Tools/gen-emoji.js            # -> Opencast/Core/Emoji/EmojiData.generated.swift
-node Tools/gen-currencies.js       # -> Opencast/Core/Calculator/CurrencyData.generated.swift
+node Tools/gen-emoji.js            # -> Opencast/Features/Emoji/EmojiData.generated.swift
+node Tools/gen-currencies.js       # -> Opencast/Features/Calculator/CurrencyData.generated.swift
 ```
 
 `gen-currencies.js` joins two sources on the ISO code: **Frankfurter**'s currency list (the same feed

@@ -46,7 +46,7 @@ invalidates the cached order. `rank` resolves the query and global affinity tabl
 fold and one clock read per table, not per candidate.
 
 > **Invariant:** `Tools/fuzz-test.swift` contains a **copy** of `FuzzyMatch` from
-> `Opencast/Core/AppIndex.swift`. If you change the scoring in one, mirror it in the other or the test
+> `Opencast/Features/Launcher/AppIndex.swift`. If you change the scoring in one, mirror it in the other or the test
 > is meaningless.
 
 The ranking harness covers prefix learning, frequency/recency scoring, persistence, and both reset

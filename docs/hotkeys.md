@@ -1,6 +1,6 @@
 # Hotkeys (in-house, zero dependencies)
 
-`Core/HotKey/` holds:
+`Features/HotKeys/` holds:
 
 - `KeyShortcut` — Sendable model, Carbon keycode + modifiers, layout-aware glyphs via `UCKeyTranslate`.
 - `HotKeyCenter` — the Carbon `RegisterEventHotKey` layer, pausable.

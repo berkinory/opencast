@@ -1,7 +1,7 @@
 // Standalone contract tests for the pure window-management geometry and action memory.
-// Run: swiftc -swift-version 6 Opencast/Core/WindowManagement/WindowCommand.swift \
-//     Opencast/Core/WindowManagement/WindowLayout.swift \
-//     Opencast/Core/WindowManagement/WindowActionMemory.swift Tools/window-command-test.swift \
+// Run: swiftc -swift-version 6 Opencast/Features/WindowManagement/WindowCommand.swift \
+//     Opencast/Features/WindowManagement/WindowLayout.swift \
+//     Opencast/Features/WindowManagement/WindowActionMemory.swift Tools/window-command-test.swift \
 //     -o /tmp/window-command-test && /tmp/window-command-test
 
 import CoreGraphics

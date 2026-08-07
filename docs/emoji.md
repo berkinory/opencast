@@ -4,7 +4,7 @@ A palette sub-screen (reached like Clipboard) presenting a searchable emoji grid
 
 ## Layout
 
-- `Core/Emoji/` — the **Foundation-only** catalog + geometry (no AppKit / SwiftUI imports):
+- `Features/Emoji/` — the **Foundation-only** catalog + geometry (no AppKit / SwiftUI imports):
   - `EmojiCatalog.swift` — the catalog model (groups, names, keywords).
   - `EmojiGridGeometry.swift` — pure grid-layout math (columns, item sizing).
   - `EmojiData.generated.swift` — the emoji dataset.
@@ -20,8 +20,8 @@ A palette sub-screen (reached like Clipboard) presenting a searchable emoji grid
   `Tools/emoji-test.swift` harness compiles the real sources:
 
   ```sh
-  swiftc Opencast/Core/Emoji/EmojiCatalog.swift Opencast/Core/Emoji/EmojiGridGeometry.swift \
-    Opencast/Core/Emoji/EmojiData.generated.swift Tools/emoji-test.swift -o /tmp/emoji-test && /tmp/emoji-test
+  swiftc Opencast/Features/Emoji/EmojiCatalog.swift Opencast/Features/Emoji/EmojiGridGeometry.swift \
+    Opencast/Features/Emoji/EmojiData.generated.swift Tools/emoji-test.swift -o /tmp/emoji-test && /tmp/emoji-test
   ```
 
 - The grid list uses the palette scrollbar (`.thinScrollbar()` + `.hideNativeScrollers()`) and the

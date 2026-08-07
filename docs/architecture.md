@@ -7,7 +7,7 @@ How Opencast is wired together. See the per-subsystem docs for internals:
 
 ## Single-owner core
 
-`AppCore.shared` (`Core/AppCore.swift`) is a `@MainActor` singleton that owns every long-lived
+`AppCore.shared` (`App/AppCore.swift`) is a `@MainActor` singleton that owns every long-lived
 manager — `AppIndex`, `ClipboardStore`, `ClipboardManager`, `HotKeyManager`, `AppSettings`,
 `FavoritesStore`, `VisibilityStore`, `LauncherRankingStore`, `CurrencyRateStore`,
 `RunningAppsMonitor`, `PaletteViewModel`, `WindowMover`, and system-command state — plus the window
@@ -21,7 +21,7 @@ launch actions are methods on `AppCore` that the SwiftUI views call.
 `OpencastApp` (`@main`) declares only a `MenuBarExtra` scene; everything else visible is driven
 imperatively from AppKit.
 
-- **Command palette** — a borderless floating `NSPanel` (`Core/PalettePanel.swift`) hosting SwiftUI
+- **Command palette** — a borderless floating `NSPanel` (`Features/Palette/PalettePanel.swift`) hosting SwiftUI
   via `NSHostingView`, managed by `PaletteWindowController`. It toggles between a compact bar and the
   full launcher by resizing the window. `PaletteWindowController` solely owns the frame (resolved once
   per show to a top-left anchor so it grows downward), and the hosting view sets `sizingOptions = []`
