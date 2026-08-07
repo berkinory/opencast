@@ -13,6 +13,8 @@ final class ExtensionHostManager: ObservableObject {
     var onNoViewFinished: (() -> Void)?
 
     private let capabilityBroker: ExtensionCapabilityBroker
+    private let showHUD: (String, String?, String?) -> Void
+    private let confirmAction: (String, String, String) -> Bool
     private var process: Process?
     private var input: FileHandle?
     private var output: FileHandle?
@@ -21,8 +23,14 @@ final class ExtensionHostManager: ObservableObject {
     private var requestCounter = 0
     private var watchdogTask: Task<Void, Never>?
 
-    init(capabilityBroker: ExtensionCapabilityBroker) {
+    init(
+        capabilityBroker: ExtensionCapabilityBroker,
+        showHUD: @escaping (String, String?, String?) -> Void,
+        confirmAction: @escaping (String, String, String) -> Bool
+    ) {
         self.capabilityBroker = capabilityBroker
+        self.showHUD = showHUD
+        self.confirmAction = confirmAction
     }
 
     func start(_ command: ExtensionCommand) {
@@ -232,18 +240,14 @@ final class ExtensionHostManager: ObservableObject {
             let kind = message["feedback"] as? String ?? "toast"
             if kind == "hud" {
                 guard let hudMessage = message["message"] as? String else { return }
-                AppCore.shared.showHUD(
-                    hudMessage,
-                    id: message["toastID"] as? String,
-                    style: message["style"] as? String
-                )
+                showHUD(
+                    hudMessage, message["toastID"] as? String, message["style"] as? String)
                 feedback = nil
             } else if kind == "confirm", let requestID = message["requestID"] as? String {
-                let confirmed = AppCore.shared.confirmExtensionAction(
-                    message: message["title"] as? String ?? "Confirm",
-                    informativeText: message["message"] as? String ?? "Are you sure?",
-                    confirmTitle: message["primaryAction"] as? String ?? "Continue"
-                )
+                let confirmed = confirmAction(
+                    message["title"] as? String ?? "Confirm",
+                    message["message"] as? String ?? "Are you sure?",
+                    message["primaryAction"] as? String ?? "Continue")
                 send([
                     "type": "event",
                     "event": "confirmResponse",

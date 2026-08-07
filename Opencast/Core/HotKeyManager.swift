@@ -25,6 +25,7 @@ final class HotKeyManager: ObservableObject, HealthCheckable {
     private let boundCommandKey = "boundCommandIDs"
     private let decoder = JSONDecoder()
     private let encoder = JSONEncoder()
+    private let entries: () -> [AppEntry]
     private var bindings: [HotKeyAction: HotKeyBinding] = [:]
     private var candidateActionsCache: [HotKeyAction]?
     @Published private(set) var unavailableActions: Set<HotKeyAction> = []
@@ -34,6 +35,10 @@ final class HotKeyManager: ObservableObject, HealthCheckable {
             healthTicker?.subscribe(self)
             doubleModifierMonitor.healthTicker = healthTicker
         }
+    }
+
+    init(entries: @escaping () -> [AppEntry]) {
+        self.entries = entries
     }
 
     func start() {
@@ -182,15 +187,15 @@ final class HotKeyManager: ObservableObject, HealthCheckable {
         case .toggleEmoji:
             return "Emoji & Symbols"
         case .app(let bundleID):
-            let apps = AppCore.shared.appIndex.apps
+            let apps = entries()
             return apps.first { $0.kind == .application && $0.bundleID == bundleID }?.name
                 ?? bundleID
         case .settingsPane(let bundleID):
-            let apps = AppCore.shared.appIndex.apps
+            let apps = entries()
             return apps.first { $0.kind == .systemSettings && $0.bundleID == bundleID }?.name
                 ?? bundleID
         case .command(let id):
-            return AppCore.shared.appIndex.apps.first { $0.id == id }?.name
+            return entries().first { $0.id == id }?.name
                 ?? CommandRegistry.all.first { $0.id == id }?.name
                 ?? id
         case .windowCommand(let id):

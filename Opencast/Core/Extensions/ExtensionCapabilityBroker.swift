@@ -35,9 +35,15 @@ final class ExtensionCapabilityBroker: ObservableObject {
     private let jobManager: ExtensionProcessJobManager
     private let networkSession: URLSession
     private let networkConsentKey: String
+    private let previousApplication: () -> NSRunningApplication?
+    private let confirmAction: (String, String, String) -> Bool
     private var networkConsentGranted: Bool
 
-    init(storageDirectory: URL? = nil) {
+    init(
+        storageDirectory: URL? = nil,
+        previousApplication: @escaping () -> NSRunningApplication?,
+        confirmAction: @escaping (String, String, String) -> Bool
+    ) {
         let bundleID = Bundle.main.bundleIdentifier ?? "com.opencast.app"
         let base = storageDirectory ?? AppPaths.applicationSupport()
         let scoped =
@@ -57,6 +63,8 @@ final class ExtensionCapabilityBroker: ObservableObject {
         portProvider = ExtensionPortProvider()
         metricsProvider = ExtensionSystemMetricsProvider()
         jobManager = ExtensionProcessJobManager()
+        self.previousApplication = previousApplication
+        self.confirmAction = confirmAction
 
         let configuration = URLSessionConfiguration.ephemeral
         configuration.urlCache = nil
@@ -94,7 +102,7 @@ final class ExtensionCapabilityBroker: ObservableObject {
             guard let text = payload["text"] as? String else {
                 return .denied("clipboard.paste requires a text value.")
             }
-            Paster.pasteString(text, previousApp: AppCore.shared.previousApplicationForExtension)
+            Paster.pasteString(text, previousApp: previousApplication())
             return .success(AnySendable(value: true))
         case "selectedText.read":
             return selectedText()
@@ -193,7 +201,7 @@ final class ExtensionCapabilityBroker: ObservableObject {
         guard Permissions.ensureAccessibility() else {
             return .denied("Accessibility permission is required to read selected text.")
         }
-        guard let application = AppCore.shared.previousApplicationForExtension else {
+        guard let application = previousApplication() else {
             return .success(AnySendable(value: ""))
         }
         let element = AXUIElementCreateApplication(application.processIdentifier)
@@ -694,9 +702,7 @@ final class ExtensionCapabilityBroker: ObservableObject {
         let title = signal == .kill ? "Force Kill Process" : "Terminate Process"
         let message = "PID " + String(pid) + (includeDescendants ? " and its descendants" : "") + " will be terminated."
         guard
-            AppCore.shared.confirmExtensionAction(
-                message: title, informativeText: message, confirmTitle: title
-            )
+            confirmAction(title, message, title)
         else {
             return .denied("Process termination was cancelled.")
         }
@@ -721,11 +727,7 @@ final class ExtensionCapabilityBroker: ObservableObject {
         let force = payload["force"] as? Bool ?? false
         let title = force ? "Force Restart Process" : "Restart Process"
         guard
-            AppCore.shared.confirmExtensionAction(
-                message: title,
-                informativeText: "PID \(pid) will be terminated and relaunched.",
-                confirmTitle: title
-            )
+            confirmAction(title, "PID \(pid) will be terminated and relaunched.", title)
         else {
             return .denied("Process restart was cancelled.")
         }

@@ -216,7 +216,7 @@ final class AppCore: ObservableObject {
     let quicklinkStore = QuicklinkStore()
     let snippetExpansionMonitor: SnippetExpansionMonitor
     let clipboardManager: ClipboardManager
-    let hotKeys = HotKeyManager()
+    let hotKeys: HotKeyManager
     let settings = AppSettings()
     let favorites = FavoritesStore()
     let visibility = VisibilityStore()
@@ -230,9 +230,28 @@ final class AppCore: ObservableObject {
     let palette = PaletteViewModel()
     let extensionCatalog: ExtensionCatalog
     let extensionStore: ExtensionStoreManager
-    let extensionCapabilities: ExtensionCapabilityBroker
-    let extensionHost: ExtensionHostManager
-    let extensionScheduler: ExtensionScheduler
+    lazy var extensionCapabilities = ExtensionCapabilityBroker(
+        previousApplication: { [weak self] in self?.windowController.previousApp },
+        confirmAction: { [weak self] message, informativeText, confirmTitle in
+            self?.confirmExtensionAction(
+                message: message,
+                informativeText: informativeText,
+                confirmTitle: confirmTitle) ?? false
+        }
+    )
+    lazy var extensionHost = ExtensionHostManager(
+        capabilityBroker: extensionCapabilities,
+        showHUD: { [weak self] message, id, style in
+            self?.showHUD(message, id: id, style: style)
+        },
+        confirmAction: { [weak self] message, informativeText, confirmTitle in
+            self?.confirmExtensionAction(
+                message: message,
+                informativeText: informativeText,
+                confirmTitle: confirmTitle) ?? false
+        }
+    )
+    lazy var extensionScheduler = ExtensionScheduler(capabilityBroker: extensionCapabilities)
     lazy var snippets = SnippetCoordinator(
         store: snippetStore,
         settings: settings,
@@ -327,13 +346,11 @@ final class AppCore: ObservableObject {
         let launcherRanking = LauncherRankingStore()
         self.launcherRanking = launcherRanking
         appIndex = AppIndex(ranking: launcherRanking)
+        hotKeys = HotKeyManager(entries: { [weak appIndex] in appIndex?.apps ?? [] })
         clipboardManager = ClipboardManager(store: clipboardStore, settings: settings)
         snippetExpansionMonitor = SnippetExpansionMonitor(store: snippetStore, settings: settings)
         extensionCatalog = ExtensionCatalog()
         extensionStore = ExtensionStoreManager(directory: extensionCatalog.directory)
-        extensionCapabilities = ExtensionCapabilityBroker()
-        extensionHost = ExtensionHostManager(capabilityBroker: extensionCapabilities)
-        extensionScheduler = ExtensionScheduler(capabilityBroker: extensionCapabilities)
         extensionHost.onNoViewFinished = { [weak self] in
             self?.hidePalette()
         }
