@@ -332,7 +332,7 @@ enum AppActionsMenu {
                 PopoverMenuItem(
                     title: "Quit Application", systemImage: "power", isDestructive: true
                 ) {
-                    core.quit(app)
+                    core.systemCommands.quit(app)
                 })
         }
         return PopoverMenuContent(header: app.name, items: items)

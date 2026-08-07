@@ -26,6 +26,7 @@
 		1DC8A0DE53EBAA6EB2F36259 /* CurrencyRateStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 65C25106F5FCF77837811B97 /* CurrencyRateStore.swift */; };
 		21381D073D89E1FC7A5182A9 /* SnippetSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5386785E3005CEB050117CCD /* SnippetSettingsView.swift */; };
 		23E5DB23DDFA2DC54550D828 /* EmojiSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6CBDBDA7A914809B55FF32FE /* EmojiSettingsView.swift */; };
+		24AF6611A66DCFC99BA04CC7 /* SystemCommandCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 674FA64DC1FA50EF85C27C45 /* SystemCommandCoordinator.swift */; };
 		25D52944D0E133CD108CB844 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B8243C4190704B957722DE7C /* Assets.xcassets */; };
 		268A0AA46BDD9288633D3EE0 /* ThinScrollbar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AFF513A7B07382D36DBC6DE /* ThinScrollbar.swift */; };
 		27DD0CBDACC2576D50361390 /* RootPaletteView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F207135F1CF766FD9A4491E0 /* RootPaletteView.swift */; };
@@ -222,6 +223,7 @@
 		6611BAE04ECE3A8A6B2E742B /* SettingsComponents.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsComponents.swift; sourceTree = "<group>"; };
 		66DE7F5A23C81E47A0DFA6B2 /* OnboardingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingView.swift; sourceTree = "<group>"; };
 		671AAC20B63D46404D59C6F2 /* ClipboardPaletteScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClipboardPaletteScreen.swift; sourceTree = "<group>"; };
+		674FA64DC1FA50EF85C27C45 /* SystemCommandCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SystemCommandCoordinator.swift; sourceTree = "<group>"; };
 		68466DCC9DE38D272F199629 /* EmojiPaletteScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmojiPaletteScreen.swift; sourceTree = "<group>"; };
 		68A3114205263DF64A689621 /* PaletteScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PaletteScreen.swift; sourceTree = "<group>"; };
 		6A32A89638CE8A0B1CE4DCA5 /* RunningApps.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RunningApps.swift; sourceTree = "<group>"; };
@@ -371,6 +373,7 @@
 			isa = PBXGroup;
 			children = (
 				92D4799C926C47AAFF99A4B0 /* SystemCommand.swift */,
+				674FA64DC1FA50EF85C27C45 /* SystemCommandCoordinator.swift */,
 				0F0B8D47B41B82D097D2C647 /* SystemCommandRunner.swift */,
 			);
 			path = SystemCommands;
@@ -913,6 +916,7 @@
 				E833C99EB70A37D5B91F8A2A /* SnippetStore.swift in Sources */,
 				5659B21346819C3643D3F18F /* SnippetViews.swift in Sources */,
 				89696F5D0EFF68BC84533F45 /* SystemCommand.swift in Sources */,
+				24AF6611A66DCFC99BA04CC7 /* SystemCommandCoordinator.swift in Sources */,
 				AB524DD8A8CC11D72D90B318 /* SystemCommandRunner.swift in Sources */,
 				828B704E20D07C637B1CD357 /* Theme.swift in Sources */,
 				268A0AA46BDD9288633D3EE0 /* ThinScrollbar.swift in Sources */,
