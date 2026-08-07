@@ -5,7 +5,7 @@ The command palette is a borderless floating `NSPanel` hosting SwiftUI; see
 
 ## State flow
 
-`PaletteViewModel` (mode / query / selection / `focusToken`) is the bridge between the panel and
+`PaletteViewModel` (`Features/Palette/PaletteModel.swift`) is the bridge between the panel and
 `AppCore`. Showing the palette calls `prepare(mode:)`, which resets state and bumps `focusToken` (a
 UUID) so the SwiftUI search field re-focuses. `RootPaletteView` switches its content on `mode`:
 

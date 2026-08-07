@@ -64,6 +64,7 @@
 		6CA7C4AC02B1D2DFE74E43FE /* CalcUnits.swift in Sources */ = {isa = PBXBuildFile; fileRef = F38167F3B9B07F49CCFE7CF8 /* CalcUnits.swift */; };
 		705450B9A4B152795595382B /* ExtensionStorePaletteView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08DEF7ACD6FA52C73713F943 /* ExtensionStorePaletteView.swift */; };
 		71E58394F92D60A0279619CC /* ClipboardStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE7065BEF9CE4DC91DF6AB79 /* ClipboardStore.swift */; };
+		7288317B7E9CDFE36FC71965 /* PaletteModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1BCFDFCAD58C3CA44F78502 /* PaletteModel.swift */; };
 		748AD79B6535D56B773AC0C3 /* CalcDateTime.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6EDDC8AE3B8BDB996EDFB912 /* CalcDateTime.swift */; };
 		777D84384121196FA858980B /* DialogController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CB566B7E5349ED5CABA4DAB7 /* DialogController.swift */; };
 		7895B0D4210A1A7C448B22FE /* PaletteInlineArguments.swift in Sources */ = {isa = PBXBuildFile; fileRef = 500BB7695C1113D18A44C4AB /* PaletteInlineArguments.swift */; };
@@ -257,6 +258,7 @@
 		99EDFF0C487A8DE2D05D548D /* WindowMover.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WindowMover.swift; sourceTree = "<group>"; };
 		9A06E277BC342596BF5AC8D3 /* Bundle+AppName.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Bundle+AppName.swift"; sourceTree = "<group>"; };
 		A0AFF8E90608331A98212251 /* QuicklinkCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuicklinkCoordinator.swift; sourceTree = "<group>"; };
+		A1BCFDFCAD58C3CA44F78502 /* PaletteModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PaletteModel.swift; sourceTree = "<group>"; };
 		A77212F0AE7D2165193E9FA6 /* AppIndex.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppIndex.swift; sourceTree = "<group>"; };
 		A877A7F16F347F11E3B9B205 /* WindowCommandCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WindowCommandCoordinator.swift; sourceTree = "<group>"; };
 		AAFB97AB508CA397704FD1B0 /* UpdateStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpdateStore.swift; sourceTree = "<group>"; };
@@ -447,6 +449,7 @@
 				EFB627B29E6DD1FE01D27B00 /* PaletteFooterControls.swift */,
 				500BB7695C1113D18A44C4AB /* PaletteInlineArguments.swift */,
 				30278F74390991460390F76B /* PaletteListLayout.swift */,
+				A1BCFDFCAD58C3CA44F78502 /* PaletteModel.swift */,
 				0BE551CEE8B674FBB2DB49EA /* PalettePanel.swift */,
 				74640B41568BC7C7A90A3115 /* PaletteRow.swift */,
 				68A3114205263DF64A689621 /* PaletteScreen.swift */,
@@ -888,6 +891,7 @@
 				3E1749B1DF98F13F2E7A3867 /* PaletteFooterControls.swift in Sources */,
 				7895B0D4210A1A7C448B22FE /* PaletteInlineArguments.swift in Sources */,
 				4B2265767404C02D0088F41C /* PaletteListLayout.swift in Sources */,
+				7288317B7E9CDFE36FC71965 /* PaletteModel.swift in Sources */,
 				1B75FC557B5E5C027947B29E /* PalettePanel.swift in Sources */,
 				1C0C3CB88AABBA8F4AA04046 /* PaletteRow.swift in Sources */,
 				111452FAE652430B75D04887 /* PaletteScreen.swift in Sources */,
