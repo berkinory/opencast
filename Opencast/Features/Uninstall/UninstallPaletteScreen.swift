@@ -6,7 +6,7 @@ struct UninstallPaletteScreen: PaletteScreen {
     let selection: Int
     let scrollIntent: ListScrollIntent?
     let session: UninstallSession
-    let core: AppCore
+    let coordinator: UninstallCoordinator
     let onSelect: (Int) -> Void
     let onOpenActions: () -> Void
 
@@ -17,7 +17,7 @@ struct UninstallPaletteScreen: PaletteScreen {
     var actionsContent: PopoverMenuContent? {
         guard session.phase == .selecting, !items.isEmpty else { return nil }
         return UninstallActionsMenu.content(
-            session: session, visible: items, selection: selection, core: core)
+            session: session, visible: items, selection: selection, coordinator: coordinator)
     }
 
     var body: some View {
@@ -39,11 +39,11 @@ struct UninstallPaletteScreen: PaletteScreen {
     func activate() -> Bool {
         switch session.phase {
         case .selecting:
-            core.confirmUninstall()
+            coordinator.remove()
         case .removing:
             return false
         case .done:
-            core.finishUninstall()
+            coordinator.finish()
         }
         return true
     }
@@ -51,7 +51,7 @@ struct UninstallPaletteScreen: PaletteScreen {
     @discardableResult
     func reveal() -> Bool {
         guard items.indices.contains(selection) else { return false }
-        core.showLeftoverInFinder(items[selection])
+        coordinator.reveal(items[selection])
         return true
     }
 

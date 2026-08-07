@@ -56,6 +56,7 @@
 		59A028CB46A978F4742E6E79 /* QuicklinkStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7D7122D966A24A349FC8D147 /* QuicklinkStore.swift */; };
 		5DC2CEC99086A8137BD27C4C /* PaletteDetailLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E22AE71B45DBB7485739198 /* PaletteDetailLayout.swift */; };
 		5E0C966995DA8748D609DEF9 /* QuicklinkCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0AFF8E90608331A98212251 /* QuicklinkCoordinator.swift */; };
+		618698C098B30C23C0C2F4B4 /* UninstallCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = E988E0784C404426D4E2076C /* UninstallCoordinator.swift */; };
 		620AFAFC4D17507ED92F137B /* EmojiIndex.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F6BACE99C5CB59D77200F49 /* EmojiIndex.swift */; };
 		637E926418BC8A67C337C305 /* SnippetCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A0F48BD3DCA94294DB5D51F /* SnippetCoordinator.swift */; };
 		6C81DC37815ABE6B47AC461F /* ClipboardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DFFA196847EC88A7B596C25F /* ClipboardView.swift */; };
@@ -294,6 +295,7 @@
 		E7FFF18ECC57AAC9678FA168 /* HotKeyManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HotKeyManager.swift; sourceTree = "<group>"; };
 		E9030C817B5F1D4E4C6FDBC6 /* OpencastExtensionHost */ = {isa = PBXFileReference; includeInIndex = 0; path = OpencastExtensionHost; sourceTree = BUILT_PRODUCTS_DIR; };
 		E9299D3A11818FC0597CACB6 /* VisibilityStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VisibilityStore.swift; sourceTree = "<group>"; };
+		E988E0784C404426D4E2076C /* UninstallCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UninstallCoordinator.swift; sourceTree = "<group>"; };
 		E9A2BD8499DA7DC64B6862FB /* ExtensionInvocationRunner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExtensionInvocationRunner.swift; sourceTree = "<group>"; };
 		EF13092E0848178BCF935120 /* opencast.icon */ = {isa = PBXFileReference; lastKnownFileType = wrapper.icon; path = opencast.icon; sourceTree = "<group>"; };
 		EFB627B29E6DD1FE01D27B00 /* PaletteFooterControls.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PaletteFooterControls.swift; sourceTree = "<group>"; };
@@ -658,6 +660,7 @@
 			isa = PBXGroup;
 			children = (
 				F2B0AE140DC6852FFFDB7DF1 /* AppLeftovers.swift */,
+				E988E0784C404426D4E2076C /* UninstallCoordinator.swift */,
 				872EB9C1E78314EC5D47B785 /* UninstallPaletteScreen.swift */,
 				91D28AED6648315A46CD89C3 /* UninstallSession.swift */,
 				07FD0F81328FD899D97306F5 /* UninstallView.swift */,
@@ -921,6 +924,7 @@
 				828B704E20D07C637B1CD357 /* Theme.swift in Sources */,
 				268A0AA46BDD9288633D3EE0 /* ThinScrollbar.swift in Sources */,
 				8F10E95EFDAEE9E4598344BF /* ToastWindowController.swift in Sources */,
+				618698C098B30C23C0C2F4B4 /* UninstallCoordinator.swift in Sources */,
 				BB252D9F556C5906392D15C9 /* UninstallPaletteScreen.swift in Sources */,
 				33C2862B8FA034D7B6629E43 /* UninstallSession.swift in Sources */,
 				575FFC5E74A97CD36BFBE214 /* UninstallView.swift in Sources */,

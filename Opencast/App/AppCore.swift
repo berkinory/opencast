@@ -316,6 +316,22 @@ final class AppCore: ObservableObject {
                 confirmTitle: confirmTitle) ?? false
         }
     )
+    lazy var uninstaller = UninstallCoordinator(
+        session: uninstall,
+        palette: palette,
+        appIndex: appIndex,
+        favorites: favorites,
+        visibility: visibility,
+        ranking: launcherRanking,
+        hotKeys: hotKeys,
+        hidePalette: { [weak self] restoreFocus in self?.hidePalette(restoreFocus: restoreFocus) },
+        confirm: { [weak self] message, informativeText, confirmTitle in
+            self?.windowController.presentConfirmation(
+                message: message,
+                informativeText: informativeText,
+                confirmTitle: confirmTitle) ?? false
+        }
+    )
     private let toastWindowController = ToastWindowController()
 
     private let dialogs = DialogController()
@@ -694,80 +710,6 @@ final class AppCore: ObservableObject {
 
     func resetRanking(for app: AppEntry) {
         launcherRanking.reset(itemKey: app.preferenceKey)
-    }
-
-    // MARK: - Uninstall
-
-    func beginUninstall(_ app: AppEntry) {
-        guard app.kind == .application,
-            app.url.standardizedFileURL.path != Bundle.main.bundleURL.standardizedFileURL.path,
-            AppLeftovers.canUninstall(url: app.url, bundleID: app.bundleID)
-        else { return }
-        uninstall.begin(app: app)
-        palette.enterSubscreen(.uninstall)
-    }
-
-    func cancelUninstall() {
-        uninstall.end()
-        palette.returnToLauncher()
-    }
-
-    func confirmUninstall(permanently: Bool = false) {
-        guard let app = uninstall.target, !uninstall.checkedItems.isEmpty,
-            uninstall.phase == .selecting
-        else { return }
-        let targets = uninstall.checkedItems
-        let bundlePath = app.url.resolvingSymlinksInPath().path
-        let removesBundle = targets.contains { $0.url.path == bundlePath }
-        if permanently {
-            let confirmed = windowController.presentConfirmation(
-                message: targets.count == 1
-                    ? "Permanently delete 1 item?"
-                    : "Permanently delete \(targets.count) items?",
-                informativeText:
-                    "“\(app.name)” and the files you checked will be erased immediately. This can’t be undone.",
-                confirmTitle: "Delete"
-            )
-            guard confirmed else { return }
-        }
-        Task { [weak self] in
-            guard let self else { return }
-            let outcome = await uninstall.remove(permanently: permanently)
-            if removesBundle, !outcome.failures.contains(where: { $0.url.path == bundlePath }) {
-                forgetUninstalledApp(app)
-            }
-            await appIndex.refresh()
-        }
-    }
-
-    func exitUninstall() {
-        switch uninstall.phase {
-        case .selecting: cancelUninstall()
-        case .removing: break
-        case .done: finishUninstall()
-        }
-    }
-
-    func finishUninstall() {
-        uninstall.end()
-        palette.prepare(mode: .launcher)
-    }
-
-    func setUninstallSort(_ sort: UninstallSort) {
-        uninstall.setSort(sort)
-        palette.selection = 0
-    }
-
-    func showLeftoverInFinder(_ item: LeftoverItem) {
-        hidePalette(restoreFocus: false)
-        AppLauncher.showInFinder(item.url)
-    }
-
-    private func forgetUninstalledApp(_ app: AppEntry) {
-        if favorites.isFavorite(app) { favorites.toggle(app) }
-        visibility.setItemVisible(true, for: app)
-        launcherRanking.reset(itemKey: app.preferenceKey)
-        if let action = app.hotKeyAction { hotKeys.setShortcut(nil, for: action) }
     }
 
     private func runCommand(_ entry: AppEntry, inlineArgumentValues: [String] = []) {

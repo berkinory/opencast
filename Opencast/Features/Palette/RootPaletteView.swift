@@ -313,7 +313,7 @@ struct RootPaletteView: View {
 
     private var sortMenuContent: PopoverMenuContent {
         UninstallActionsMenu.sortContent(session: uninstall) { sort in
-            core.setUninstallSort(sort)
+            core.uninstaller.setSort(sort)
             listScroll = ListScrollIntent(kind: .top)
         }
     }
@@ -652,14 +652,14 @@ struct RootPaletteView: View {
                     let app = selectedAppEntry,
                     AppLeftovers.canUninstall(url: app.url, bundleID: app.bundleID)
                 {
-                    core.beginUninstall(app)
+                    core.uninstaller.begin(app)
                     return .handled
                 }
             }
             guard press.modifiers.contains(.command) else { return .ignored }
             if press.modifiers.contains(.shift) {
                 if vm.mode == .uninstall, uninstall.phase == .selecting {
-                    core.confirmUninstall(permanently: true)
+                    core.uninstaller.remove(permanently: true)
                     return .handled
                 }
             }
@@ -907,7 +907,7 @@ struct RootPaletteView: View {
             selection: selection,
             scrollIntent: listScroll,
             session: uninstall,
-            core: core,
+            coordinator: core.uninstaller,
             onSelect: { vm.selection = $0 },
             onOpenActions: openActions
         )
@@ -1294,7 +1294,7 @@ struct RootPaletteView: View {
     private func handlePaletteEscape() {
         switch vm.mode {
         case .uninstall:
-            core.exitUninstall()
+            core.uninstaller.exit()
         case .snippetEditor:
             core.snippets.exitEditor()
         default:
@@ -1437,7 +1437,7 @@ struct RootPaletteView: View {
     /// Return to the launcher and restore the query that opened the sub-screen.
     private func exitToLauncher() {
         if vm.mode == .uninstall {
-            core.exitUninstall()
+            core.uninstaller.exit()
             return
         }
         if vm.mode == .snippetEditor {

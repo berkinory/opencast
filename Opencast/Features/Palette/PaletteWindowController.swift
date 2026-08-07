@@ -203,7 +203,7 @@ final class PaletteWindowController: NSObject, NSWindowDelegate {
                 return false
             }
             if core.palette.mode == .uninstall {
-                core.exitUninstall()
+                core.uninstaller.exit()
             } else if core.palette.mode == .snippetEditor || core.palette.mode == .quicklinkEditor {
                 guard !(panel.firstResponder is NSTextField || panel.firstResponder is NSTextView) else {
                     return false

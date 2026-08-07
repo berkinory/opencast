@@ -279,7 +279,8 @@ enum UninstallFormat {
 @MainActor
 enum UninstallActionsMenu {
     static func content(
-        session: UninstallSession, visible: [LeftoverItem], selection: Int, core: AppCore
+        session: UninstallSession, visible: [LeftoverItem], selection: Int,
+        coordinator: UninstallCoordinator
     ) -> PopoverMenuContent {
         let name = session.target?.name ?? "Application"
         var items: [PopoverMenuItem] = []
@@ -287,25 +288,25 @@ enum UninstallActionsMenu {
             items.append(
                 PopoverMenuItem(
                     title: "Uninstall Application", systemImage: "trash", shortcut: "↵", isDestructive: true
-                ) { core.confirmUninstall() }
+                ) { coordinator.remove() }
             )
             items.append(
                 PopoverMenuItem(
                     title: "Permanently Delete…", systemImage: "trash.slash", shortcut: "⇧⌘⌫", isDestructive: true
-                ) { core.confirmUninstall(permanently: true) }
+                ) { coordinator.remove(permanently: true) }
             )
         }
         if visible.indices.contains(selection) {
             let item = visible[selection]
             items.append(
                 PopoverMenuItem(title: "Show in Finder", systemImage: "folder", shortcut: "⌘↵") {
-                    core.showLeftoverInFinder(item)
+                    coordinator.reveal(item)
                 }
             )
         }
         items.append(
             PopoverMenuItem(title: "Cancel", systemImage: "xmark", shortcut: "⎋") {
-                core.cancelUninstall()
+                coordinator.cancel()
             }
         )
         return PopoverMenuContent(header: "Uninstall \(name)", items: items)
