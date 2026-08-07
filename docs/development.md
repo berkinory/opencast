@@ -95,7 +95,7 @@ swiftc -swift-version 6 Opencast/Features/Launcher/LauncherRankingStore.swift To
     -o /tmp/ranking-test && /tmp/ranking-test                      # learned launcher ranking
 swiftc -swift-version 6 Opencast/Features/Launcher/SearchScopes.swift Tools/scopes-test.swift \
     -o /tmp/scopes-test && /tmp/scopes-test                       # launcher search scopes
-swiftc Opencast/Features/Calculator/*.swift Tools/calc-test.swift \
+swiftc Opencast/Features/Calculator/Engine/*.swift Tools/calc-test.swift \
     -o /tmp/calc-test && /tmp/calc-test                           # calculator engine
 swiftc -swift-version 6 Opencast/Features/Clipboard/ClipboardStore.swift Tools/clipboard-test.swift \
     -o /tmp/clipboard-test && /tmp/clipboard-test                 # clipboard store
@@ -110,7 +110,7 @@ swiftc -swift-version 6 Opencast/Features/Palette/PaletteSelectionIndex.swift \
 
 `Tools/fuzz-test.swift` holds a **copy** of `FuzzyMatch` from `Opencast/Features/Launcher/AppIndex.swift` —
 change the scoring in one and mirror it in the other. The calc harness compiles the real engine
-sources, which is why `Opencast/Features/Calculator/` must stay Foundation-only.
+sources, which is why `Opencast/Features/Calculator/Engine/` must stay Foundation-only.
 
 The clipboard harness likewise compiles the real `ClipboardStore.swift`, so that file must keep to
 Foundation + SQLite3 and depend on no other app source. Each case drives a store rooted in a
@@ -123,7 +123,7 @@ run them online, then commit the result:
 
 ```sh
 node Tools/gen-emoji.js            # -> Opencast/Features/Emoji/EmojiData.generated.swift
-node Tools/gen-currencies.js       # -> Opencast/Features/Calculator/CurrencyData.generated.swift
+node Tools/gen-currencies.js       # -> Opencast/Features/Calculator/Engine/CurrencyData.generated.swift
 ```
 
 `gen-currencies.js` joins two sources on the ISO code: **Frankfurter**'s currency list (the same feed

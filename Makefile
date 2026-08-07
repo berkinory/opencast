@@ -54,7 +54,7 @@ test: tools
 	$(TEST_BIN_DIR)/ranking-test
 	swiftc -swift-version 6 Opencast/Features/Launcher/SearchScopes.swift Tools/scopes-test.swift -o $(TEST_BIN_DIR)/scopes-test
 	$(TEST_BIN_DIR)/scopes-test
-	swiftc Opencast/Features/Calculator/*.swift Tools/calc-test.swift -o $(TEST_BIN_DIR)/calc-test
+	swiftc Opencast/Features/Calculator/Engine/*.swift Tools/calc-test.swift -o $(TEST_BIN_DIR)/calc-test
 	$(TEST_BIN_DIR)/calc-test
 	swiftc -swift-version 6 Opencast/Features/Clipboard/ClipboardStore.swift Tools/clipboard-test.swift -o $(TEST_BIN_DIR)/clipboard-test
 	$(TEST_BIN_DIR)/clipboard-test

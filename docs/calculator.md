@@ -1,6 +1,6 @@
 # Inline calculator
 
-`Features/Calculator/` is a **Foundation-only** engine (no AppKit / SwiftUI imports) fronted by
+`Features/Calculator/Engine/` is a **Foundation-only** engine (no AppKit / SwiftUI imports) fronted by
 `CalcMemo`, a one-deep memo mirroring `AppIndex`'s. It must stay Foundation-only because the
 `Tools/calc-test.swift` harness compiles the real engine sources — including `CalcDateTime`. It is
 also **pure**: the one input it can't compute, the FX rate table, is passed in (see Currency below).
