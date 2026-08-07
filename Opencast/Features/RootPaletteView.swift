@@ -258,7 +258,7 @@ struct RootPaletteView: View {
             }
             if let quicklink = selectedLauncherQuicklink {
                 return QuicklinkActionsMenu.content(
-                    quicklink: quicklink, core: core, favorites: favorites,
+                    quicklink: quicklink, coordinator: core.quicklinks, favorites: favorites,
                     onToggleFavorite: { toggleFavorite(quicklink) },
                     onTogglePinned: { togglePinnedQuicklink(quicklink) })
             }
@@ -270,7 +270,7 @@ struct RootPaletteView: View {
         case .snippets:
             if let snippet = selectedSnippet {
                 return SnippetActionsMenu.content(
-                    snippet: snippet, core: core,
+                    snippet: snippet, coordinator: core.snippets, target: vm.pasteTarget,
                     onTogglePinned: { togglePinnedSnippet(snippet) })
             }
             return nil
@@ -874,7 +874,7 @@ struct RootPaletteView: View {
             items: items,
             selection: selection,
             scrollIntent: listScroll,
-            core: core,
+            coordinator: core.quicklinks,
             favorites: favorites,
             onSelect: { vm.selection = $0 },
             onOpenActions: openActions,
@@ -1161,7 +1161,7 @@ struct RootPaletteView: View {
     }
 
     private func togglePinnedSnippet(_ snippet: Snippet) {
-        core.togglePinnedSnippet(snippet)
+        core.snippets.togglePinned(snippet)
         if let index = snippetResults.firstIndex(where: { $0.id == snippet.id }) {
             vm.selection = index
         }
@@ -1169,7 +1169,7 @@ struct RootPaletteView: View {
     }
 
     private func togglePinnedQuicklink(_ quicklink: Quicklink) {
-        core.togglePinnedQuicklink(quicklink)
+        core.quicklinks.togglePinned(quicklink)
         if vm.mode == .launcher {
             if let index = launcherQuicklinkResults.firstIndex(where: { $0.id == quicklink.id }) {
                 vm.selection = calcCount + appResults.count + index
@@ -1269,7 +1269,7 @@ struct RootPaletteView: View {
             return clipboardScreen(items: clipResults, selection: selection).copy()
         case .snippets:
             guard command, snippetResults.indices.contains(selection) else { return false }
-            core.copySnippet(snippetResults[selection])
+            core.snippets.copy(snippetResults[selection])
         case .quicklinks:
             guard command else { return false }
             return quicklinkScreen(items: quicklinkResults, selection: selection).copy()
@@ -1296,7 +1296,7 @@ struct RootPaletteView: View {
         case .uninstall:
             core.exitUninstall()
         case .snippetEditor:
-            core.exitSnippetEditor()
+            core.snippets.exitEditor()
         default:
             core.handlePaletteEscape()
         }
@@ -1441,11 +1441,11 @@ struct RootPaletteView: View {
             return
         }
         if vm.mode == .snippetEditor {
-            core.exitSnippetEditor()
+            core.snippets.exitEditor()
             return
         }
         if vm.mode == .quicklinkEditor {
-            core.exitQuicklinkEditor()
+            core.quicklinks.exitEditor()
             return
         }
         if vm.mode == .extensionCommand {
@@ -1480,7 +1480,7 @@ struct RootPaletteView: View {
                 vm.focusToken = UUID()
                 vm.resetToken = UUID()
             } else {
-                core.exitSnippetEditor()
+                core.snippets.exitEditor()
                 Task { @MainActor in
                     await Task.yield()
                     vm.postFeedback("Created snippet")
@@ -1526,7 +1526,7 @@ struct RootPaletteView: View {
                 vm.focusToken = UUID()
                 vm.resetToken = UUID()
             } else {
-                core.exitQuicklinkEditor()
+                core.quicklinks.exitEditor()
                 Task { @MainActor in
                     await Task.yield()
                     vm.postFeedback("Created quicklink")
@@ -1568,15 +1568,15 @@ struct RootPaletteView: View {
             }
             let quicklinkIndex = index - appResults.count
             guard launcherQuicklinkResults.indices.contains(quicklinkIndex) else { return }
-            core.openQuicklink(launcherQuicklinkResults[quicklinkIndex])
+            core.quicklinks.open(launcherQuicklinkResults[quicklinkIndex])
         case .clipboard:
             clipboardScreen(items: clipResults, selection: selection).activate()
         case .snippets:
             guard snippetResults.indices.contains(selection) else {
-                core.createSnippet()
+                core.snippets.create()
                 return
             }
-            core.pasteSnippet(snippetResults[selection])
+            core.snippets.paste(snippetResults[selection])
         case .snippetEditor, .quicklinkEditor:
             return
         case .quicklinks:

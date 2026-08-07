@@ -5,7 +5,7 @@ struct QuicklinkPaletteScreen: PaletteScreen {
     let items: [Quicklink]
     let selection: Int
     let scrollIntent: ListScrollIntent?
-    let core: AppCore
+    let coordinator: QuicklinkCoordinator
     let favorites: FavoritesStore
     let onSelect: (Int) -> Void
     let onOpenActions: () -> Void
@@ -22,7 +22,7 @@ struct QuicklinkPaletteScreen: PaletteScreen {
         guard let selectedItem else { return nil }
         return QuicklinkActionsMenu.content(
             quicklink: selectedItem,
-            core: core,
+            coordinator: coordinator,
             favorites: favorites,
             onToggleFavorite: { onToggleFavorite(selectedItem) },
             onTogglePinned: { onTogglePinned(selectedItem) }
@@ -43,17 +43,17 @@ struct QuicklinkPaletteScreen: PaletteScreen {
     @discardableResult
     func activate() -> Bool {
         guard let selectedItem else {
-            core.createQuicklink()
+            coordinator.create()
             return true
         }
-        core.openQuicklink(selectedItem)
+        coordinator.open(selectedItem)
         return true
     }
 
     @discardableResult
     func copy() -> Bool {
         guard let selectedItem else { return false }
-        core.copyQuicklink(selectedItem)
+        coordinator.copy(selectedItem)
         return true
     }
 
@@ -63,7 +63,7 @@ struct QuicklinkPaletteScreen: PaletteScreen {
 
     private func activate(_ item: Quicklink) {
         select(item)
-        core.openQuicklink(item)
+        coordinator.open(item)
     }
 
     private func openActions(_ item: Quicklink) {

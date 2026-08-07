@@ -160,7 +160,7 @@ struct QuicklinkEditorView: View {
     }
 
     private func chooseFileOrFolder() {
-        core.chooseQuicklinkTarget { path in
+        core.quicklinks.chooseTarget { path in
             link = path
         }
     }

@@ -233,6 +233,26 @@ final class AppCore: ObservableObject {
     let extensionCapabilities: ExtensionCapabilityBroker
     let extensionHost: ExtensionHostManager
     let extensionScheduler: ExtensionScheduler
+    lazy var snippets = SnippetCoordinator(
+        store: snippetStore,
+        settings: settings,
+        palette: palette,
+        previousApplication: { [weak self] in self?.windowController.previousApp },
+        hidePalette: { [weak self] restoreFocus in self?.hidePalette(restoreFocus: restoreFocus) }
+    )
+    lazy var quicklinks = QuicklinkCoordinator(
+        store: quicklinkStore,
+        settings: settings,
+        palette: palette,
+        favorites: favorites,
+        hidePalette: { [weak self] restoreFocus in self?.hidePalette(restoreFocus: restoreFocus) },
+        chooseTarget: { [weak self] completion in
+            self?.windowController.presentFilePicker { url in
+                guard let url else { return }
+                completion(url.path)
+            }
+        }
+    )
     private let toastWindowController = ToastWindowController()
 
     private let dialogs = DialogController()
@@ -632,162 +652,6 @@ final class AppCore: ObservableObject {
         palette.returnToLauncher()
     }
 
-    func createSnippet() {
-        guard settings.snippetsEnabled else { return }
-        palette.enterSubscreen(.snippetEditor)
-    }
-
-    func editSnippet(_ snippet: Snippet) {
-        guard settings.snippetsEnabled else { return }
-        palette.enterSubscreen(.snippetEditor)
-        palette.snippetEditingID = snippet.id
-        palette.snippetEditorReturnsToSearch = true
-    }
-
-    func searchSnippets() {
-        guard settings.snippetsEnabled else { return }
-        palette.enterSubscreen(.snippets)
-    }
-
-    func createQuicklink() {
-        guard settings.quicklinksEnabled else { return }
-        palette.enterSubscreen(.quicklinkEditor)
-    }
-
-    func editQuicklink(_ quicklink: Quicklink) {
-        guard settings.quicklinksEnabled else { return }
-        palette.enterSubscreen(.quicklinkEditor)
-        palette.quicklinkEditingID = quicklink.id
-        palette.quicklinkEditorReturnsToSearch = true
-    }
-
-    func searchQuicklinks() {
-        guard settings.quicklinksEnabled else { return }
-        palette.enterSubscreen(.quicklinks)
-    }
-
-    func exitSnippetEditor() {
-        if palette.snippetEditorReturnsToSearch {
-            palette.mode = .snippets
-            palette.query = ""
-            palette.selection = 0
-            palette.snippetEditingID = nil
-            palette.snippetEditorReturnsToSearch = false
-            palette.focusToken = UUID()
-            palette.resetToken = UUID()
-        } else {
-            palette.returnToLauncher()
-        }
-    }
-
-    func pasteSnippet(_ snippet: Snippet) {
-        let previous = windowController.previousApp
-        hidePalette(restoreFocus: false)
-        Paster.pasteString(snippet.content, previousApp: previous)
-    }
-
-    func copySnippet(_ snippet: Snippet) {
-        Paster.copyString(snippet.content)
-        palette.postFeedback("Copied snippet")
-    }
-
-    func togglePinnedSnippet(_ snippet: Snippet) {
-        do {
-            try snippetStore.togglePinned(snippet)
-        } catch {
-            palette.postFeedback("Could not save snippet", tone: .error)
-            return
-        }
-        palette.selection = snippetStore.rowIndex(of: snippet, in: palette.query) ?? 0
-    }
-
-    func duplicateSnippet(_ snippet: Snippet) {
-        do {
-            _ = try snippetStore.duplicate(snippet)
-            palette.postFeedback("Duplicated snippet")
-        } catch {
-            palette.postFeedback("Could not duplicate snippet", tone: .error)
-        }
-    }
-
-    func exitQuicklinkEditor() {
-        if palette.quicklinkEditorReturnsToSearch {
-            palette.mode = .quicklinks
-            palette.query = ""
-            palette.selection = 0
-            palette.quicklinkEditingID = nil
-            palette.quicklinkEditorReturnsToSearch = false
-            palette.focusToken = UUID()
-            palette.resetToken = UUID()
-        } else {
-            palette.returnToLauncher()
-        }
-    }
-
-    func chooseQuicklinkTarget(completion: @escaping (String) -> Void) {
-        windowController.presentFilePicker { url in
-            guard let url else { return }
-            completion(url.path)
-        }
-    }
-
-    func openQuicklink(_ quicklink: Quicklink) {
-        guard AppLauncher.open(quicklink) else {
-            palette.postFeedback("Could not open quicklink", tone: .error)
-            return
-        }
-        hidePalette(restoreFocus: false)
-    }
-
-    func copyQuicklink(_ quicklink: Quicklink) {
-        Paster.copyString(quicklink.link)
-        palette.postFeedback("Copied link")
-    }
-
-    func togglePinnedQuicklink(_ quicklink: Quicklink) {
-        do {
-            try quicklinkStore.togglePinned(quicklink)
-        } catch {
-            palette.postFeedback("Could not save quicklink", tone: .error)
-            return
-        }
-        if palette.mode == .quicklinks {
-            palette.selection = quicklinkStore.rowIndex(of: quicklink, in: palette.query) ?? 0
-        }
-    }
-
-    func duplicateQuicklink(_ quicklink: Quicklink) {
-        do {
-            _ = try quicklinkStore.duplicate(quicklink)
-            palette.postFeedback("Duplicated quicklink")
-        } catch {
-            palette.postFeedback("Could not duplicate quicklink", tone: .error)
-        }
-    }
-
-    func deleteQuicklink(_ quicklink: Quicklink) {
-        do {
-            try quicklinkStore.delete(quicklink)
-        } catch {
-            palette.postFeedback("Could not delete quicklink", tone: .error)
-            return
-        }
-        favorites.remove(quicklink)
-        palette.selection = 0
-        palette.postFeedback("Deleted quicklink")
-    }
-
-    func deleteSnippet(_ snippet: Snippet) {
-        do {
-            try snippetStore.delete(snippet)
-        } catch {
-            palette.postFeedback("Could not delete snippet", tone: .error)
-            return
-        }
-        palette.selection = 0
-        palette.postFeedback("Deleted snippet")
-    }
-
     func confirmUninstall(permanently: Bool = false) {
         guard let app = uninstall.target, !uninstall.checkedItems.isEmpty,
             uninstall.phase == .selecting
@@ -963,13 +827,13 @@ final class AppCore: ObservableObject {
             guard settings.clipboardEnabled else { return }
             palette.enterSubscreen(.clipboard)
         case .searchSnippets:
-            searchSnippets()
+            snippets.search()
         case .createSnippet:
-            createSnippet()
+            snippets.create()
         case .searchQuicklinks:
-            searchQuicklinks()
+            quicklinks.search()
         case .createQuicklink:
-            createQuicklink()
+            quicklinks.create()
         case .searchEmoji:
             guard settings.emojiEnabled else { return }
             palette.enterSubscreen(.emoji)

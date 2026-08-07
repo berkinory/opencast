@@ -209,9 +209,9 @@ final class PaletteWindowController: NSObject, NSWindowDelegate {
                     return false
                 }
                 if core.palette.mode == .snippetEditor {
-                    core.exitSnippetEditor()
+                    core.snippets.exitEditor()
                 } else {
-                    core.exitQuicklinkEditor()
+                    core.quicklinks.exitEditor()
                 }
             } else {
                 core.handlePaletteEscape()
@@ -257,9 +257,9 @@ final class PaletteWindowController: NSObject, NSWindowDelegate {
                 return false
             }
             if core.palette.mode == .snippetEditor {
-                core.exitSnippetEditor()
+                core.snippets.exitEditor()
             } else {
-                core.exitQuicklinkEditor()
+                core.quicklinks.exitEditor()
             }
             return true
         }

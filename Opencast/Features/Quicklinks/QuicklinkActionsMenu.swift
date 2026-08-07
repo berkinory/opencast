@@ -3,7 +3,7 @@ import SwiftUI
 @MainActor
 enum QuicklinkActionsMenu {
     static func content(
-        quicklink: Quicklink, core: AppCore, favorites: FavoritesStore,
+        quicklink: Quicklink, coordinator: QuicklinkCoordinator, favorites: FavoritesStore,
         onToggleFavorite: @escaping () -> Void,
         onTogglePinned: (() -> Void)? = nil
     ) -> PopoverMenuContent {
@@ -23,7 +23,7 @@ enum QuicklinkActionsMenu {
                 if let onTogglePinned {
                     onTogglePinned()
                 } else {
-                    core.togglePinnedQuicklink(quicklink)
+                    coordinator.togglePinned(quicklink)
                 }
             }
             : PopoverMenuItem(
@@ -32,7 +32,7 @@ enum QuicklinkActionsMenu {
                 if let onTogglePinned {
                     onTogglePinned()
                 } else {
-                    core.togglePinnedQuicklink(quicklink)
+                    coordinator.togglePinned(quicklink)
                 }
             }
         return PopoverMenuContent(
@@ -41,23 +41,23 @@ enum QuicklinkActionsMenu {
                 PopoverMenuItem(
                     title: "Open Quicklink", systemImage: "arrow.up.right", shortcut: "↵"
                 ) {
-                    core.openQuicklink(quicklink)
+                    coordinator.open(quicklink)
                 },
                 favoriteItem,
                 pinnedItem,
                 PopoverMenuItem(title: "Copy Link", systemImage: "doc.on.doc", shortcut: "⌘↵") {
-                    core.copyQuicklink(quicklink)
+                    coordinator.copy(quicklink)
                 },
                 PopoverMenuItem(title: "Duplicate Quicklink", systemImage: "plus.square.on.square") {
-                    core.duplicateQuicklink(quicklink)
+                    coordinator.duplicate(quicklink)
                 },
                 PopoverMenuItem(title: "Edit Quicklink", systemImage: "pencil") {
-                    core.editQuicklink(quicklink)
+                    coordinator.edit(quicklink)
                 },
                 PopoverMenuItem(
                     title: "Delete Quicklink", systemImage: "trash", isDestructive: true
                 ) {
-                    core.deleteQuicklink(quicklink)
+                    coordinator.delete(quicklink)
                 },
             ]
         )
