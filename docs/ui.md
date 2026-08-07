@@ -2,7 +2,7 @@
 
 The design system for Opencast's UI, written so an agent restyling or extending it stays consistent
 with what's already there. This documents **Opencast as built** — every rule here maps to code in
-`Opencast/`. `Core/Theme.swift` is the single design-token source.
+`Opencast/`. `DesignSystem/Theme.swift` is the single design-token source.
 
 Read this before touching any view body, `Theme` value, or the panel chrome.
 
@@ -40,7 +40,7 @@ These are the things that quietly break the look if changed. Preserve them unles
 
 ---
 
-## Tokens — `Opencast/Core/Theme.swift`
+## Tokens — `Opencast/DesignSystem/Theme.swift`
 
 `Theme` is the single source of truth. **Never hardcode a spacing/radius/size/color that has a token.**
 Add a token rather than a magic number when introducing a new value.
@@ -120,7 +120,7 @@ the dark surface). **Selection always beats hover** when a row is both.
 
 ---
 
-## The edge dissolve — `Core/EdgeDissolve.swift`
+## The edge dissolve — `DesignSystem/EdgeDissolve.swift`
 
 The signature effect. A scroll-driven `LinearGradient` mask on each list so rows soften as they approach
 a floating bar, ghost beneath it, and vanish only at the window edge. Attach with `.edgeDissolve()` on
@@ -174,7 +174,7 @@ Glass is **only** for floating controls, never the main surface.
 
 ---
 
-## Scrollbars — `Core/ThinScrollbar.swift`
+## Scrollbars — `DesignSystem/ThinScrollbar.swift`
 
 Custom thin overlay scrollbar (the native one flashes and reserves a gutter inside a transparent panel).
 `.hideNativeScrollers()` on the scroll _content_ forces the backing `NSScrollView` to a hidden `.overlay`

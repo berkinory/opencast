@@ -34,7 +34,7 @@ imperatively from AppKit.
 - **Feedback HUD** — a non-activating, screen-level `NSPanel` owned by `AppCore` and managed by
   `ToastWindowController`. It hosts the shared `FeedbackToastView`, stays visible after the palette
   closes, and is used by extension `showHUD` feedback.
-- **Modal dialogs** — every confirmation and system-command error uses `Core/NativeConfirmation.swift`.
+- **Modal dialogs** — every confirmation and system-command error uses `Platform/NativeConfirmation.swift`.
   The primary action is on the right and bound to Return; the secondary action is on the left and bound
   to Escape. Do not add direct `NSAlert` or SwiftUI `confirmationDialog` calls elsewhere.
 
@@ -50,7 +50,7 @@ pushed off-main via `Task.detached` / `nonisolated`. Keep that boundary when add
 
 House idioms for the sharp edges:
 
-- Block-observer lifetimes go through the RAII `NotificationToken` (`Core/NotificationToken.swift`)
+- Block-observer lifetimes go through the RAII `NotificationToken` (`Platform/NotificationToken.swift`)
   instead of removal in a `deinit`.
 - `ClipboardStore` uses `isolated deinit` for its SQLite teardown.
 - Raw Carbon / C pointers get decoded to plain values before crossing into actor code (see
