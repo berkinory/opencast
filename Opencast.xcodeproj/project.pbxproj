@@ -141,6 +141,7 @@
 		EA50B90E560464861DF77048 /* ExtensionHostRuntime.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88FD40DBA985BAEDEA6CB70B /* ExtensionHostRuntime.swift */; };
 		EA7F39EE7D7D24BF1D23CD23 /* SnippetActionsMenu.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD7828F8E8D06ABDF3E82E4A /* SnippetActionsMenu.swift */; };
 		EB0F48828E3A5B02C4CEECD5 /* PaletteInlineArguments.swift in Sources */ = {isa = PBXBuildFile; fileRef = 494FFCFEEE0503D3191481D1 /* PaletteInlineArguments.swift */; };
+		EB3A6393CF2E93BA6A8DCEE5 /* WindowCommandCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = A877A7F16F347F11E3B9B205 /* WindowCommandCoordinator.swift */; };
 		EC9A78624E63B6B63FB50120 /* SnippetExpansionMonitor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5626D5C4B7201389BD65AE55 /* SnippetExpansionMonitor.swift */; };
 		F5201B807399F1C6E0863AE3 /* ShortcutsSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D3A782BDD846463B97DA98A6 /* ShortcutsSettingsView.swift */; };
 		F6F0940BA37796914D5F6CEC /* EmojiGridGeometry.swift in Sources */ = {isa = PBXBuildFile; fileRef = 027E69A728290EA06F4016AA /* EmojiGridGeometry.swift */; };
@@ -248,6 +249,7 @@
 		A0AFF8E90608331A98212251 /* QuicklinkCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuicklinkCoordinator.swift; sourceTree = "<group>"; };
 		A3B28C27C4D1D851AF7CFA9B /* Theme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Theme.swift; sourceTree = "<group>"; };
 		A863622F04A30FEB521F5EC9 /* ExtensionModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExtensionModels.swift; sourceTree = "<group>"; };
+		A877A7F16F347F11E3B9B205 /* WindowCommandCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WindowCommandCoordinator.swift; sourceTree = "<group>"; };
 		AC19B6E19F6F3282B7A219E3 /* VisibilityStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VisibilityStore.swift; sourceTree = "<group>"; };
 		ADEB576FAC85805D88D40C0B /* ExtensionSystemCommand.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExtensionSystemCommand.swift; sourceTree = "<group>"; };
 		B02FFB0AEFE588A952231BDE /* Memo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Memo.swift; sourceTree = "<group>"; };
@@ -456,6 +458,14 @@
 			path = Emoji;
 			sourceTree = "<group>";
 		};
+		524B1CBF1530E8AA73D0CD5A /* WindowManagement */ = {
+			isa = PBXGroup;
+			children = (
+				A877A7F16F347F11E3B9B205 /* WindowCommandCoordinator.swift */,
+			);
+			path = WindowManagement;
+			sourceTree = "<group>";
+		};
 		57054D7BF685AEDE6621529D /* About */ = {
 			isa = PBXGroup;
 			children = (
@@ -589,6 +599,7 @@
 				8F506C5F46BD04ADE518C3D4 /* Settings */,
 				987BD0D17A5D03C48F1F469F /* Snippets */,
 				FDF61DB80286EDCAFE6E1F3E /* Uninstall */,
+				524B1CBF1530E8AA73D0CD5A /* WindowManagement */,
 				BB3776CBF11EBD27E3E049DD /* PaletteActionLayout.swift */,
 				1FD014B0B84946CC2A7625D8 /* PaletteDetailLayout.swift */,
 				9B3D242D623DF0D7B1A8C778 /* PaletteFooterControls.swift */,
@@ -914,6 +925,7 @@
 				28595EAD7482BF7021D92F54 /* VisualEffectView.swift in Sources */,
 				DB9181BDC7E7315295650300 /* WindowActionMemory.swift in Sources */,
 				8AC91E62C332E5D41B3DA9ED /* WindowCommand.swift in Sources */,
+				EB3A6393CF2E93BA6A8DCEE5 /* WindowCommandCoordinator.swift in Sources */,
 				E55C14A2340DE8AF6953D869 /* WindowLayout.swift in Sources */,
 				2CB280034CD9583282C3E272 /* WindowManagementSettingsView.swift in Sources */,
 				C86153665473F77E43826399 /* WindowMover.swift in Sources */,

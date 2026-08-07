@@ -277,6 +277,13 @@ final class AppCore: ObservableObject {
     lazy var calculator = CalculatorCoordinator(
         hidePalette: { [weak self] restoreFocus in self?.hidePalette(restoreFocus: restoreFocus) }
     )
+    lazy var windowCommands = WindowCommandCoordinator(
+        settings: settings,
+        mover: windowMover,
+        paletteIsVisible: { [weak self] in self?.windowController.isVisible ?? false },
+        previousApplication: { [weak self] in self?.windowController.previousApp },
+        hidePalette: { [weak self] restoreFocus in self?.hidePalette(restoreFocus: restoreFocus) }
+    )
     private let toastWindowController = ToastWindowController()
 
     private let dialogs = DialogController()
@@ -369,7 +376,7 @@ final class AppCore: ObservableObject {
         hotKeys.onToggleClipboard = { [weak self] in self?.toggleClipboard() }
         hotKeys.onToggleEmoji = { [weak self] in self?.toggleEmoji() }
         hotKeys.onRunCommand = { [weak self] id in self?.runHotKeyCommand(id: id) }
-        hotKeys.onRunWindowCommand = { [weak self] id in self?.runWindowCommand(id: id) }
+        hotKeys.onRunWindowCommand = { [weak self] id in self?.windowCommands.run(id) }
         hotKeys.start()
 
         // First launch has no palette hotkey bound and shows nothing but the menu-bar icon; guide the user once. Marker is written at show-time so it stays one-time even if they Cmd-Q mid-flow.
@@ -839,7 +846,7 @@ final class AppCore: ObservableObject {
             return
         }
         if let command = WindowCommandCatalog.command(forEntryID: entry.id) {
-            runWindowCommand(id: command.id)
+            windowCommands.run(command.id)
             return
         }
         if SystemCommandCatalog.command(forEntryID: entry.id) != nil {
@@ -954,20 +961,6 @@ final class AppCore: ObservableObject {
             return nil
         }
         return totalSeconds
-    }
-
-    private func runWindowCommand(id: WindowCommand.ID) {
-        guard settings.windowManagementEnabled else { return }
-        let wasVisible = windowController.isVisible
-        let target =
-            wasVisible
-            ? windowController.previousApp
-            : NSWorkspace.shared.frontmostApplication
-        if wasVisible { hidePalette(restoreFocus: true) }
-        _ = windowMover.perform(
-            id,
-            target: target,
-            gap: WindowMover.currentGap(respectSystemMargins: settings.windowRespectSystemMargins))
     }
 
     private func runHotKeyCommand(id: String) {
