@@ -56,13 +56,15 @@ final class UninstallCoordinator {
         let bundlePath = app.url.resolvingSymlinksInPath().path
         let removesBundle = targets.contains { $0.url.path == bundlePath }
         if permanently {
-            let message = targets.count == 1
+            let message =
+                targets.count == 1
                 ? "Permanently delete 1 item?"
                 : "Permanently delete \(targets.count) items?"
-            guard confirm(
-                message,
-                "“\(app.name)” and the files you checked will be erased immediately. This can’t be undone.",
-                "Delete")
+            guard
+                confirm(
+                    message,
+                    "“\(app.name)” and the files you checked will be erased immediately. This can’t be undone.",
+                    "Delete")
             else { return }
         }
         Task { [weak self] in
