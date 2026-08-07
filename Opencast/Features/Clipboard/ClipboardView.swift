@@ -119,51 +119,52 @@ enum DateBucket: Int {
 @MainActor
 enum ClipboardActionsMenu {
     static func content(
-        item: ClipboardItem, core: AppCore, target: PasteTarget?, onFeedback: @escaping (String) -> Void
+        item: ClipboardItem, coordinator: ClipboardCoordinator, target: PasteTarget?,
+        onFeedback: @escaping (String) -> Void
     ) -> PopoverMenuContent {
         var items: [PopoverMenuItem] = [
             PopoverMenuItem(
                 title: target?.pasteTitle ?? "Paste",
                 icon: .paste(target, fallback: "doc.on.clipboard"), shortcut: "↵"
             ) {
-                core.paste(item)
+                coordinator.paste(item)
             },
             PopoverMenuItem(title: "Copy to Clipboard", systemImage: "doc.on.doc", shortcut: "⌘↵") {
-                core.copyToClipboard(item)
+                coordinator.copy(item)
             },
             PopoverMenuItem(
                 title: "Paste & Keep Window Open", icon: .paste(target, fallback: "macwindow")
             ) {
-                core.pasteKeepingWindowOpen(item)
+                coordinator.pasteAndKeepOpen(item)
             },
         ]
         if item.isPinned {
             items.append(
                 PopoverMenuItem(title: "Unpin Entry", systemImage: "pin.slash", shortcut: "⌘P") {
-                    core.togglePinnedClip(item)
+                    coordinator.togglePinned(item)
                 })
         } else {
             items.append(
                 PopoverMenuItem(title: "Pin Entry", systemImage: "pin", shortcut: "⌘P") {
-                    core.togglePinnedClip(item)
+                    coordinator.togglePinned(item)
                 })
         }
         if item.kind == .image {
             items.append(
                 PopoverMenuItem(title: "Show in Finder", systemImage: "folder") {
-                    core.revealClipboardImage(item)
+                    coordinator.revealImage(item)
                 })
         }
         items.append(
             PopoverMenuItem(title: "Delete Entry", systemImage: "trash", isDestructive: true) {
-                core.deleteClipboardEntry(item)
+                coordinator.delete(item)
                 onFeedback("Deleted entry")
             })
         items.append(
             PopoverMenuItem(
                 title: "Delete All Entries", systemImage: "trash.fill", isDestructive: true
             ) {
-                core.confirmAndDeleteAllClipboardEntries {
+                coordinator.deleteAll {
                     onFeedback("Deleted all entries")
                 }
             })

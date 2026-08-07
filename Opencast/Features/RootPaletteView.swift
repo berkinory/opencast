@@ -241,7 +241,7 @@ struct RootPaletteView: View {
         switch vm.mode {
         case .launcher:
             if let calc = calcActionableResult {
-                return CalcActionsMenu.content(result: calc, core: core)
+                return CalcActionsMenu.content(result: calc, coordinator: core.calculator)
             }
             if let app = selectedAppEntry {
                 return AppActionsMenu.content(
@@ -853,7 +853,7 @@ struct RootPaletteView: View {
             selection: selection,
             scrollIntent: listScroll,
             store: store,
-            core: core,
+            coordinator: core.clipboard,
             pasteTarget: vm.pasteTarget,
             followKey: ClipFollowKey(id: store.items.first?.id, token: vm.followToken),
             isQueryEmpty: isQueryEmpty,
@@ -892,7 +892,7 @@ struct RootPaletteView: View {
             tone: settings.emojiSkinTone,
             scroll: emojiScroll,
             isLoaded: emojiIndex.isLoaded,
-            core: core,
+            coordinator: core.emojis,
             pasteTarget: vm.pasteTarget,
             onSelect: { vm.selection = $0 },
             onOpenActions: openActions
@@ -1558,7 +1558,7 @@ struct RootPaletteView: View {
         case .launcher:
             if let calcResult, selection == 0 {
                 // Error cards no-op — copyCalculatorResult only acts on value payloads.
-                core.copyCalculatorResult(calcResult)
+                core.calculator.copy(calcResult)
                 return
             }
             let index = selection - calcCount

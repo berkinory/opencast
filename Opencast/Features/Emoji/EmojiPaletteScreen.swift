@@ -7,7 +7,7 @@ struct EmojiPaletteScreen: PaletteScreen {
     let tone: EmojiSkinTone
     let scroll: EmojiScrollIntent
     let isLoaded: Bool
-    let core: AppCore
+    let coordinator: EmojiCoordinator
     let pasteTarget: PasteTarget?
     let onSelect: (Int) -> Void
     let onOpenActions: () -> Void
@@ -22,7 +22,8 @@ struct EmojiPaletteScreen: PaletteScreen {
 
     var actionsContent: PopoverMenuContent? {
         guard let selectedItem else { return nil }
-        return EmojiActionsMenu.content(entry: selectedItem, core: core, target: pasteTarget)
+        return EmojiActionsMenu.content(
+            entry: selectedItem, coordinator: coordinator, target: pasteTarget)
     }
 
     var body: some View {
@@ -51,21 +52,21 @@ struct EmojiPaletteScreen: PaletteScreen {
     @discardableResult
     func activate() -> Bool {
         guard let selectedItem else { return false }
-        core.pasteEmoji(selectedItem)
+        coordinator.paste(selectedItem)
         return true
     }
 
     @discardableResult
     func copy() -> Bool {
         guard let selectedItem else { return false }
-        core.copyEmoji(selectedItem)
+        coordinator.copy(selectedItem)
         return true
     }
 
     @discardableResult
     func pasteKeepingOpen() -> Bool {
         guard let selectedItem else { return false }
-        core.pasteEmojiKeepingWindowOpen(selectedItem)
+        coordinator.pasteAndKeepOpen(selectedItem)
         return true
     }
 

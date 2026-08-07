@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		023EC9AA6FA53D68B5BFF515 /* CalculatorCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = BBE44AD7CADBDEDE80F3ACB7 /* CalculatorCoordinator.swift */; };
 		02BBC384C774F1ABE742A016 /* CalcDateTime.swift in Sources */ = {isa = PBXBuildFile; fileRef = 86CA50815B0C56B0AE46C351 /* CalcDateTime.swift */; };
 		03C2586620B6484E4EDB75A6 /* ExtensionCapabilityBroker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 59EC0D64AF7FFA34C40B4EF4 /* ExtensionCapabilityBroker.swift */; };
 		1093E7C5085E483148348968 /* ClipboardManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7D353439A8C9D744AD011AC /* ClipboardManager.swift */; };
@@ -109,11 +110,13 @@
 		BEABF0E6BFF1455FC2EAC728 /* opencast.icon in Resources */ = {isa = PBXBuildFile; fileRef = EF13092E0848178BCF935120 /* opencast.icon */; };
 		BFE22BE49A5E1088358633D2 /* CalcCurrency.swift in Sources */ = {isa = PBXBuildFile; fileRef = 69ED5119B575C4630F695E10 /* CalcCurrency.swift */; };
 		C22AEFB56819316BADAE7F86 /* VisibilityStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC19B6E19F6F3282B7A219E3 /* VisibilityStore.swift */; };
+		C23CF1344E41D598320856D8 /* ClipboardCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = FCC7F18143B7C379084A9555 /* ClipboardCoordinator.swift */; };
 		C3751F1549322F57E0E48750 /* RunningApps.swift in Sources */ = {isa = PBXBuildFile; fileRef = 462D07AB47D78A4FE62BA421 /* RunningApps.swift */; };
 		C54F90649E3649D4B41F94E9 /* PaletteSelectionIndex.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4BBD649604559EC33FD31BC /* PaletteSelectionIndex.swift */; };
 		C6AC764BFFE78D1DB30E4D70 /* ExtensionCatalog.swift in Sources */ = {isa = PBXBuildFile; fileRef = B7ADEAEA68C98C6DBCD27B5F /* ExtensionCatalog.swift */; };
 		C86153665473F77E43826399 /* WindowMover.swift in Sources */ = {isa = PBXBuildFile; fileRef = 10D4AB52915B9E0C55F33479 /* WindowMover.swift */; };
 		CA88B41C0D1AEDE67DB22871 /* NotificationToken.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6FFDCEA4E2609460BDA6EC85 /* NotificationToken.swift */; };
+		CF05991F60CFC148CB0BE63D /* EmojiCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = FE39A46B9EF9CE0259AE93BA /* EmojiCoordinator.swift */; };
 		CF5639EA8AC617D25673A7D0 /* CalculatorCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE38B042EDB9B428B0371B97 /* CalculatorCardView.swift */; };
 		D01843F49D32261F70096524 /* OpencastExtensionHost in Resources */ = {isa = PBXBuildFile; fileRef = E9030C817B5F1D4E4C6FDBC6 /* OpencastExtensionHost */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		D04C65AA42F42D3B417305BA /* ExtensionHostProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43EF950269B548713FA9CA8E /* ExtensionHostProtocol.swift */; };
@@ -259,6 +262,7 @@
 		BB3776CBF11EBD27E3E049DD /* PaletteActionLayout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PaletteActionLayout.swift; sourceTree = "<group>"; };
 		BBA57190DA7686EC2772D796 /* WindowCommand.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WindowCommand.swift; sourceTree = "<group>"; };
 		BBC2F5B04DBE7AA3635AFEB8 /* FeedbackToastView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedbackToastView.swift; sourceTree = "<group>"; };
+		BBE44AD7CADBDEDE80F3ACB7 /* CalculatorCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CalculatorCoordinator.swift; sourceTree = "<group>"; };
 		BE38B042EDB9B428B0371B97 /* CalculatorCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CalculatorCardView.swift; sourceTree = "<group>"; };
 		BEAE804EA9078EB30594C959 /* OnboardingState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingState.swift; sourceTree = "<group>"; };
 		BF2C2438BF265801370AA7B9 /* AppSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppSettings.swift; sourceTree = "<group>"; };
@@ -297,6 +301,8 @@
 		F9B757ECE8217E75C25E12B2 /* GeneralSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GeneralSettingsView.swift; sourceTree = "<group>"; };
 		FA205250C2E4CA9E959796DB /* PaletteListLayout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PaletteListLayout.swift; sourceTree = "<group>"; };
 		FB2853308836F857CCD1F3A9 /* InlineArgument.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InlineArgument.swift; sourceTree = "<group>"; };
+		FCC7F18143B7C379084A9555 /* ClipboardCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClipboardCoordinator.swift; sourceTree = "<group>"; };
+		FE39A46B9EF9CE0259AE93BA /* EmojiCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmojiCoordinator.swift; sourceTree = "<group>"; };
 		FFFDB5FB4C753F6AEDC7F91A /* EmojiGridView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmojiGridView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -315,6 +321,7 @@
 		0A9CF0EDF6E04195D99499AF /* Emoji */ = {
 			isa = PBXGroup;
 			children = (
+				FE39A46B9EF9CE0259AE93BA /* EmojiCoordinator.swift */,
 				FFFDB5FB4C753F6AEDC7F91A /* EmojiGridView.swift */,
 				68466DCC9DE38D272F199629 /* EmojiPaletteScreen.swift */,
 			);
@@ -468,6 +475,7 @@
 		69A928147921F47661C44D3A /* Clipboard */ = {
 			isa = PBXGroup;
 			children = (
+				FCC7F18143B7C379084A9555 /* ClipboardCoordinator.swift */,
 				671AAC20B63D46404D59C6F2 /* ClipboardPaletteScreen.swift */,
 				DFFA196847EC88A7B596C25F /* ClipboardView.swift */,
 			);
@@ -606,6 +614,7 @@
 			isa = PBXGroup;
 			children = (
 				BE38B042EDB9B428B0371B97 /* CalculatorCardView.swift */,
+				BBE44AD7CADBDEDE80F3ACB7 /* CalculatorCoordinator.swift */,
 				27005C975775529D2439B4A4 /* LauncherView.swift */,
 			);
 			path = Launcher;
@@ -792,7 +801,9 @@
 				9CC51A1FF0917C14AC2B8D43 /* CalcQuantity.swift in Sources */,
 				B659734D816ECE369DE31936 /* CalcUnits.swift in Sources */,
 				CF5639EA8AC617D25673A7D0 /* CalculatorCardView.swift in Sources */,
+				023EC9AA6FA53D68B5BFF515 /* CalculatorCoordinator.swift in Sources */,
 				A584EFE4141003F5DAD76D4C /* CalculatorSettingsView.swift in Sources */,
+				C23CF1344E41D598320856D8 /* ClipboardCoordinator.swift in Sources */,
 				1093E7C5085E483148348968 /* ClipboardManager.swift in Sources */,
 				AA70967464636CA8C88F3DF9 /* ClipboardPaletteScreen.swift in Sources */,
 				4BE8F596C87E28C20A958FBF /* ClipboardSettingsView.swift in Sources */,
@@ -806,6 +817,7 @@
 				1FEBD5DD3EFC8FF8DB020920 /* DoubleCommandMonitor.swift in Sources */,
 				B1F0F4F93CEC431444FA892D /* EdgeDissolve.swift in Sources */,
 				30EB5556D915A3BBD671A9DF /* EmojiCatalog.swift in Sources */,
+				CF05991F60CFC148CB0BE63D /* EmojiCoordinator.swift in Sources */,
 				259F054219D2C1ED45924E11 /* EmojiData.generated.swift in Sources */,
 				F6F0940BA37796914D5F6CEC /* EmojiGridGeometry.swift in Sources */,
 				28918546E9AE109851807DA8 /* EmojiGridView.swift in Sources */,

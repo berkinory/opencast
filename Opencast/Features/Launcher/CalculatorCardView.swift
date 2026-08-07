@@ -214,12 +214,12 @@ private struct CalcExpression: View {
 /// Actions menu content for the calculator card — only answers can be copied, so an error card gets no menu (the caller passes `calc` only for value payloads).
 @MainActor
 enum CalcActionsMenu {
-    static func content(result: CalcResult, core: AppCore) -> PopoverMenuContent {
+    static func content(result: CalcResult, coordinator: CalculatorCoordinator) -> PopoverMenuContent {
         PopoverMenuContent(
             header: result.expression,
             items: [
                 PopoverMenuItem(title: "Copy Answer", systemImage: "doc.on.doc", shortcut: "↵") {
-                    core.copyCalculatorResult(result)
+                    coordinator.copy(result)
                 }
             ]
         )

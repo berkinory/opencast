@@ -253,6 +253,30 @@ final class AppCore: ObservableObject {
             }
         }
     )
+    lazy var clipboard = ClipboardCoordinator(
+        store: clipboardStore,
+        palette: palette,
+        previousApplication: { [weak self] in self?.windowController.previousApp },
+        hidePalette: { [weak self] restoreFocus in self?.hidePalette(restoreFocus: restoreFocus) },
+        pasteKeepingOpen: { [weak self] item, store in
+            self?.windowController.pasteKeepingWindowOpen(item, store: store) ?? false
+        },
+        confirmDeleteAll: { [weak self] completion in
+            self?.windowController.confirmDeleteAllClipboardEntries(onConfirmed: completion)
+        }
+    )
+    lazy var emojis = EmojiCoordinator(
+        frequent: frequentEmoji,
+        settings: settings,
+        previousApplication: { [weak self] in self?.windowController.previousApp },
+        hidePalette: { [weak self] restoreFocus in self?.hidePalette(restoreFocus: restoreFocus) },
+        pasteKeepingOpen: { [weak self] text in
+            self?.windowController.pasteStringKeepingWindowOpen(text)
+        }
+    )
+    lazy var calculator = CalculatorCoordinator(
+        hidePalette: { [weak self] restoreFocus in self?.hidePalette(restoreFocus: restoreFocus) }
+    )
     private let toastWindowController = ToastWindowController()
 
     private let dialogs = DialogController()
@@ -955,13 +979,6 @@ final class AppCore: ObservableObject {
         launch(entry)
     }
 
-    /// Enter on the inline calculator card: copy the answer and dismiss.
-    func copyCalculatorResult(_ result: CalcResult) {
-        guard case .value(_, let copyText) = result.payload else { return }
-        hidePalette(restoreFocus: false)
-        Paster.copyPlainText(copyText)
-    }
-
     func showInFinder(_ app: AppEntry) {
         hidePalette(restoreFocus: false)
         AppLauncher.showInFinder(app.url)
@@ -972,77 +989,4 @@ final class AppCore: ObservableObject {
         Paster.copyPlainText(app.url.path)
     }
 
-    func paste(_ item: ClipboardItem) {
-        let previous = windowController.previousApp
-        hidePalette(restoreFocus: false)
-        // A successful write promotes the item to the head of its section; follow it so any preserved (pop-to-root) or open clipboard state highlights the row that moved.
-        if Paster.paste(item, store: clipboardStore, previousApp: previous) {
-            selectClip(item)
-        }
-    }
-
-    func pasteKeepingWindowOpen(_ item: ClipboardItem) {
-        if windowController.pasteKeepingWindowOpen(item, store: clipboardStore) {
-            selectClip(item)
-        }
-    }
-
-    func copyToClipboard(_ item: ClipboardItem) {
-        hidePalette(restoreFocus: false)
-        if Paster.copy(item, store: clipboardStore) {
-            selectClip(item)
-        }
-    }
-
-    func revealClipboardImage(_ item: ClipboardItem) {
-        guard let url = clipboardStore.imageURL(for: item) else { return }
-        hidePalette(restoreFocus: false)
-        AppLauncher.showInFinder(url)
-    }
-
-    /// Pin or unpin a clipboard entry: the row jumps into (or out of) the Pinned section at the top, so the selection and the scroll follow it.
-    func togglePinnedClip(_ item: ClipboardItem) {
-        clipboardStore.togglePinned(item)
-        selectClip(item)
-        palette.followToken = UUID()
-    }
-
-    func deleteClipboardEntry(_ item: ClipboardItem) {
-        clipboardStore.remove(item)
-    }
-
-    func confirmAndDeleteAllClipboardEntries(onConfirmed: @escaping () -> Void) {
-        Task { @MainActor [weak self] in
-            guard let self else { return }
-            windowController.confirmDeleteAllClipboardEntries { [weak self] in
-                self?.clipboardStore.clearAll()
-                onConfirmed()
-            }
-        }
-    }
-
-    /// Put the selection on `item`'s row in the list as currently filtered — pinned rows hold the top, so a row that moved isn't always index 0.
-    private func selectClip(_ item: ClipboardItem) {
-        palette.selection = clipboardStore.rowIndex(of: item, in: palette.query) ?? 0
-    }
-
-    // MARK: - Emoji actions (frequency is tallied on the base glyph; the configured tone is applied at copy time)
-
-    func pasteEmoji(_ entry: EmojiEntry) {
-        frequentEmoji.record(entry.glyph)
-        let previous = windowController.previousApp
-        hidePalette(restoreFocus: false)
-        Paster.pasteString(entry.display(tone: settings.emojiSkinTone), previousApp: previous)
-    }
-
-    func copyEmoji(_ entry: EmojiEntry) {
-        frequentEmoji.record(entry.glyph)
-        hidePalette(restoreFocus: false)
-        Paster.copyString(entry.display(tone: settings.emojiSkinTone))
-    }
-
-    func pasteEmojiKeepingWindowOpen(_ entry: EmojiEntry) {
-        frequentEmoji.record(entry.glyph)
-        windowController.pasteStringKeepingWindowOpen(entry.display(tone: settings.emojiSkinTone))
-    }
 }

@@ -11,7 +11,7 @@ struct ClipboardPaletteScreen: PaletteScreen {
     let selection: Int
     let scrollIntent: ListScrollIntent?
     let store: ClipboardStore
-    let core: AppCore
+    let coordinator: ClipboardCoordinator
     let pasteTarget: PasteTarget?
     let followKey: ClipFollowKey
     let isQueryEmpty: Bool
@@ -30,7 +30,7 @@ struct ClipboardPaletteScreen: PaletteScreen {
         guard let selectedItem else { return nil }
         return ClipboardActionsMenu.content(
             item: selectedItem,
-            core: core,
+            coordinator: coordinator,
             target: pasteTarget,
             onFeedback: onFeedback
         )
@@ -81,21 +81,21 @@ struct ClipboardPaletteScreen: PaletteScreen {
     @discardableResult
     func activate() -> Bool {
         guard let selectedItem else { return false }
-        core.paste(selectedItem)
+        coordinator.paste(selectedItem)
         return true
     }
 
     @discardableResult
     func copy() -> Bool {
         guard let selectedItem else { return false }
-        core.copyToClipboard(selectedItem)
+        coordinator.copy(selectedItem)
         return true
     }
 
     @discardableResult
     func delete() -> Bool {
         guard let selectedItem else { return false }
-        core.deleteClipboardEntry(selectedItem)
+        coordinator.delete(selectedItem)
         onFeedback("Deleted entry")
         return true
     }
@@ -103,7 +103,7 @@ struct ClipboardPaletteScreen: PaletteScreen {
     @discardableResult
     func togglePinned() -> Bool {
         guard let selectedItem else { return false }
-        core.togglePinnedClip(selectedItem)
+        coordinator.togglePinned(selectedItem)
         return true
     }
 
@@ -113,7 +113,7 @@ struct ClipboardPaletteScreen: PaletteScreen {
 
     private func activate(_ item: ClipboardItem) {
         select(item)
-        core.paste(item)
+        coordinator.paste(item)
     }
 
     private func openActions(_ item: ClipboardItem) {
