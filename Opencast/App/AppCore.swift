@@ -332,6 +332,25 @@ final class AppCore: ObservableObject {
                 confirmTitle: confirmTitle) ?? false
         }
     )
+    lazy var launcher = LauncherCoordinator(
+        ranking: launcherRanking,
+        appIndex: appIndex,
+        settings: settings,
+        palette: palette,
+        extensionCatalog: extensionCatalog,
+        extensionStore: extensionStore,
+        extensionHost: extensionHost,
+        snippets: snippets,
+        quicklinks: quicklinks,
+        windowCommands: windowCommands,
+        systemCommands: systemCommands,
+        hidePalette: { [weak self] restoreFocus in self?.hidePalette(restoreFocus: restoreFocus) },
+        showPalette: { [weak self] mode in self?.showPalette(mode: mode) },
+        paletteIsVisible: { [weak self] in self?.windowController.isVisible ?? false },
+        showSettings: { [weak self] in self?.showSettings() },
+        checkForUpdates: { [weak self] in self?.checkForUpdates() },
+        importExtension: { [weak self] in self?.importExtension() }
+    )
     private let toastWindowController = ToastWindowController()
 
     private let dialogs = DialogController()
@@ -420,7 +439,7 @@ final class AppCore: ObservableObject {
         hotKeys.onTogglePalette = { [weak self] in self?.togglePalette() }
         hotKeys.onToggleClipboard = { [weak self] in self?.toggleClipboard() }
         hotKeys.onToggleEmoji = { [weak self] in self?.toggleEmoji() }
-        hotKeys.onRunCommand = { [weak self] id in self?.runHotKeyCommand(id: id) }
+        hotKeys.onRunCommand = { [weak self] id in self?.launcher.runHotKey(id: id) }
         hotKeys.onRunWindowCommand = { [weak self] id in self?.windowCommands.run(id) }
         hotKeys.start()
 
@@ -663,124 +682,6 @@ final class AppCore: ObservableObject {
     func finishOnboarding() {
         auxWindows.close(id: "onboarding")
         showPalette(mode: .launcher)
-    }
-
-    // MARK: - Actions invoked from the palette UI
-
-    func launch(
-        _ app: AppEntry,
-        searchQuery: String? = nil,
-        inlineArgumentValues: [String] = []
-    ) {
-        // Every palette launch teaches weak global usage; typed launches additionally teach the submitted query and each of its prefixes.
-        launcherRanking.record(itemKey: app.preferenceKey, query: searchQuery ?? "")
-        // Commands dispatch before the palette hides: mode-switching commands keep it open.
-        if let command = extensionCatalog.command(forEntryID: app.id) {
-            openExtension(command)
-            return
-        }
-        if app.kind == .command {
-            runCommand(app, inlineArgumentValues: inlineArgumentValues)
-            return
-        }
-        hidePalette(restoreFocus: false)
-        switch app.kind {
-        case .application:
-            Task { [weak self] in
-                do {
-                    try await AppLauncher.launch(app.url)
-                } catch {
-                    guard let self else { return }
-                    showPalette(mode: .launcher)
-                    palette.postFeedback("Could not open \(app.name)", tone: .error)
-                }
-            }
-        case .systemSettings:
-            guard let bundleID = app.bundleID else { return }
-            AppLauncher.openSettingsPane(bundleID: bundleID)
-        case .command:
-            break  // handled above
-        }
-    }
-
-    func openExtension(_ command: ExtensionCommand) {
-        palette.enterExtension(command)
-        extensionHost.start(command)
-    }
-
-    func resetRanking(for app: AppEntry) {
-        launcherRanking.reset(itemKey: app.preferenceKey)
-    }
-
-    private func runCommand(_ entry: AppEntry, inlineArgumentValues: [String] = []) {
-        if let command = extensionCatalog.command(forEntryID: entry.id) {
-            openExtension(command)
-            return
-        }
-        if let command = WindowCommandCatalog.command(forEntryID: entry.id) {
-            windowCommands.run(command.id)
-            return
-        }
-        if SystemCommandCatalog.command(forEntryID: entry.id) != nil {
-            systemCommands.run(entry)
-            return
-        }
-        switch CommandRegistry.command(for: entry) {
-        case .clipboardHistory:
-            guard settings.clipboardEnabled else { return }
-            palette.enterSubscreen(.clipboard)
-        case .searchSnippets:
-            snippets.search()
-        case .createSnippet:
-            snippets.create()
-        case .searchQuicklinks:
-            quicklinks.search()
-        case .createQuicklink:
-            quicklinks.create()
-        case .searchEmoji:
-            guard settings.emojiEnabled else { return }
-            palette.enterSubscreen(.emoji)
-        case .store:
-            palette.enterSubscreen(.store)
-            extensionStore.refreshRemoteCatalog()
-        case .importExtension:
-            importExtension()
-        case .settings:
-            hidePalette(restoreFocus: false)
-            showSettings()
-        case .checkForUpdates:
-            checkForUpdates()
-        case .quit:
-            NSApp.terminate(nil)
-        case .caffeinate:
-            systemCommands.caffeinate(duration: nil)
-        case .decaffeinate:
-            systemCommands.decaffeinate()
-        case .caffeinateFor:
-            guard let duration = systemCommands.duration(from: inlineArgumentValues) else { return }
-            systemCommands.caffeinate(duration: duration)
-        case nil:
-            break
-        }
-    }
-
-    private func runHotKeyCommand(id: String) {
-        guard
-            let entry = appIndex.apps.first(where: { $0.id == id })
-                ?? CommandRegistry.all.first(where: { $0.id == id })
-        else { return }
-        if !windowController.isVisible { showPalette(mode: .launcher) }
-        launch(entry)
-    }
-
-    func showInFinder(_ app: AppEntry) {
-        hidePalette(restoreFocus: false)
-        AppLauncher.showInFinder(app.url)
-    }
-
-    func copyPath(_ app: AppEntry) {
-        hidePalette(restoreFocus: false)
-        Paster.copyPlainText(app.url.path)
     }
 
 }

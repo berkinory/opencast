@@ -34,6 +34,7 @@
 		29912E55458E71369F67BA7A /* CalcEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = 320E8071DDF941F3F01877FB /* CalcEngine.swift */; };
 		2B32C93D8A2859E131F34B84 /* NotificationToken.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0C47EBB3D225F264CAC6825 /* NotificationToken.swift */; };
 		2C5CE27DEF8D4A07A8271113 /* CommandRegistry.swift in Sources */ = {isa = PBXBuildFile; fileRef = C6CCAFA1285E322F00F12165 /* CommandRegistry.swift */; };
+		2C5D9246CB838B9D8CE12815 /* LauncherCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBFE29D81E7FCB405F53F073 /* LauncherCoordinator.swift */; };
 		2CB280034CD9583282C3E272 /* WindowManagementSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 24327BF95ACECC0F482B1D25 /* WindowManagementSettingsView.swift */; };
 		31E2B8B667FDD5202FC43748 /* ExtensionHostManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = D45BA2D1E7E1DE30BEC779DF /* ExtensionHostManager.swift */; };
 		32F41463F15337723C8F346C /* ExtensionPackageValidator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45935AC50B021A52BFCBFEDE /* ExtensionPackageValidator.swift */; };
@@ -287,6 +288,7 @@
 		D45BA2D1E7E1DE30BEC779DF /* ExtensionHostManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExtensionHostManager.swift; sourceTree = "<group>"; };
 		D8AA4ED848DC56C2DDC275E9 /* Permissions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Permissions.swift; sourceTree = "<group>"; };
 		DA59B54CFE9ECFC4E9BC59C3 /* PaletteActionLayout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PaletteActionLayout.swift; sourceTree = "<group>"; };
+		DBFE29D81E7FCB405F53F073 /* LauncherCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LauncherCoordinator.swift; sourceTree = "<group>"; };
 		DCCF4ED60F487B6C9945F732 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		DD7828F8E8D06ABDF3E82E4A /* SnippetActionsMenu.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SnippetActionsMenu.swift; sourceTree = "<group>"; };
 		DFFA196847EC88A7B596C25F /* ClipboardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClipboardView.swift; sourceTree = "<group>"; };
@@ -616,6 +618,7 @@
 				C6CCAFA1285E322F00F12165 /* CommandRegistry.swift */,
 				940E10C0761D9267184C8EBD /* FavoritesStore.swift */,
 				AF824A314057E4C193483274 /* InlineArgument.swift */,
+				DBFE29D81E7FCB405F53F073 /* LauncherCoordinator.swift */,
 				0F7D1A5D76D5B45283D2BA36 /* LauncherRankingStore.swift */,
 				27005C975775529D2439B4A4 /* LauncherView.swift */,
 				4973359D768464832A31BF6A /* Memo.swift */,
@@ -869,6 +872,7 @@
 				3B619A3C3A2C100CEA52FDC9 /* InlineArgument.swift in Sources */,
 				8586F03BA9F0A81BB8F72C94 /* KeyShortcut.swift in Sources */,
 				05C551B515D364F31C845F33 /* LaunchAtLogin.swift in Sources */,
+				2C5D9246CB838B9D8CE12815 /* LauncherCoordinator.swift in Sources */,
 				51CE208E7EF0DC64AF1FFCB3 /* LauncherRankingStore.swift in Sources */,
 				D499C33F8FB574B4FB112EC4 /* LauncherSettingsView.swift in Sources */,
 				D0C73501A1B15D2042A77EB9 /* LauncherView.swift in Sources */,

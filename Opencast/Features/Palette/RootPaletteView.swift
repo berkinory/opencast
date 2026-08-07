@@ -248,7 +248,7 @@ struct RootPaletteView: View {
                     app: app, searchQuery: vm.query, core: core, favorites: favorites,
                     running: selectionIsRunning,
                     onResetRanking: {
-                        core.resetRanking(for: app)
+                        core.launcher.resetRanking(for: app)
                         // Reset can move the item; keep the highlight on the item whose action ran.
                         if let index = appResults.firstIndex(of: app) {
                             vm.selection = index + calcCount
@@ -537,7 +537,7 @@ struct RootPaletteView: View {
             let index = digit - 1
             guard slots.indices.contains(index) else { return .ignored }
             switch slots[index] {
-            case .app(let app): core.launch(app)
+            case .app(let app): core.launcher.launch(app)
             case .more: core.expandFromCompact()
             }
             return .handled
@@ -613,7 +613,7 @@ struct RootPaletteView: View {
             guard let app = selectedAppEntry, app.kind == .application else {
                 return .ignored
             }
-            core.copyPath(app)
+            core.launcher.copyPath(app)
             closeMenus()
             return .handled
         }
@@ -823,7 +823,7 @@ struct RootPaletteView: View {
             if !slots.isEmpty {
                 CompactFavoritesRow(
                     slots: slots,
-                    onLaunch: { core.launch($0) },
+                    onLaunch: { core.launcher.launch($0) },
                     onOverflow: { core.expandFromCompact() }
                 )
             }
@@ -1279,7 +1279,7 @@ struct RootPaletteView: View {
             guard command, let app = selectedAppEntry else { return false }
             let canShowInFinder = app.kind == .application || app.kind == .systemSettings
             guard canShowInFinder else { return false }
-            core.showInFinder(app)
+            core.launcher.reveal(app)
         case .uninstall:
             guard command else { return false }
             return uninstallScreen(items: uninstallResults, selection: selection).reveal()
@@ -1606,7 +1606,7 @@ struct RootPaletteView: View {
     }
 
     private func launchApp(_ app: AppEntry) {
-        core.launch(
+        core.launcher.launch(
             app,
             searchQuery: vm.query,
             inlineArgumentValues: inlineArgumentValues)

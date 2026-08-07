@@ -283,7 +283,7 @@ enum AppActionsMenu {
         var items: [PopoverMenuItem] = [
             PopoverMenuItem(
                 title: app.primaryActionTitle, systemImage: "list.bullet.rectangle", shortcut: "↵"
-            ) { core.launch(app, searchQuery: searchQuery) }
+            ) { core.launcher.launch(app, searchQuery: searchQuery) }
         ]
         if favorites.isFavorite(app) {
             items.append(
@@ -307,13 +307,13 @@ enum AppActionsMenu {
         if app.kind == .application {
             items.append(
                 PopoverMenuItem(title: "Copy Path", systemImage: "doc.on.doc", shortcut: "⌘⇧C") {
-                    core.copyPath(app)
+                    core.launcher.copyPath(app)
                 })
         }
         if app.kind == .application || app.kind == .systemSettings {
             items.append(
                 PopoverMenuItem(title: "Show in Finder", systemImage: "folder", shortcut: "⌘↵") {
-                    core.showInFinder(app)
+                    core.launcher.reveal(app)
                 })
         }
         if app.kind == .application,

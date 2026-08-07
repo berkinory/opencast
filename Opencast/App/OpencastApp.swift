@@ -28,7 +28,7 @@ struct OpencastApp: App {
                         if let command = extensionScheduler.command(for: snapshot) {
                             ForEach(snapshot.snapshot.items) { item in
                                 Button {
-                                    AppCore.shared.openExtension(command)
+                                    AppCore.shared.launcher.openExtension(command)
                                 } label: {
                                     VStack(alignment: .leading) {
                                         Text(item.title)
@@ -39,7 +39,7 @@ struct OpencastApp: App {
                                 }
                             }
                             if snapshot.snapshot.items.isEmpty {
-                                Button("Open") { AppCore.shared.openExtension(command) }
+                                Button("Open") { AppCore.shared.launcher.openExtension(command) }
                             }
                         }
                     }
