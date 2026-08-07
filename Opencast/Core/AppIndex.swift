@@ -42,7 +42,25 @@ struct AppEntry: Identifiable, Hashable, Sendable {
         switch kind {
         case .application: return "Application"
         case .systemSettings: return "System Setting"
-        case .command: return isExtensionCommand ? "Extension" : "Command"
+        case .command:
+            if isExtensionCommand { return "Extension" }
+            if WindowCommandCatalog.command(forEntryID: id) != nil { return "Window Command" }
+            if SystemCommandCatalog.command(forEntryID: id) != nil { return "System Command" }
+            return "Command"
+        }
+    }
+
+    var primaryActionTitle: String {
+        switch kind {
+        case .application:
+            return "Open Application"
+        case .systemSettings:
+            return "Open System Setting"
+        case .command:
+            if isExtensionCommand { return "Open Extension" }
+            if WindowCommandCatalog.command(forEntryID: id) != nil { return "Move Window" }
+            if SystemCommandCatalog.command(forEntryID: id) != nil { return "Run Command" }
+            return CommandRegistry.command(for: self)?.primaryActionTitle ?? "Open Command"
         }
     }
 

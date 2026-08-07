@@ -70,6 +70,23 @@ enum CommandID: String, CaseIterable, Sendable {
         default: return false
         }
     }
+
+    var primaryActionTitle: String {
+        switch self {
+        case .clipboardHistory: return "Open Clipboard History"
+        case .searchSnippets: return "Open Snippets"
+        case .createSnippet: return "Create Snippet"
+        case .searchQuicklinks: return "Open Quicklinks"
+        case .createQuicklink: return "Create Quicklink"
+        case .searchEmoji: return "Open Emoji & Symbols"
+        case .store: return "Open Store"
+        case .importExtension: return "Import Extension"
+        case .settings: return "Open Settings"
+        case .checkForUpdates: return "Check for Updates"
+        case .quit: return "Quit Opencast"
+        case .caffeinate, .decaffeinate, .caffeinateFor: return "Run Command"
+        }
+    }
 }
 
 enum CommandRegistry {

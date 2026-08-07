@@ -1115,13 +1115,7 @@ struct RootPaletteView: View {
         case .launcher:
             if calcActionable { return "Copy Answer" }
             if selectedQuicklink != nil { return "Open Quicklink" }
-            switch selectedApp?.kind {
-            case .systemSettings: return "Open System Setting"
-            case .command:
-                guard let selectedApp else { return "Open Command" }
-                return isRunnableCommand(selectedApp) ? "Run Command" : "Open Command"
-            default: return "Open Application"
-            }
+            return selectedApp?.primaryActionTitle ?? "Open Application"
         case .uninstall:
             switch uninstall.phase {
             case .selecting:
@@ -1139,12 +1133,6 @@ struct RootPaletteView: View {
             }
             return "Install"
         }
-    }
-
-    private func isRunnableCommand(_ app: AppEntry) -> Bool {
-        SystemCommandCatalog.command(forEntryID: app.id) != nil
-            || CommandRegistry.command(for: app)?.isRunnable == true
-            || core.extensionCatalog.command(forEntryID: app.id) != nil
     }
 
     private func showsActionGroup(count: Int, calcBlocked: Bool) -> Bool {
