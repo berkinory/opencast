@@ -1,5 +1,15 @@
 # Changelog
 
+## [0.2.1]
+
+### Improved
+
+- Improved command labels so the main action always says what will happen.
+- Made clipboard, emoji, quicklink, and uninstall screens behave more consistently.
+- Made each feature more independent, reducing the chance that one change breaks another.
+- Reorganized the project by feature so future additions and contributions are easier to follow.
+- Simplified the app’s internal wiring for more reliable shortcuts, extensions, and window actions.
+
 ## [0.2.0]
 
 ### Added
