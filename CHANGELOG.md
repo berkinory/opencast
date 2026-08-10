@@ -4,6 +4,8 @@
 
 ### Improved
 
+- Kept Settings in front when the launcher is opened and closed over it.
+- Made Command-Q close Settings without quitting the menu bar app.
 - Improved command labels so the main action always says what will happen.
 - Made clipboard, emoji, quicklink, and uninstall screens behave more consistently.
 - Made each feature more independent, reducing the chance that one change breaks another.

@@ -50,6 +50,21 @@ struct OpencastApp: App {
                 .keyboardShortcut(",")
             Divider()
             Button("Quit \(appName)") { NSApp.terminate(nil) }
+        }
+        .commands { appCommands }
+    }
+
+    @CommandsBuilder
+    private var appCommands: some Commands {
+        CommandGroup(replacing: .appInfo) {
+            Button("About \(appName)") { AppCore.shared.showAbout() }
+        }
+        CommandGroup(replacing: .appSettings) {
+            Button("Settings…") { AppCore.shared.showSettings() }
+                .keyboardShortcut(",")
+        }
+        CommandGroup(replacing: .appTermination) {
+            Button("Close Settings") { AppCore.shared.closeSettings() }
                 .keyboardShortcut("q")
         }
     }

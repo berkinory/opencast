@@ -8,6 +8,7 @@ final class PaletteWindowController: NSObject, NSWindowDelegate {
     private let dialogs: DialogController
     private var panel: PalettePanel?
     private(set) var previousApp: NSRunningApplication?
+    private weak var previousOwnWindow: NSWindow?
     private var popToRootTimer: Timer?
     private var isPresentingConfirmation = false
     private var filePicker: NSOpenPanel?
@@ -23,10 +24,15 @@ final class PaletteWindowController: NSObject, NSWindowDelegate {
     var isVisible: Bool { panel?.isVisible ?? false }
 
     func show() {
-        // Ignore ourselves as the "previous" app (e.g. summoned while Settings/About/Onboarding is frontmost) so paste/focus-restore always targets the user's real app, never Opencast's own field.
         let frontmost = NSWorkspace.shared.frontmostApplication
-        if frontmost?.processIdentifier != NSRunningApplication.current.processIdentifier {
+        if frontmost?.processIdentifier == NSRunningApplication.current.processIdentifier {
+            previousApp = nil
+            if let keyWindow = NSApp.keyWindow, keyWindow !== panel {
+                previousOwnWindow = keyWindow
+            }
+        } else {
             previousApp = frontmost
+            previousOwnWindow = nil
         }
         // Resolve the name/icon path once per summon rather than per render; reading `previousApp` (not `frontmost`) keeps the label naming the same app paste will actually target.
         core.palette.pasteTarget = PasteTarget(app: previousApp)
@@ -56,7 +62,13 @@ final class PaletteWindowController: NSObject, NSWindowDelegate {
         // Drop the multi-MB clipboard preview bitmaps now the window is gone, so idle RAM returns near baseline (row thumbnails stay cached).
         ImageThumbnail.purgePreviews()
         schedulePopToRoot()
-        if restoreFocus { previousApp?.activate() }
+        guard restoreFocus else { return }
+        if let previousOwnWindow, previousOwnWindow.isVisible {
+            NSApp.activate(ignoringOtherApps: true)
+            previousOwnWindow.makeKeyAndOrderFront(nil)
+        } else {
+            previousApp?.activate()
+        }
     }
 
     /// Pop to Root Search: reset immediately (also releases heavy sub-screens — a fully scrolled emoji grid is ~2k realized views), or keep state and reset after the configured delay unless a reopen consumes it first.

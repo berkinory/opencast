@@ -417,6 +417,10 @@ final class AppCore: ObservableObject {
         showSettings(route: .about)
     }
 
+    func closeSettings() {
+        auxWindows.close(id: "settings")
+    }
+
     func checkForUpdates() {
         if updates.isHomebrewManaged {
             checkHomebrewUpdates()
