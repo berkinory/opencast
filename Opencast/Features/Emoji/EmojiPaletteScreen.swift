@@ -5,7 +5,7 @@ struct EmojiPaletteScreen: PaletteScreen {
     let sections: [EmojiGridSection]
     let selection: Int
     let tone: EmojiSkinTone
-    let scroll: EmojiScrollIntent
+    let scroll: ListScrollIntent
     let isLoaded: Bool
     let coordinator: EmojiCoordinator
     let pasteTarget: PasteTarget?
@@ -39,7 +39,11 @@ struct EmojiPaletteScreen: PaletteScreen {
                     tone: tone,
                     scroll: scroll,
                     onSelect: onSelect,
-                    onActivate: { _ = activate() },
+                    onActivate: { index in
+                        guard items.indices.contains(index) else { return }
+                        onSelect(index)
+                        coordinator.paste(items[index])
+                    },
                     onActions: { index in
                         onSelect(index)
                         onOpenActions()
@@ -70,9 +74,4 @@ struct EmojiPaletteScreen: PaletteScreen {
         return true
     }
 
-    func selectionAfterMovingRow(_ direction: Int) -> Int {
-        let geometry = EmojiGridGeometry(
-            counts: sections.map(\.entries.count), columns: EmojiGrid.columns)
-        return direction > 0 ? geometry.down(from: selection) : geometry.up(from: selection)
-    }
 }

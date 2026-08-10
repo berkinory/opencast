@@ -58,8 +58,10 @@ test: tools
 	$(TEST_BIN_DIR)/calc-test
 	swiftc -swift-version 6 Opencast/Features/Clipboard/ClipboardStore.swift Tools/clipboard-test.swift -o $(TEST_BIN_DIR)/clipboard-test
 	$(TEST_BIN_DIR)/clipboard-test
-	swiftc Opencast/Features/Emoji/EmojiCatalog.swift Opencast/Features/Emoji/EmojiGridGeometry.swift Opencast/Features/Emoji/EmojiData.generated.swift Tools/emoji-test.swift -o $(TEST_BIN_DIR)/emoji-test
+	swiftc Opencast/Features/Emoji/EmojiCatalog.swift Opencast/Features/Emoji/EmojiData.generated.swift Tools/emoji-test.swift -o $(TEST_BIN_DIR)/emoji-test
 	$(TEST_BIN_DIR)/emoji-test
+	swiftc -swift-version 6 Opencast/Features/Palette/PaletteGridGeometry.swift Tools/palette-grid-test.swift -o $(TEST_BIN_DIR)/palette-grid-test
+	$(TEST_BIN_DIR)/palette-grid-test
 	swiftc -swift-version 6 Opencast/Features/SystemCommands/SystemCommand.swift Tools/system-command-test.swift -o $(TEST_BIN_DIR)/system-command-test
 	$(TEST_BIN_DIR)/system-command-test
 	swiftc -swift-version 6 \

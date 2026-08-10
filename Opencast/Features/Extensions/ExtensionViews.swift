@@ -2,6 +2,8 @@ import AppKit
 import SwiftUI
 
 struct ExtensionSessionView: View {
+    static let gridColumns = 5
+
     let command: ExtensionCommand
     @ObservedObject var host: ExtensionHostManager
     let snapshot: ExtensionRenderSnapshot?
@@ -10,7 +12,8 @@ struct ExtensionSessionView: View {
     let selection: Int
     let scrollIntent: ListScrollIntent?
     let onSelect: (Int) -> Void
-    let onActivate: () -> Void
+    let onActivate: (Int) -> Void
+    let onActions: (Int) -> Void
     @State private var formValues: [String: String] = [:]
     @State private var formErrors: [String: String] = [:]
 
@@ -61,39 +64,30 @@ struct ExtensionSessionView: View {
             return AnyView(EmptyResults(text: snapshot.emptyView?.title ?? "No extension items found"))
         }
         return AnyView(
-            ScrollViewReader { proxy in
-                ScrollView {
-                    VStack(spacing: 0) {
-                        LazyVGrid(
-                            columns: [GridItem(.adaptive(minimum: 132), spacing: Theme.Spacing.md)],
-                            spacing: Theme.Spacing.md
-                        ) {
-                            ForEach(Array(items.enumerated()), id: \.element.id) { index, item in
-                                ExtensionGridItem(item: item, selected: index == selection)
-                                    .id(item.id)
-                                    .contentShape(Rectangle())
-                                    .onTapGesture { onSelect(index) }
-                                    .simultaneousGesture(
-                                        TapGesture(count: 2).onEnded {
-                                            onSelect(index)
-                                            onActivate()
-                                        }
-                                    )
-                            }
-                        }
-                        .padding(.horizontal, Theme.Spacing.md)
-                        .padding(.vertical, Theme.Spacing.md)
-                        if let pagination = snapshot.pagination, pagination.hasMore {
-                            Button("Load More") { host.loadMore(root: "grid") }
-                                .buttonStyle(.bordered)
-                                .padding(.bottom, Theme.Spacing.md)
-                        }
-                    }
-                }
-                .scrollIndicators(.hidden)
-                .onChange(of: selection) { _, index in
-                    guard items.indices.contains(index) else { return }
-                    withAnimation(.easeOut(duration: 0.12)) { proxy.scrollTo(items[index].id) }
+            PaletteGridLayout(
+                sections: [PaletteGridSection(id: "extension-grid", title: nil, items: items)],
+                columns: Self.gridColumns,
+                selection: selection,
+                scroll: scrollIntent ?? ListScrollIntent(kind: .top),
+                columnSpacing: Theme.Spacing.md,
+                rowSpacing: Theme.Spacing.md,
+                minimumCellHeight: 92,
+                contentInsets: EdgeInsets(
+                    top: Theme.Spacing.md,
+                    leading: Theme.Spacing.md,
+                    bottom: Theme.Spacing.md,
+                    trailing: Theme.Spacing.md
+                ),
+                onSelect: onSelect,
+                onActivate: onActivate,
+                onActions: onActions
+            ) { item, selected, hovered in
+                ExtensionGridItem(item: item, selected: selected, hovered: hovered)
+            } footer: {
+                if let pagination = snapshot.pagination, pagination.hasMore {
+                    Button("Load More") { host.loadMore(root: "grid") }
+                        .buttonStyle(.bordered)
+                        .padding(.bottom, Theme.Spacing.md)
                 }
             }
         )
@@ -119,9 +113,10 @@ struct ExtensionSessionView: View {
                             .simultaneousGesture(
                                 TapGesture(count: 2).onEnded {
                                     onSelect(index)
-                                    onActivate()
+                                    onActivate(index)
                                 }
                             )
+                            .onRightClick { onActions(index) }
                     }
                 }
                 .padding(.horizontal, Theme.Spacing.md)
@@ -420,6 +415,7 @@ private struct ExtensionActionStrip: View {
 private struct ExtensionGridItem: View {
     let item: ExtensionRenderItem
     let selected: Bool
+    let hovered: Bool
 
     var body: some View {
         VStack(alignment: .leading, spacing: Theme.Spacing.sm) {
@@ -441,7 +437,10 @@ private struct ExtensionGridItem: View {
         .padding(Theme.Spacing.lg)
         .background(
             RoundedRectangle(cornerRadius: Theme.Radius.card, style: .continuous)
-                .fill(selected ? Theme.Colors.selection : Theme.Colors.cardFill)
+                .fill(
+                    selected
+                        ? Theme.Colors.selection
+                        : hovered ? Theme.Colors.rowHover : Theme.Colors.cardFill)
         )
     }
 }

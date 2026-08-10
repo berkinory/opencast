@@ -135,6 +135,8 @@ final class PalettePanel: NSPanel {
         switch characters {
         case "n": (kVK_DownArrow, NSDownArrowFunctionKey)
         case "p": (kVK_UpArrow, NSUpArrowFunctionKey)
+        case "f": (kVK_RightArrow, NSRightArrowFunctionKey)
+        case "b": (kVK_LeftArrow, NSLeftArrowFunctionKey)
         default: nil
         }
     }

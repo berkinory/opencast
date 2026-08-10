@@ -64,8 +64,9 @@ Never break these without an explicit task to do so.
 - **`Core/Calculator/` (incl. `CalcDateTime`) must stay Foundation-only *and pure*** — no AppKit /
   SwiftUI imports, no clock or network reads. `Tools/calc-test.swift` compiles the real engine
   sources. Both externally-sourced inputs are injected: the clock via `now`/`calendar`, the FX table
-  via `rates` (`CurrencyRateStore` owns the fetch). Likewise `Core/Emoji/`
-  (`EmojiCatalog`, `EmojiGridGeometry`) stays AppKit/SwiftUI-free for `Tools/emoji-test.swift`, and
+  via `rates` (`CurrencyRateStore` owns the fetch). Likewise `EmojiCatalog` stays AppKit/SwiftUI-free
+  for `Tools/emoji-test.swift`, `PaletteGridGeometry` stays framework-free for
+  `Tools/palette-grid-test.swift`, and
   `Core/ClipboardStore.swift` must keep to Foundation + SQLite3 with no other app source, so
   `Tools/clipboard-test.swift` can compile it standalone. `Core/LauncherRankingStore.swift` is the
   same deal for `Tools/ranking-test.swift` — Foundation only, with the clock injected via `now` and

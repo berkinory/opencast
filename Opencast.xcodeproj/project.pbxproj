@@ -48,6 +48,7 @@
 		4B2265767404C02D0088F41C /* PaletteListLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30278F74390991460390F76B /* PaletteListLayout.swift */; };
 		4BE8F596C87E28C20A958FBF /* ClipboardSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6D2CEC6B747A3F7FDA120991 /* ClipboardSettingsView.swift */; };
 		4C3EE7AEF172CF321F383BFC /* SearchScopes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F2A51A0280BDE282048EDFA /* SearchScopes.swift */; };
+		4CEE633FBC9D6C0632B10DDE /* PaletteGridGeometry.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8A25B090DDAD6A830844B799 /* PaletteGridGeometry.swift */; };
 		4D620051B1C2961C7AF55D58 /* VisibilityStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = E9299D3A11818FC0597CACB6 /* VisibilityStore.swift */; };
 		4E82965EA91AF5D36171CD47 /* AboutView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 63CBA6A6B74BE5D0160E245F /* AboutView.swift */; };
 		51CE208E7EF0DC64AF1FFCB3 /* LauncherRankingStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0F7D1A5D76D5B45283D2BA36 /* LauncherRankingStore.swift */; };
@@ -91,6 +92,7 @@
 		976716075FC16AFAFD86EE50 /* PaletteActionLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA59B54CFE9ECFC4E9BC59C3 /* PaletteActionLayout.swift */; };
 		9888E45A89E29F81D41FEC39 /* ExtensionStoreRemote.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9B027D10BF41AB30B5203A0 /* ExtensionStoreRemote.swift */; };
 		98C521BB8F67770261F41C83 /* AppCore.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD4BAE776F74D89EAE580D21 /* AppCore.swift */; };
+		9A5F5FC52CC79A8FA9B95189 /* PaletteGridLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = BEE56DB2B6758ECB4018C45D /* PaletteGridLayout.swift */; };
 		9A6A061C34FA2DD929208371 /* main.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8EAC85B27764DF6B1230DE9B /* main.swift */; };
 		9B8D64884367ACA4CE764B97 /* PaletteSelectionIndex.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C1555E09E35D697CD70133B /* PaletteSelectionIndex.swift */; };
 		9D3F92ACE5AFEF38FC4BAA4A /* AppLeftovers.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2B0AE140DC6852FFFDB7DF1 /* AppLeftovers.swift */; };
@@ -115,7 +117,6 @@
 		BC4DE96FAB6633B60633ACBA /* VisualEffectView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D11ED0BE89DE989696E6748A /* VisualEffectView.swift */; };
 		BE32E6E4A265FA24A26A1A4F /* WindowLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 231C81AD238DE6D68FD61543 /* WindowLayout.swift */; };
 		BEABF0E6BFF1455FC2EAC728 /* opencast.icon in Resources */ = {isa = PBXBuildFile; fileRef = EF13092E0848178BCF935120 /* opencast.icon */; };
-		BFED712AE308D96B00E2DC12 /* EmojiGridGeometry.swift in Sources */ = {isa = PBXBuildFile; fileRef = AECEDCE02E0BDE623D1E5ADC /* EmojiGridGeometry.swift */; };
 		C23CF1344E41D598320856D8 /* ClipboardCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = FCC7F18143B7C379084A9555 /* ClipboardCoordinator.swift */; };
 		C279BED9932E0CDD175BB56C /* AppPaths.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8DDB33FADBABB5C580F93E6A /* AppPaths.swift */; };
 		C7BBD88284A433C5B742DD67 /* NativeConfirmation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8B576C0D3BF5065648605C07 /* NativeConfirmation.swift */; };
@@ -242,6 +243,7 @@
 		872EB9C1E78314EC5D47B785 /* UninstallPaletteScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UninstallPaletteScreen.swift; sourceTree = "<group>"; };
 		875391F4D0BC13ECB4B3D591 /* SnippetViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SnippetViews.swift; sourceTree = "<group>"; };
 		88FD40DBA985BAEDEA6CB70B /* ExtensionHostRuntime.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExtensionHostRuntime.swift; sourceTree = "<group>"; };
+		8A25B090DDAD6A830844B799 /* PaletteGridGeometry.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PaletteGridGeometry.swift; sourceTree = "<group>"; };
 		8B576C0D3BF5065648605C07 /* NativeConfirmation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NativeConfirmation.swift; sourceTree = "<group>"; };
 		8DDB33FADBABB5C580F93E6A /* AppPaths.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppPaths.swift; sourceTree = "<group>"; };
 		8EAC85B27764DF6B1230DE9B /* main.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = main.swift; sourceTree = "<group>"; };
@@ -263,7 +265,6 @@
 		AAFB97AB508CA397704FD1B0 /* UpdateStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpdateStore.swift; sourceTree = "<group>"; };
 		AC8E4AD79D1E8A76923AB1EA /* ExtensionStoreManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExtensionStoreManager.swift; sourceTree = "<group>"; };
 		AD5C33EA1F5AC03F4F27D7EC /* CalcDateTime.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CalcDateTime.swift; sourceTree = "<group>"; };
-		AECEDCE02E0BDE623D1E5ADC /* EmojiGridGeometry.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmojiGridGeometry.swift; sourceTree = "<group>"; };
 		AF330375C25EECC6F56D2C88 /* CalcEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CalcEngine.swift; sourceTree = "<group>"; };
 		AF824A314057E4C193483274 /* InlineArgument.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InlineArgument.swift; sourceTree = "<group>"; };
 		B0C47EBB3D225F264CAC6825 /* NotificationToken.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationToken.swift; sourceTree = "<group>"; };
@@ -276,6 +277,7 @@
 		BBE44AD7CADBDEDE80F3ACB7 /* CalculatorCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CalculatorCoordinator.swift; sourceTree = "<group>"; };
 		BD4BAE776F74D89EAE580D21 /* AppCore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppCore.swift; sourceTree = "<group>"; };
 		BE38B042EDB9B428B0371B97 /* CalculatorCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CalculatorCardView.swift; sourceTree = "<group>"; };
+		BEE56DB2B6758ECB4018C45D /* PaletteGridLayout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PaletteGridLayout.swift; sourceTree = "<group>"; };
 		C1A79BAFDB9E5D0E550CEB8A /* CalcUnits.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CalcUnits.swift; sourceTree = "<group>"; };
 		C30F6729865EB380623B6909 /* QuicklinkPaletteScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuicklinkPaletteScreen.swift; sourceTree = "<group>"; };
 		C5C1F0D91AD655A596A4F605 /* QuicklinkActionsMenu.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuicklinkActionsMenu.swift; sourceTree = "<group>"; };
@@ -334,7 +336,6 @@
 				083C35AE2C51533B8C45CE2D /* EmojiCatalog.swift */,
 				FE39A46B9EF9CE0259AE93BA /* EmojiCoordinator.swift */,
 				62F1B227B244CCBCD72C2CA9 /* EmojiData.generated.swift */,
-				AECEDCE02E0BDE623D1E5ADC /* EmojiGridGeometry.swift */,
 				FFFDB5FB4C753F6AEDC7F91A /* EmojiGridView.swift */,
 				3F6BACE99C5CB59D77200F49 /* EmojiIndex.swift */,
 				68466DCC9DE38D272F199629 /* EmojiPaletteScreen.swift */,
@@ -439,6 +440,8 @@
 				DA59B54CFE9ECFC4E9BC59C3 /* PaletteActionLayout.swift */,
 				4E22AE71B45DBB7485739198 /* PaletteDetailLayout.swift */,
 				EFB627B29E6DD1FE01D27B00 /* PaletteFooterControls.swift */,
+				8A25B090DDAD6A830844B799 /* PaletteGridGeometry.swift */,
+				BEE56DB2B6758ECB4018C45D /* PaletteGridLayout.swift */,
 				500BB7695C1113D18A44C4AB /* PaletteInlineArguments.swift */,
 				30278F74390991460390F76B /* PaletteListLayout.swift */,
 				A1BCFDFCAD58C3CA44F78502 /* PaletteModel.swift */,
@@ -850,7 +853,6 @@
 				C988076EB01611E460B010CF /* EmojiCatalog.swift in Sources */,
 				CF05991F60CFC148CB0BE63D /* EmojiCoordinator.swift in Sources */,
 				1A5FEF19FE3C9B7B749B9574 /* EmojiData.generated.swift in Sources */,
-				BFED712AE308D96B00E2DC12 /* EmojiGridGeometry.swift in Sources */,
 				28918546E9AE109851807DA8 /* EmojiGridView.swift in Sources */,
 				620AFAFC4D17507ED92F137B /* EmojiIndex.swift in Sources */,
 				9494037D81736229E0E92BA1 /* EmojiPaletteScreen.swift in Sources */,
@@ -897,6 +899,8 @@
 				976716075FC16AFAFD86EE50 /* PaletteActionLayout.swift in Sources */,
 				5DC2CEC99086A8137BD27C4C /* PaletteDetailLayout.swift in Sources */,
 				3E1749B1DF98F13F2E7A3867 /* PaletteFooterControls.swift in Sources */,
+				4CEE633FBC9D6C0632B10DDE /* PaletteGridGeometry.swift in Sources */,
+				9A5F5FC52CC79A8FA9B95189 /* PaletteGridLayout.swift in Sources */,
 				7895B0D4210A1A7C448B22FE /* PaletteInlineArguments.swift in Sources */,
 				4B2265767404C02D0088F41C /* PaletteListLayout.swift in Sources */,
 				7288317B7E9CDFE36FC71965 /* PaletteModel.swift in Sources */,

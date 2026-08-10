@@ -4,6 +4,8 @@
 
 ### Improved
 
+- Added familiar Control-key navigation to emoji and extension grids.
+- Made built-in and extension grids scroll and select items consistently.
 - Reduced launcher pauses and unnecessary background wake-ups.
 - Showed uninstall results sooner and made their file sizes match Finder more closely.
 - Kept Settings in front when the launcher is opened and closed over it.

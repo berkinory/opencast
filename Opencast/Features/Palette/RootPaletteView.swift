@@ -41,8 +41,6 @@ struct RootPaletteView: View {
     @State private var menuSelection = 0
     /// Changes only when a list should follow selection or return to its origin; mouse selection never moves the viewport.
     @State private var listScroll: ListScrollIntent?
-    /// The emoji grid's scroll request — the lazy grid needs distinct reset/follow scroll ops.
-    @State private var emojiScroll = EmojiScrollIntent(kind: .top)
     @State private var inlineArgumentValues: [String] = []
     @State private var inlineArgumentFocus: Int?
     @State private var inlineArgumentFocusRequest: Int?
@@ -181,6 +179,19 @@ struct RootPaletteView: View {
     private var selectedExtensionItem: ExtensionRenderItem? {
         extensionResults.indices.contains(selection) ? extensionResults[selection] : nil
     }
+    private var gridGeometry: PaletteGridGeometry? {
+        switch vm.mode {
+        case .emoji:
+            return PaletteGridGeometry(
+                counts: emojiSections.map(\.entries.count), columns: EmojiGrid.columns)
+        case .extensionCommand where extensionHost.snapshot?.root == "grid":
+            return PaletteGridGeometry(
+                counts: [extensionResults.count], columns: ExtensionSessionView.gridColumns)
+        default:
+            return nil
+        }
+    }
+    private var isGridMode: Bool { gridGeometry != nil }
     private var storeResults: [ExtensionStoreItem] {
         guard vm.mode == .store else { return [] }
         let installedByName = Dictionary(uniqueKeysWithValues: extensionStore.installed.map { ($0.name, $0) })
@@ -476,7 +487,6 @@ struct RootPaletteView: View {
             inlineArgumentFocus = nil
             inlineArgumentFocusRequest = nil
             listScroll = ListScrollIntent(kind: .top)
-            emojiScroll = EmojiScrollIntent(kind: .top)
             if vm.mode == .extensionCommand {
                 extensionHost.search(text: vm.query)
             }
@@ -489,12 +499,10 @@ struct RootPaletteView: View {
             showActions = false
             showSortMenu = false
             listScroll = ListScrollIntent(kind: .top)
-            emojiScroll = EmojiScrollIntent(kind: .top)
         }
         // Pop-to-root can leave query and mode unchanged, so explicitly restore the content origin.
         .onChange(of: vm.resetToken) {
             listScroll = ListScrollIntent(kind: .top)
-            emojiScroll = EmojiScrollIntent(kind: .top)
         }
         // Opening either menu highlights its first row and closes the other, so exactly one menu is ever open and always has a highlight.
         .onChange(of: menuOpen) { vm.menuOpen = menuOpen }
@@ -554,7 +562,7 @@ struct RootPaletteView: View {
                 moveMenu(1)
                 return .handled
             }
-            if vm.mode == .emoji { moveEmojiRow(1) } else { move(1) }
+            if isGridMode { moveGridRow(1) } else { move(1) }
             return .handled
         }
         .onKeyPress(.upArrow) {
@@ -563,21 +571,19 @@ struct RootPaletteView: View {
                 moveMenu(-1)
                 return .handled
             }
-            if vm.mode == .emoji { moveEmojiRow(-1) } else { move(-1) }
+            if isGridMode { moveGridRow(-1) } else { move(-1) }
             return .handled
         }
-        // Horizontal arrows step the emoji grid; everywhere else they stay with the field editor's caret. An open menu swallows them so the list behind never moves.
+        // Horizontal arrows step grid screens; everywhere else they stay with the field editor's caret. An open menu swallows them so the list behind never moves.
         .onKeyPress(.leftArrow) {
             if menuOpen { return .handled }
-            let isEmojiMode = vm.mode == .emoji
-            guard isEmojiMode else { return .ignored }
+            guard isGridMode else { return .ignored }
             move(-1)
             return .handled
         }
         .onKeyPress(.rightArrow) {
             if menuOpen { return .handled }
-            let isEmojiMode = vm.mode == .emoji
-            guard isEmojiMode else { return .ignored }
+            guard isGridMode else { return .ignored }
             move(1)
             return .handled
         }
@@ -890,7 +896,7 @@ struct RootPaletteView: View {
             sections: sections,
             selection: selection,
             tone: settings.emojiSkinTone,
-            scroll: emojiScroll,
+            scroll: listScroll ?? ListScrollIntent(kind: .top),
             isLoaded: emojiIndex.isLoaded,
             coordinator: core.emojis,
             pasteTarget: vm.pasteTarget,
@@ -1022,7 +1028,17 @@ struct RootPaletteView: View {
                         extensionHost.select(itemID: extensions[$0].id)
                     }
                 },
-                onActivate: activateSelection
+                onActivate: { index in
+                    vm.selection = index
+                    activateSelection()
+                },
+                onActions: { index in
+                    vm.selection = index
+                    if extensions.indices.contains(index) {
+                        extensionHost.select(itemID: extensions[index].id)
+                    }
+                    openActions()
+                }
             )
         case .store:
             ExtensionStorePaletteView(
@@ -1340,16 +1356,16 @@ struct RootPaletteView: View {
         case .offset(let delta):
             if menuOpen {
                 moveMenu(delta)
-            } else if vm.mode == .emoji {
-                moveEmojiRows(delta)
+            } else if isGridMode {
+                moveGridRows(delta)
             } else {
                 move(delta)
             }
         case .edge(let direction):
             if menuOpen {
                 moveMenuToEdge(direction)
-            } else if vm.mode == .emoji {
-                moveEmojiToEdge(direction)
+            } else if isGridMode {
+                moveGridToEdge(direction)
             } else {
                 moveToEdge(direction)
             }
@@ -1377,7 +1393,6 @@ struct RootPaletteView: View {
         }
         let kind: ListScrollIntent.Kind = delta < 0 && nextSelection == 0 ? .top : .follow
         listScroll = ListScrollIntent(kind: kind)
-        emojiScroll = EmojiScrollIntent(kind: .follow)
     }
 
     private func moveToEdge(_ direction: Int) {
@@ -1403,28 +1418,36 @@ struct RootPaletteView: View {
         closeMenus()
     }
 
-    /// Vertical grid move: one visual row within a section, spilling into the neighbor while keeping the column.
-    private func moveEmojiRow(_ delta: Int) {
-        guard resultCount > 0 else { return }
-        vm.selection = emojiScreen(sections: emojiSections, selection: selection)
-            .selectionAfterMovingRow(delta)
-        emojiScroll = EmojiScrollIntent(kind: .follow)
+    private func moveGridRow(_ delta: Int) {
+        guard let gridGeometry else { return }
+        let nextSelection =
+            delta > 0
+            ? gridGeometry.down(from: selection)
+            : gridGeometry.up(from: selection)
+        vm.selection = nextSelection
+        if vm.mode == .extensionCommand, extensionResults.indices.contains(nextSelection) {
+            extensionHost.select(itemID: extensionResults[nextSelection].id)
+        }
+        listScroll = ListScrollIntent(kind: .follow)
     }
 
-    private func moveEmojiRows(_ delta: Int) {
+    private func moveGridRows(_ delta: Int) {
         let steps = abs(delta)
         guard steps > 0 else { return }
         for _ in 0..<steps {
             let previous = selection
-            moveEmojiRow(delta > 0 ? 1 : -1)
+            moveGridRow(delta > 0 ? 1 : -1)
             if selection == previous { break }
         }
     }
 
-    private func moveEmojiToEdge(_ direction: Int) {
+    private func moveGridToEdge(_ direction: Int) {
         guard resultCount > 0 else { return }
         vm.selection = direction < 0 ? 0 : resultCount - 1
-        emojiScroll = EmojiScrollIntent(kind: .follow)
+        if vm.mode == .extensionCommand, extensionResults.indices.contains(selection) {
+            extensionHost.select(itemID: extensionResults[selection].id)
+        }
+        listScroll = ListScrollIntent(kind: .follow)
     }
 
     /// Tab flips between the launcher and clipboard.
