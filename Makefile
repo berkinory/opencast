@@ -70,6 +70,8 @@ test: tools
 	$(TEST_BIN_DIR)/window-command-test
 	swiftc -swift-version 6 Opencast/Features/HotKeys/DoubleCommandDetector.swift Tools/hotkey-test.swift -o $(TEST_BIN_DIR)/hotkey-test
 	$(TEST_BIN_DIR)/hotkey-test
+	swiftc -swift-version 6 Opencast/Features/Uninstall/AppLeftovers.swift Tools/uninstall-test.swift -o $(TEST_BIN_DIR)/uninstall-test
+	$(TEST_BIN_DIR)/uninstall-test
 
 extensions-test: extension-host-build
 	@command -v node >/dev/null || { echo "error: node is required" >&2; exit 1; }

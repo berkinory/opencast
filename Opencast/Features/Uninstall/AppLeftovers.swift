@@ -157,12 +157,12 @@ enum AppLeftovers {
 
     static func size(of url: URL) -> Int64? {
         let keys: Set<URLResourceKey> = [
-            .totalFileAllocatedSizeKey, .fileAllocatedSizeKey, .isDirectoryKey, .isSymbolicLinkKey,
+            .totalFileSizeKey, .fileSizeKey, .isDirectoryKey, .isSymbolicLinkKey,
         ]
         guard let values = try? url.resourceValues(forKeys: keys), values.isSymbolicLink != true else {
             return nil
         }
-        guard values.isDirectory == true else { return allocatedSize(values) }
+        guard values.isDirectory == true else { return logicalSize(values) }
         guard
             let walker = FileManager.default.enumerator(
                 at: url, includingPropertiesForKeys: Array(keys), options: [])
@@ -170,16 +170,16 @@ enum AppLeftovers {
         var total: Int64 = 0
         for case let child as URL in walker {
             if Task.isCancelled { return nil }
-            if let values = try? child.resourceValues(forKeys: keys) {
-                total += allocatedSize(values) ?? 0
+            if let values = try? child.resourceValues(forKeys: keys), values.isSymbolicLink != true {
+                total += logicalSize(values) ?? 0
             }
         }
         return total
     }
 
-    private static func allocatedSize(_ values: URLResourceValues) -> Int64? {
-        if let size = values.totalFileAllocatedSize { return Int64(size) }
-        if let size = values.fileAllocatedSize { return Int64(size) }
+    private static func logicalSize(_ values: URLResourceValues) -> Int64? {
+        if let size = values.totalFileSize { return Int64(size) }
+        if let size = values.fileSize { return Int64(size) }
         return nil
     }
 
