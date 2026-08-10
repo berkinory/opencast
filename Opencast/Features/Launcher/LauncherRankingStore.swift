@@ -24,6 +24,7 @@ final class LauncherRankingStore: ObservableObject {
     private(set) var revision = 0
 
     private var lookup: [String: [String: LauncherRankingRecord]]?
+    private var writeTask: Task<Void, Never>?
 
     init(fileURL: URL? = nil, now: @escaping () -> Date = Date.init) {
         self.fileURL = fileURL ?? Self.defaultFileURL()
@@ -39,6 +40,10 @@ final class LauncherRankingStore: ObservableObject {
     }
 
     var isEmpty: Bool { records.isEmpty }
+
+    func flush() async {
+        await writeTask?.value
+    }
 
     /// Records global usage plus every prefix of a submitted query. An empty query records global usage only.
     func record(itemKey: String, query: String) {
@@ -171,7 +176,12 @@ final class LauncherRankingStore: ObservableObject {
     private func didMutate() {
         lookup = nil
         revision &+= 1
-        if let data = try? JSONEncoder().encode(records) {
+        let snapshot = records
+        let fileURL = fileURL
+        let previous = writeTask
+        writeTask = Task.detached(priority: .utility) {
+            await previous?.value
+            guard let data = try? JSONEncoder().encode(snapshot) else { return }
             try? data.write(to: fileURL, options: .atomic)
         }
     }

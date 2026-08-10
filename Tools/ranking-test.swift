@@ -3,7 +3,7 @@ import Foundation
 @main
 struct RankingTest {
     @MainActor
-    static func main() {
+    static func main() async {
         let fileURL = FileManager.default.temporaryDirectory
             .appendingPathComponent("opencast-ranking-\(UUID().uuidString).json")
         defer { try? FileManager.default.removeItem(at: fileURL) }
@@ -90,6 +90,7 @@ struct RankingTest {
         check("one pass returns every item learned for the query", Set(table.keys) == [whatsApp, wick])
 
         let persistedWickAffinity = affinity(store, wick, "w")
+        await store.flush()
         let reloaded = LauncherRankingStore(fileURL: fileURL) { clock }
         check(
             "records persist across store instances",
@@ -101,6 +102,7 @@ struct RankingTest {
 
         reloaded.resetAll()
         check("global reset clears all learned ranking", reloaded.isEmpty)
+        await reloaded.flush()
 
         print(failures == 0 ? "\nALL PASSED" : "\n\(failures) FAILED")
         exit(failures == 0 ? 0 : 1)

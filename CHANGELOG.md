@@ -4,6 +4,7 @@
 
 ### Improved
 
+- Reduced launcher pauses and unnecessary background wake-ups.
 - Showed uninstall results sooner and made their file sizes match Finder more closely.
 - Kept Settings in front when the launcher is opened and closed over it.
 - Made Command-Q close Settings without quitting the menu bar app.
