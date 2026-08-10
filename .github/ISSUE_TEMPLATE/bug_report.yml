@@ -1,22 +1,31 @@
-name: Bug Report
-description: Report a bug running Opencast
-title: "[Bug]: "
+name: Bug report
+description: Report a reproducible problem
+title: "[Bug] "
 labels: ["bug"]
 body:
   - type: textarea
-    id: what-happened
+    id: description
     attributes:
-      label: What happened?
+      label: Description
       placeholder: |
-        What you did, what you expected, what you got instead.
-        A short recording beats a paragraph.
+        What happened, and what did you expect instead?
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      placeholder: |
+        1. Open...
+        2. Run...
+        3. See...
     validations:
       required: true
   - type: input
     id: version
     attributes:
       label: Opencast version
-      placeholder: 0.1.0
+      placeholder: 0.2.0
     validations:
       required: true
   - type: input
@@ -26,3 +35,8 @@ body:
       placeholder: "26.0"
     validations:
       required: true
+  - type: textarea
+    id: context
+    attributes:
+      label: Additional context
+      description: Add a screen recording, screenshot, or relevant logs if available. Remove private data first.

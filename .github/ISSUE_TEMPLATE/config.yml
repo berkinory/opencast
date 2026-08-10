@@ -2,4 +2,4 @@ blank_issues_enabled: true
 contact_links:
   - name: Report a security vulnerability
     url: https://github.com/berkinory/opencast/security/advisories/new
-    about: Security issues go here privately, not in the tracker.
+    about: Report security issues privately.

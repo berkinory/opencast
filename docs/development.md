@@ -1,164 +1,93 @@
 # Development
 
-How to build and test Opencast.
-
 ## Requirements
 
-- macOS 15 or later. macOS 26 adds the native Liquid Glass surface; older supported systems use the solid fallback.
-- Xcode 26 installed — it provides the SwiftUI macro plugin and SDK used to build.
+- macOS 15 or later
+- Xcode 26 with the macOS SDK selected by `xcode-select`
+- [XcodeGen](https://github.com/yonaskolb/XcodeGen)
+- Apple's `swift-format`
+- Node.js and Bun when working on extensions or generated data
 
-## First-time setup
-
-For local development, no Apple account is required:
-
-```sh
-make build
-```
-
-## Make targets
-
-The repository uses Apple's `swift-format` for formatting and strict style checks. The compiler remains
-the semantic checker; `make` runs formatting checks, standalone tests, and a build.
+Install the command-line tools with Homebrew:
 
 ```sh
-make check                                # lint + tests + Debug build
-make format                               # format Opencast/ and Tools/
-make lint
-make build                                # local unsigned Debug build
-make run                                  # build and launch Opencast Dev
-make generate                             # regenerate Opencast.xcodeproj from project.yml
+brew install xcodegen swift-format node bun
 ```
 
-Install the local tools once with `brew install swift-format xcodegen`.
-
-## Build & run
-
-Open the project in Xcode for editing:
+## Daily workflow
 
 ```sh
-open Opencast.xcodeproj
+make generate     # regenerate the Xcode project from project.yml
+make build        # unsigned Debug build
+make run          # build and launch Opencast Dev
+make lint         # strict formatting check
+make format       # apply Swift formatting
+make test         # standalone Swift harnesses
+make check        # lint, tests, and Debug build
 ```
 
-For a local run without an Apple account:
+Open `Opencast.xcodeproj` for Xcode development. `project.yml` is the source of truth; never edit the
+generated project to add files or change build settings. Commit both files after `make generate`.
+
+The Debug product is `Opencast Dev.app` with bundle identifier `com.opencast.app.dev`. Its preferences,
+caches, application support data, login item, and system permissions are separate from the release
+app. Keep all new persisted paths based on `Bundle.main.bundleIdentifier`.
+
+If command-line builds use Command Line Tools instead of Xcode, select Xcode first:
 
 ```sh
-make run
+sudo xcode-select --switch /Applications/Xcode.app/Contents/Developer
 ```
-
-`xcodebuild` uses whatever `xcode-select` points at; if that's the Command Line Tools rather than
-Xcode, prefix with `DEVELOPER_DIR=/Applications/Xcode.app/Contents/Developer` (the SwiftUI
-`@State`/`@FocusState` macros need Xcode's macOS platform).
-
-`Opencast.xcodeproj` is committed and generated from `project.yml` via
-[XcodeGen](https://github.com/yonaskolb/XcodeGen) — after changing project settings in `project.yml`,
-run `xcodegen generate` and commit the result.
-
-### The dev build
-
-Debug builds are isolated from the release: **`Opencast Dev.app`**, bundle id `com.opencast.app.dev`. Since
-every persisted thing is keyed by bundle
-id — `~/Library/Preferences/<id>.plist` (settings + hotkey bindings),
-`~/Library/Caches/<id>/` (clipboard history, exchange rates, frequent emoji),
-`~/Library/Application Support/<id>/` (the onboarding marker), the `SMAppService` login item, and the
-Accessibility / Input Monitoring (TCC) grants — a build you run locally can't read or clobber the
-installed app's state, and both can run side-by-side.
-
-Consequences worth knowing:
-
-- The dev build asks for Accessibility on its own the first time, and starts with **no** hotkeys bound
-  and onboarding unseen. Grant + bind once; the fixed build path and bundle id keep local state stable.
-  `make build` is unsigned by default; Xcode can use Apple Development signing if an account is available.
-- Don't bind the same global hotkey in both — whichever registered first wins.
-
-### Editor (VS Code) code-intelligence
-
-Autocomplete / go-to-definition come from SourceKit-LSP driven by a `buildServer.json`. Generate it
-once (it's machine-specific and git-ignored):
-
-```sh
-brew install xcode-build-server
-xcode-build-server config -project Opencast.xcodeproj -scheme Opencast \
-    --build_root "$PWD/build/DerivedData"
-```
-
-`--build_root` matches the fixed path the VS Code build task / F5 use, so the editor indexes what you
-actually build. Do a build once (⌘⇧B or F5) to populate it. In VS Code, **F5** builds and launches the
-app; changes always apply (fixed build path — no need to delete `build/`).
 
 ## Tests
 
-There's no XCTest target. Standalone harnesses:
+`make test` compiles small harnesses in `Tools/` against production source files. This keeps core
+logic testable without launching the app or creating an XCTest target. Add cases to the nearest
+harness when changing matching, parsing, persistence, geometry, shortcuts, or command behavior.
+
+Some files deliberately have narrow dependencies so a harness can compile them directly:
+
+- calculator engine: Foundation-only and pure; inject time, calendar, and exchange rates;
+- emoji catalog and palette grid geometry: no AppKit or SwiftUI;
+- clipboard store: Foundation and SQLite3 only;
+- launcher ranking and search scopes: Foundation only with injected paths and time;
+- window command geometry: Foundation and CoreGraphics only.
+
+`Tools/fuzz-test.swift` contains the harness copy of launcher fuzzy matching. When scoring changes,
+update the production implementation and its test copy together.
+
+Extension changes use additional checks:
 
 ```sh
-swift Tools/fuzz-test.swift                                        # launcher fuzzy matcher
-swiftc -swift-version 6 Opencast/Features/Launcher/LauncherRankingStore.swift Tools/ranking-test.swift \
-    -o /tmp/ranking-test && /tmp/ranking-test                      # learned launcher ranking
-swiftc -swift-version 6 Opencast/Features/Launcher/SearchScopes.swift Tools/scopes-test.swift \
-    -o /tmp/scopes-test && /tmp/scopes-test                       # launcher search scopes
-swiftc Opencast/Features/Calculator/Engine/*.swift Tools/calc-test.swift \
-    -o /tmp/calc-test && /tmp/calc-test                           # calculator engine
-swiftc -swift-version 6 Opencast/Features/Clipboard/ClipboardStore.swift Tools/clipboard-test.swift \
-    -o /tmp/clipboard-test && /tmp/clipboard-test                 # clipboard store
-swiftc -swift-version 6 Opencast/Features/WindowManagement/WindowCommand.swift \
-    Opencast/Features/WindowManagement/WindowLayout.swift \
-    Opencast/Features/WindowManagement/WindowActionMemory.swift Tools/window-command-test.swift \
-    -o /tmp/window-command-test && /tmp/window-command-test        # window geometry
-swiftc -swift-version 6 Opencast/Features/Palette/PaletteSelectionIndex.swift \
-    Tools/palette-selection-test.swift \
-    -o /tmp/palette-selection-test && /tmp/palette-selection-test  # palette selection geometry
+make extensions-test
+make extension-store-test
+make extension-budget-test
 ```
 
-`Tools/fuzz-test.swift` holds a **copy** of `FuzzyMatch` from `Opencast/Features/Launcher/AppIndex.swift` —
-change the scoring in one and mirror it in the other. The calc harness compiles the real engine
-sources, which is why `Opencast/Features/Calculator/Engine/` must stay Foundation-only.
+## Generated sources
 
-The clipboard harness likewise compiles the real `ClipboardStore.swift`, so that file must keep to
-Foundation + SQLite3 and depend on no other app source. Each case drives a store rooted in a
-throwaway temp directory (`ClipboardStore(directory:)`), so a run can never reach a real history.
-
-## Generated data
-
-Two Swift files are emitted by scripts and must never be hand-edited. Both download their source, so
-run them online, then commit the result:
+Do not edit generated Swift files by hand:
 
 ```sh
-node Tools/gen-emoji.js            # -> Opencast/Features/Emoji/EmojiData.generated.swift
-node Tools/gen-currencies.js       # -> Opencast/Features/Calculator/Engine/CurrencyData.generated.swift
+node Tools/gen-emoji.js
+node Tools/gen-currencies.js
 ```
 
-`gen-currencies.js` joins two sources on the ISO code: **Frankfurter**'s currency list (the same feed
-`CurrencyRateStore` fetches rates from, so the table and the rate source can't drift apart) and
-**Unicode CLDR**'s `en` currency data, which supplies display names, signs and the singular/plural
-noun. It reads the pinned `cldr-json` checkout rather than the host's `Intl`, whose output shifts
-with the local ICU version and would make the file unreproducible.
+Review and commit the generated diff. The currency generator joins pinned provider and CLDR data;
+ambiguous currency nouns remain in the hand-maintained contested table.
 
-Only unambiguous data is emitted. Anything two currencies claim — `dollars`, `pounds`, `krona` — is
-left out and decided by hand in `CalcCurrency.contested`, the one currency table still written by
-hand. Re-run the script when a currency is added or retired; nothing breaks in the meantime, since
-an unquoted code just reports "no exchange rate".
+## Packaging and releases
 
-## Local packaging
+Create a local unsigned image with `make unsigned-dmg`. It is for local verification only.
 
-A contributor can create an unsigned local DMG without Apple credentials:
+Official releases are built by `.github/workflows/release.yml`. The workflow signs and notarizes the
+app, creates Sparkle and DMG artifacts, publishes the GitHub release, and updates the Homebrew cask.
+Signing credentials and Sparkle private keys belong in protected CI secrets, never in the repository
+or command output.
 
-```sh
-make unsigned-dmg
-```
+Before a release:
 
-Do not distribute that artifact.
-
-## Release notes
-
-The release workflow reads the matching version section from `CHANGELOG.md` when it exists. The same text
-appears on the GitHub Release and in the Sparkle update window. Add the section in the same change as the
-`MARKETING_VERSION` bump:
-
-```md
-## [0.1.0] - 2026-08-01
-
-### Added
-
-- a concise user-facing change
-```
-
-The section is optional. If it is missing, the release contains only the generated requirements block.
+1. Run `make check` and all extension checks.
+2. Confirm `project.yml`, the generated Xcode project, and release notes agree.
+3. Verify the signed app, update archive, appcast, and DMG produced by CI.
+4. Test both a direct update and the Homebrew upgrade instructions.

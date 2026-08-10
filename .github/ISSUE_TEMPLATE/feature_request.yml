@@ -1,18 +1,24 @@
 name: Feature request
-description: Suggest an idea
-title: "[Feature]: "
+description: Propose an improvement
+title: "[Feature] "
 labels: ["enhancement"]
 body:
   - type: textarea
-    id: what
+    id: problem
     attributes:
-      label: What should it do?
+      label: Problem
+      description: What is difficult or missing today?
     validations:
       required: true
   - type: textarea
-    id: why
+    id: proposal
     attributes:
-      label: Why does it belong in Opencast?
-      description: Opencast stays small on purpose — quality over quantity. Tell us why this is worth its weight.
+      label: Proposed solution
+      description: Describe the behavior and workflow you would expect.
     validations:
       required: true
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives
+      description: Share any workarounds or other approaches you considered.

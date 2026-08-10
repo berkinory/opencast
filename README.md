@@ -1,78 +1,141 @@
 # Opencast
 
-A tiny, fully native macOS launcher — the essentials, without the bloat.
+A native command palette for macOS.
 
-<p align="center">
-  <a href="mailto:iabueammar@gmail.com?subject=Hiring%20enquiry">
-    <img alt="Hire me — iabueammar@gmail.com"
-         src="https://img.shields.io/badge/Hire%20me-Let's%20talk-111111?style=flat&logo=gmail&logoColor=white"></a>
-  <a href="LICENSE">
-    <img alt="License: AGPL-3.0"
-         src="https://img.shields.io/badge/License-AGPL--3.0-3DA639?style=flat"></a>
-</p>
-
-<!-- Screenshot placeholder — drop the real image at docs/screenshot.png -->
 <p align="center">
   <img src="docs/screenshot.png" alt="Opencast command palette" width="720">
 </p>
 
-Around **3 MB on disk** and **under 100 MB of RAM** — no Electron, no telemetry, no background
-CPU churn. Just SwiftUI + AppKit with zero dependencies. It's fast because there's nothing to it.
+Opencast brings apps, commands, clipboard history, calculations, snippets, quicklinks, emoji,
+window management, and extensions into one keyboard-first interface. It is built with SwiftUI and
+AppKit for macOS 15 and later.
 
 ## Features
 
-- **App launcher** — fuzzy-search and launch anything, pin favorites, see what's running, quit an app
-  or every app at once.
-- **Calculator** — do math, unit and live currency conversions inline, right in the palette.
-- **Clipboard history** — text and images, searchable, pasted back into the app you were using.
-- **Global hotkey** — one shortcut summons the palette from anywhere.
-- **Per-app hotkeys** — bind a key to an app; press it to toggle (focus/hide).
+- Search and launch applications, commands, and System Settings panes.
+- Use clipboard history with text and image previews, pinning, search, and app exclusions.
+- Calculate expressions and convert units or currencies directly in the launcher.
+- Create snippets and quicklinks, then search or trigger them from the palette.
+- Search emoji and symbols with keyboard navigation and skin-tone preferences.
+- Move and resize windows with commands or global shortcuts.
+- Install capability-scoped extensions from the built-in store or a local package.
+- Assign global shortcuts to the launcher, features, apps, and commands.
+- Receive signed updates through Sparkle, or update with Homebrew when installed as a cask.
 
 ## Install
 
-Opencast is not distributed yet. Build it from source with Xcode 26:
+Download the latest signed build from [GitHub Releases](https://github.com/berkinory/opencast/releases/latest),
+or install it with Homebrew:
 
 ```sh
-xcodegen generate
-xcodebuild -project Opencast.xcodeproj -scheme Opencast -configuration Debug \
-  CODE_SIGNING_ALLOWED=NO build
+brew install --cask berkinory/brew/opencast
 ```
 
-The project started from an upstream AGPL-3.0 project; its license and
-attribution remain in this repository.
+Opencast requires macOS 15 or later.
 
 ## Permissions
 
-**Accessibility** — needed only so Opencast can paste a clipboard item back into the app you
-came from. You're prompted the first time you paste; grant it in **System Settings → Privacy &
-Security → Accessibility**.
+Opencast requests system permissions only when a feature needs them:
 
-## Using it
+- **Accessibility** lets clipboard items, emoji, and snippets return text to the previously focused
+  app. It is also required for window management.
+- **Input Monitoring** is required for snippet expansion outside Opencast.
 
-1. Open **Settings → General** and record a global shortcut to summon Opencast.
-2. Press it anywhere → the palette floats in. Type to filter, **↵** to launch.
-3. **Tab** switches between Apps and Clipboard; **↑/↓** move, **Esc** dismisses.
-4. **Settings → App Hotkeys** — search an app and record a shortcut to toggle it.
+Networked features are disabled until enabled by the user. Extension capabilities are declared by
+each package and enforced by the native host.
 
-## Building from source
+## Build
 
-See **[docs/development.md](docs/development.md)** for the toolchain, build, and test workflow, and
-**[docs/ui.md](docs/ui.md)** for the UI design system.
+Install Xcode 26, XcodeGen, and Apple's `swift-format`, then run:
 
-Extension authors should start with **[Extensions/README.md](Extensions/README.md)**. Extensions run
-inside JavaScriptCore with native Swift capability brokers; Node and Bun are build tools only.
+```sh
+make generate
+make check
+make run
+```
+
+`project.yml` is the source of truth for the Xcode project. Run `make generate` after changing it.
+Debug builds use a separate app name, bundle identifier, preferences, caches, and permissions, so
+they can run beside an installed release.
+
+See [Development](docs/development.md), [Architecture](docs/architecture.md), and
+[UI](docs/ui.md) for the contributor-facing details.
+
+## Extensions
+
+Extensions are JavaScript or TypeScript commands rendered by a native host. Node.js and Bun are
+development tools only; they are not embedded in the app. Each command runs in an isolated helper
+process and can access only the capabilities declared in its manifest.
+
+Start from one of the packages in `Extensions/Packages/`. A package contains its metadata, security
+contract, and source:
+
+```text
+Extensions/Packages/example/
+├── package.json
+├── opencast.json
+└── src/index.tsx
+```
+
+`package.json` describes the extension and its commands. `opencast.json` declares command entry
+points and privileged capabilities:
+
+```json
+{
+  "schemaVersion": 1,
+  "commands": [
+    {
+      "name": "example",
+      "src": "src/index.tsx",
+      "mode": "view",
+      "capabilities": {
+        "names": ["network.request"],
+        "networkDomains": ["api.example.com"]
+      }
+    }
+  ]
+}
+```
+
+Commands use `view`, `no-view`, or `menu-bar` mode. The compatibility layer provides the supported
+parts of `@raycast/api`, `@raycast/utils`, React, and JSX. Unsupported APIs fail explicitly. Prefer
+the native `List`, `Grid`, `Detail`, `Form`, and `ActionPanel` surfaces instead of custom rendering.
+
+Build and validate an extension with:
+
+```sh
+node Tools/extensions/build-extension.js \
+  --package Extensions/Packages/example \
+  --out build/extensions/example.ocx
+
+make extensions-test
+make extension-store-test
+make extension-budget-test
+```
+
+The builder rejects undeclared capabilities, native modules, post-install scripts, remote code
+loading, direct Node.js APIs, and oversized bundles. Network domains, executable paths, and file
+roots must be as narrow as the command allows.
+
+To test locally, build the `.ocx` package and run **Import Extension** in Opencast. To publish, add
+the package to `Store/approved-extensions.json`, run all extension checks, and submit the source,
+manifest, generated package, and catalog changes together.
 
 ## Contributing
 
-Read **[CONTRIBUTING.md](CONTRIBUTING.md)** first — it covers the memory budget every PR is held to,
-the before/after video requirement for visual changes, and why features get declined. Security issues
-go through [SECURITY.md](SECURITY.md), not the issue tracker.
+Open an issue before starting a large behavior or architecture change. Keep pull requests focused,
+match the existing design and architecture, and include tests for logic that can run outside the UI.
+Every change must pass `make check`; extension changes must also pass the extension test targets.
 
-Questions and ideas can go through GitHub issues or email.
+Report security vulnerabilities through
+[GitHub Security Advisories](https://github.com/berkinory/opencast/security/advisories/new), not a
+public issue.
 
-## Contributors
+## Credits
 
-Opencast builds on the work of the [upstream contributors](https://github.com/abue-ammar/tinycast/graphs/contributors).
+Opencast began as a fork of [Tinycast](https://github.com/abue-ammar/tinycast) and continues under
+the same AGPL-3.0 license. The current project builds on that foundation with its own architecture,
+features, design, and extension platform.
 
 ## License
 
