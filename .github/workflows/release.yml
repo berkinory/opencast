@@ -116,113 +116,17 @@ jobs:
           security find-identity -v -p codesigning "$KEYCHAIN" | grep -q "Developer ID Application"
           rm -f "$RUNNER_TEMP/developer-id.p12"
 
-      # Build the Developer ID-signed app into an ephemeral DerivedData dir.
-      - name: Build app
+      - name: Build and package release archives
         env:
-          VERSION: ${{ steps.meta.outputs.version }}
-          DISPLAY_NAME: ${{ steps.meta.outputs.display_name }}
-          BUNDLE_ID: ${{ steps.meta.outputs.bundle_id }}
           BUILD_NUMBER: ${{ github.run_number }}
-        run: |
-          xcodebuild -project Opencast.xcodeproj -scheme Opencast -configuration Release \
-            -derivedDataPath "$RUNNER_TEMP/DerivedData" \
-            CODE_SIGN_STYLE=Manual CODE_SIGN_IDENTITY="Developer ID Application" \
-            OTHER_CODE_SIGN_FLAGS="--timestamp" \
-            PRODUCT_BUNDLE_IDENTIFIER="$BUNDLE_ID" \
-            MARKETING_VERSION="$VERSION" CURRENT_PROJECT_VERSION="$BUILD_NUMBER" \
-            ONLY_ACTIVE_ARCH=NO build
-
-      - name: Re-sign Sparkle helpers
-        env:
+          DERIVED_DATA: ${{ runner.temp }}/DerivedData
           DISPLAY_NAME: ${{ steps.meta.outputs.display_name }}
-        run: |
-          APP="$RUNNER_TEMP/DerivedData/Build/Products/Release/${DISPLAY_NAME}.app"
-          bash Tools/sign-sparkle.sh "$APP" "Developer ID Application"
-
-      - name: Verify universal binary
-        env:
-          DISPLAY_NAME: ${{ steps.meta.outputs.display_name }}
-        run: |
-          APP="$RUNNER_TEMP/DerivedData/Build/Products/Release/${DISPLAY_NAME}.app"
-          BINARY="$APP/Contents/MacOS/${DISPLAY_NAME}"
-          ARCHS="$(lipo -archs "$BINARY")"
-          echo "Architectures: $ARCHS"
-          [[ "$ARCHS" == *arm64* && "$ARCHS" == *x86_64* ]] || {
-            echo "::error::Release binary is not universal: $ARCHS"
-            exit 1
-          }
-
-      - name: Notarize and staple app
-        env:
-          DISPLAY_NAME: ${{ steps.meta.outputs.display_name }}
-          NOTARY_KEY_ID: ${{ secrets.NOTARY_API_KEY_ID }}
+          NOTARY_AUTH: api
           NOTARY_ISSUER_ID: ${{ secrets.NOTARY_API_ISSUER_ID }}
           NOTARY_KEY_BASE64: ${{ secrets.NOTARY_API_KEY_P8_BASE64 }}
-        run: |
-          set -euo pipefail
-          APP="$RUNNER_TEMP/DerivedData/Build/Products/Release/${DISPLAY_NAME}.app"
-          ZIP="$RUNNER_TEMP/${DISPLAY_NAME}.zip"
-          KEY_PATH="$RUNNER_TEMP/AuthKey_${NOTARY_KEY_ID}.p8"
-          SUBMIT_JSON="$RUNNER_TEMP/notary-submit.json"
-          WAIT_JSON="$RUNNER_TEMP/notary-wait.json"
-          cleanup() { rm -f "$KEY_PATH" "$ZIP" "$SUBMIT_JSON" "$WAIT_JSON"; }
-          trap cleanup EXIT
-
-          echo "${NOTARY_KEY_BASE64}" | base64 --decode > "$KEY_PATH"
-          ditto -c -k --sequesterRsrc --keepParent "$APP" "$ZIP"
-
-          if ! xcrun notarytool submit "$ZIP" \
-            --key "$KEY_PATH" --key-id "$NOTARY_KEY_ID" --issuer "$NOTARY_ISSUER_ID" \
-            --output-format json > "$SUBMIT_JSON" 2>&1; then
-            cat "$SUBMIT_JSON"
-            echo "::error::notarytool upload failed before a submission was created"
-            exit 1
-          fi
-          cat "$SUBMIT_JSON"
-          SUBMISSION_ID="$(sed -nE 's/.*"id"[[:space:]]*:[[:space:]]*"([^"]+)".*/\1/p' "$SUBMIT_JSON" | head -n1)"
-          if [ -z "$SUBMISSION_ID" ]; then
-            echo "::error::notarytool did not return a submission id"
-            exit 1
-          fi
-          echo "Submission ID: $SUBMISSION_ID"
-
-          if ! xcrun notarytool wait "$SUBMISSION_ID" \
-            --key "$KEY_PATH" --key-id "$NOTARY_KEY_ID" --issuer "$NOTARY_ISSUER_ID" \
-            --timeout 25m --output-format json > "$WAIT_JSON" 2>&1; then
-            cat "$WAIT_JSON"
-            echo "::error::notarization did not finish within 25 minutes; fetching the submission log"
-            xcrun notarytool log "$SUBMISSION_ID" \
-              --key "$KEY_PATH" --key-id "$NOTARY_KEY_ID" --issuer "$NOTARY_ISSUER_ID" || true
-            exit 1
-          fi
-          cat "$WAIT_JSON"
-          STATUS="$(sed -nE 's/.*"status"[[:space:]]*:[[:space:]]*"([^"]+)".*/\1/p' "$WAIT_JSON" | head -n1)"
-          if [ "$STATUS" != "Accepted" ]; then
-            echo "::error::notarization finished with status: ${STATUS:-unknown}"
-            xcrun notarytool log "$SUBMISSION_ID" \
-              --key "$KEY_PATH" --key-id "$NOTARY_KEY_ID" --issuer "$NOTARY_ISSUER_ID" || true
-            exit 1
-          fi
-
-          xcrun stapler staple "$APP"
-          xcrun stapler validate "$APP"
-          codesign --verify --deep --strict --verbose=2 "$APP"
-          spctl --assess --type execute --verbose=4 "$APP"
-
-      # Pack the stapled .app + an /Applications symlink into a compressed DMG under dist/.
-      - name: Package release archives
-        env:
-          DISPLAY_NAME: ${{ steps.meta.outputs.display_name }}
-          DMG_FILE: ${{ steps.meta.outputs.dmg_file }}
-          ZIP_FILE: ${{ steps.meta.outputs.zip_file }}
-        run: |
-          APP="$RUNNER_TEMP/DerivedData/Build/Products/Release/${DISPLAY_NAME}.app"
-          STAGE="$(mktemp -d)"
-          mkdir -p dist
-          cp -R "$APP" "$STAGE/"
-          ditto -c -k --sequesterRsrc --keepParent "$APP" "dist/${ZIP_FILE}"
-          ln -s /Applications "$STAGE/Applications"
-          diskutil image create from "$STAGE" --format UDZO --volumeName "$DISPLAY_NAME" "dist/${DMG_FILE}"
+          NOTARY_KEY_ID: ${{ secrets.NOTARY_API_KEY_ID }}
+          OUTPUT_DIR: ${{ github.workspace }}/dist
+        run: ./build-dmg.sh
 
       - name: Prepare release notes
         env:

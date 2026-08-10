@@ -4,6 +4,7 @@
 
 ### Improved
 
+- Unified local and CI release archive builds and DMG layout through `build-dmg.sh`.
 - Added familiar Control-key navigation to emoji and extension grids.
 - Made built-in and extension grids scroll and select items consistently.
 - Reduced launcher pauses and unnecessary background wake-ups.
