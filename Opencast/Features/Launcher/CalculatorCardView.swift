@@ -26,8 +26,9 @@ enum CalcMemo {
         var calendar = Calendar.current
         calendar.locale = Locale.current
         let result = CalcEngine.evaluate(query, now: Date(), calendar: calendar, currency: currency)
-        cache = (query, enabled, cryptoEnabled, stamp, result)
-        return result
+        let visibleResult = result?.isActionable == true ? result : nil
+        cache = (query, enabled, cryptoEnabled, stamp, visibleResult)
+        return visibleResult
     }
 }
 

@@ -88,13 +88,8 @@ enum CalcEngine {
                     payload: .value(
                         display: "\(CalcFormatter.display(output, locale: locale)) \(to.symbol)",
                         copyText: "\(CalcFormatter.copyText(output)) \(to.symbol)"))
-            case .mismatch(let from, let to):
-                return CalcResult(
-                    expression: query,
-                    payload: .error(
-                        message:
-                            "Cannot convert \(from.category.displayName) to \(to.category.displayName)."
-                    ))
+            case .mismatch:
+                return nil
             }
         }
 
@@ -115,10 +110,8 @@ enum CalcEngine {
                     payload: .value(
                         display: display,
                         copyText: "\(copyAmount) \(to.code)"))
-            case .mismatch(let from, let to):
-                return CalcResult(
-                    expression: query,
-                    payload: .error(message: "Cannot convert \(from) to \(to)."))
+            case .mismatch:
+                return nil
             case .noRate(let code):
                 return CalcResult(
                     expression: query,

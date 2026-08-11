@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.2.2]
+
+### Improved
+
+- Calculator no longer shows an error for unsupported conversions.
+
 ## [0.2.1]
 
 ### Improved

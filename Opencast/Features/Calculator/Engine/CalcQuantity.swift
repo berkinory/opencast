@@ -10,8 +10,7 @@ enum CalcQuantity {
 
         var parser = QuantityParser(tokens: split.expressionTokens, currency: currency)
         guard let value = parser.parse() else {
-            guard let issue = parser.issue else { return nil }
-            return CalcResult(expression: query, payload: .error(message: issue))
+            return nil
         }
         guard parser.dimensionCount > 0 else { return nil }
 
@@ -80,16 +79,14 @@ enum CalcQuantity {
         case .unit(let from):
             if let to = CalcUnits.byName[targetName] {
                 guard from.category == to.category else {
-                    return conversionError(
-                        query, from: from.category.displayName, to: to.category.displayName)
+                    return nil
                 }
                 let output = convertUnit(value.amount, from: from, to: to)
                 guard output.isFinite else { return nil }
                 return measurementResult(output, unit: to, expression: expression, locale: locale)
             }
             if currency.isOn, CalcCurrency.byName[targetName] != nil {
-                return conversionError(
-                    query, from: from.category.displayName, to: CalcCurrency.categoryName)
+                return nil
             }
             return nil
         case .currency(let from):
@@ -115,9 +112,8 @@ enum CalcQuantity {
                 else { return nil }
                 return currencyResult(output, definition: to, expression: expression, locale: locale)
             }
-            if let to = CalcUnits.byName[targetName] {
-                return conversionError(
-                    query, from: CalcCurrency.categoryName, to: to.category.displayName)
+            if CalcUnits.byName[targetName] != nil {
+                return nil
             }
             return nil
         }
@@ -143,10 +139,6 @@ enum CalcQuantity {
         return CalcResult(
             expression: expression, sourceBadge: "Expression", targetBadge: definition.name,
             payload: .value(display: display, copyText: "\(CalcFormatter.currencyCopyText(amount)) \(definition.code)"))
-    }
-
-    private static func conversionError(_ query: String, from: String, to: String) -> CalcResult {
-        CalcResult(expression: query, payload: .error(message: "Cannot convert \(from) to \(to)."))
     }
 
     fileprivate static func convertUnit(_ amount: Double, from: UnitDef, to: UnitDef) -> Double {
@@ -261,7 +253,6 @@ private struct QuantityParser {
     var dimensionCount = 0
     var usedCurrency = false
     var currencyCodes: [String] = []
-    var issue: String?
 
     private var current: CalcToken? { position < tokens.count ? tokens[position] : nil }
     private var currencyEnabled: Bool { currency.isOn }
@@ -481,18 +472,9 @@ private struct QuantityParser {
         guard currency.isOn,
             cryptoEnabled || (!CalcCurrency.isCryptoCode(from.code) && !CalcCurrency.isCryptoCode(to.code))
         else { return nil }
-        guard let rates = currency.rates else {
-            issue = "Exchange rates unavailable — check your connection."
-            return nil
-        }
-        guard rates.rate(for: from.code) != nil else {
-            issue = "No exchange rate for \(from.code)."
-            return nil
-        }
-        guard rates.rate(for: to.code) != nil else {
-            issue = "No exchange rate for \(to.code)."
-            return nil
-        }
+        guard let rates = currency.rates else { return nil }
+        guard rates.rate(for: from.code) != nil else { return nil }
+        guard rates.rate(for: to.code) != nil else { return nil }
         return rates.convert(amount, from: from.code, to: to.code)
     }
 
@@ -522,8 +504,7 @@ private struct QuantityParser {
         return false
     }
 
-    private mutating func fail(_ message: String) -> QuantityValue? {
-        issue = message
+    private func fail(_ message: String) -> QuantityValue? {
         return nil
     }
 }

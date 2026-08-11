@@ -112,10 +112,10 @@ struct CalcTests {
         expectDisplay("255 to octal", "0o377")
         expectDisplay("0xff", "255")  // bare radix literal echoes decimal
 
-        // Friendly category errors
-        expectError("10kg to sec", "Cannot convert Weight to Time.")
-        expectError("100 mL to km", "Cannot convert Volume to Length.")
-        expectError("1 GB to hr", "Cannot convert Digital Storage to Time.")
+        // Unsupported conversions stay out of the calculator results.
+        expectNil("10kg to sec")
+        expectNil("100 mL to km")
+        expectNil("1 GB to hr")
 
         // Non-calculator input → no card
         expectNil("safari")
@@ -310,9 +310,10 @@ struct CalcTests {
         expectDisplay("10 pounds", "4.5359237 kg")
         expectDisplay("10 pounds to euros", "€11.65")
         expectBadges("10 pounds to euros", source: "British Pound", target: "Euro")
-        // Currency ↔ unit is a friendly category error, like Weight ↔ Time
-        expectError("10 usd to kg", "Cannot convert Currency to Weight.")
-        expectError("10 kg to usd", "Cannot convert Weight to Currency.")
+        // Currency ↔ unit is not a calculator result.
+        expectNil("10 usd to kg")
+        expectNil("10 kg to usd")
+        expectNil("7 usd in b")
         // A known currency the snapshot doesn't quote, and no snapshot at all
         expectError("5 usd to npr", "No exchange rate for NPR.")
         expectErrorWithoutRates(
