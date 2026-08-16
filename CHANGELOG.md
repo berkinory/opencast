@@ -10,6 +10,7 @@
 - Added clipboard filters for text, images, links, and email while keeping pinned items in order.
 - Kept selected grid items visible while navigating around the palette bars.
 - Made the palette cursor settle consistently between the search field and the rest of the window.
+- Kept built-in shortcut labels and actions in one command definition.
 
 ## [0.2.1]
 

@@ -183,9 +183,9 @@ final class HotKeyManager: ObservableObject, HealthCheckable {
         case .togglePalette:
             return "App Launcher"
         case .toggleClipboard:
-            return "Clipboard History"
+            return action.commandName ?? "Clipboard History"
         case .toggleEmoji:
-            return "Emoji & Symbols"
+            return action.commandName ?? "Emoji & Symbols"
         case .app(let bundleID):
             let apps = entries()
             return apps.first { $0.kind == .application && $0.bundleID == bundleID }?.name

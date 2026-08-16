@@ -76,8 +76,9 @@ struct AppEntry: Identifiable, Hashable, Sendable {
         case .systemSettings:
             return bundleID.map(HotKeyAction.settingsPane)
         case .command:
-            if id == CommandID.clipboardHistory.rawValue { return .toggleClipboard }
-            if id == CommandID.searchEmoji.rawValue { return .toggleEmoji }
+            if let command = CommandRegistry.command(for: self), let action = command.hotKeyAction {
+                return action
+            }
             if let command = WindowCommandCatalog.command(forEntryID: id) {
                 return .windowCommand(id: command.id)
             }

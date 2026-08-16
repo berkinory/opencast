@@ -152,6 +152,10 @@ enum HotKeyAction: Hashable, Sendable {
     case command(id: String)
     case windowCommand(id: WindowCommand.ID)
 
+    var commandName: String? {
+        CommandID.allCases.first { $0.hotKeyAction == self }?.name
+    }
+
     /// UserDefaults key holding the shortcut JSON; the `KeyboardShortcuts_` prefix is a fossil of the replaced package, kept verbatim so existing bindings need no migration.
     var defaultsKey: String {
         switch self {

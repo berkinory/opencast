@@ -71,6 +71,14 @@ enum CommandID: String, CaseIterable, Sendable {
         }
     }
 
+    var hotKeyAction: HotKeyAction? {
+        switch self {
+        case .clipboardHistory: return .toggleClipboard
+        case .searchEmoji: return .toggleEmoji
+        default: return nil
+        }
+    }
+
     var primaryActionTitle: String {
         switch self {
         case .clipboardHistory: return "Open Clipboard History"
