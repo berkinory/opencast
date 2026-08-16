@@ -3,7 +3,7 @@ import Foundation
 @main
 private struct HotKeyTests {
     static func main() {
-        for modifier in DoubleModifier.allCases {
+        for _ in DoubleModifier.allCases {
             var detector = DoubleModifierDetector(maximumInterval: 0.35)
             precondition(!detector.flagsChanged(modifierIsDown: true, otherModifierIsDown: false, at: 0))
             precondition(!detector.flagsChanged(modifierIsDown: false, otherModifierIsDown: false, at: 0.1))
@@ -11,7 +11,6 @@ private struct HotKeyTests {
             precondition(
                 detector.flagsChanged(
                     modifierIsDown: false, otherModifierIsDown: false, at: 0.3))
-            _ = modifier
         }
 
         var detector = DoubleModifierDetector(maximumInterval: 0.35)

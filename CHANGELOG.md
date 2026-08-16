@@ -5,6 +5,7 @@
 ### Improved
 
 - Calculator no longer shows an error for unsupported conversions.
+- Removed redundant checks from the standalone test tools.
 
 ## [0.2.1]
 
