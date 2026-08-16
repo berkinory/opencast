@@ -201,18 +201,7 @@ final class CurrencyRateStore: ObservableObject {
             throw URLError(.badServerResponse)
         }
 
-        // Frankfurter v2 answers with one flat row per pair rather than a keyed table.
-        let rows = try JSONDecoder().decode([RateRow].self, from: data)
-        guard let base = rows.first?.base else { throw URLError(.cannotParseResponse) }
-        var rates: [String: Double] = [:]
-        rates.reserveCapacity(rows.count + 1)
-        for row in rows where row.rate > 0 && row.rate.isFinite && row.base == base {
-            rates[row.quote] = row.rate
-        }
-        guard !rates.isEmpty else { throw URLError(.cannotParseResponse) }
-        rates[base] = 1
-
-        return CurrencyRates(base: base, rates: rates, fetchedAt: Date())
+        return try CurrencyFeed.fiat(data: data)
     }
 
     private nonisolated static func fetchCrypto() async throws -> [String: Double] {
@@ -222,23 +211,6 @@ final class CurrencyRateStore: ObservableObject {
             throw URLError(.badServerResponse)
         }
 
-        let payload = try JSONDecoder().decode([String: CryptoQuote].self, from: data)
-        var rates: [String: Double] = [:]
-        for asset in CalcCurrency.cryptoAssets {
-            guard let price = payload[asset.id]?.usd, price > 0, price.isFinite else { continue }
-            rates[asset.code] = 1 / price
-        }
-        guard !rates.isEmpty else { throw URLError(.cannotParseResponse) }
-        return rates
-    }
-
-    private struct RateRow: Decodable {
-        let base: String
-        let quote: String
-        let rate: Double
-    }
-
-    private struct CryptoQuote: Decodable {
-        let usd: Double
+        return try CurrencyFeed.crypto(data: data)
     }
 }

@@ -9,6 +9,7 @@ struct CalcTests {
     static var passes = 0
 
     static func main() {
+        currencyFeed()
         // Arithmetic & precedence
         expectDisplay("2+2", "4")
         expectDisplay("5*7", "35")
@@ -388,6 +389,36 @@ struct CalcTests {
 
         print("\n\(passes) passed, \(failures) failed")
         exit(failures == 0 ? 0 : 1)
+    }
+
+    static func currencyFeed() {
+        let fiat = Data("""
+        [{"base":"USD","quote":"EUR","rate":0.92},{"base":"USD","quote":"GBP","rate":0.79}]
+        """.utf8)
+        let snapshot = try? CurrencyFeed.fiat(data: fiat, fetchedAt: Date(timeIntervalSince1970: 10))
+        expect(snapshot?.base == "USD", "fiat feed keeps its base")
+        expect(snapshot?.rate(for: "USD") == 1, "fiat feed adds the base rate")
+        expect(snapshot?.rate(for: "EUR") == 0.92, "fiat feed decodes quoted rates")
+
+        let crypto = Data("""
+        {"bitcoin":{"usd":50000},"ethereum":{"usd":2500}}
+        """.utf8)
+        let assets = [
+            CalcCurrency.CryptoAsset(code: "BTC", name: "Bitcoin", id: "bitcoin", symbol: "₿", aliases: []),
+            CalcCurrency.CryptoAsset(code: "ETH", name: "Ethereum", id: "ethereum", symbol: "Ξ", aliases: []),
+        ]
+        let cryptoRates = try? CurrencyFeed.crypto(data: crypto, assets: assets)
+        expect(cryptoRates?["BTC"] == 1.0 / 50_000, "crypto feed inverts USD prices")
+        expect(cryptoRates?["ETH"] == 1.0 / 2_500, "crypto feed decodes every requested asset")
+    }
+
+    static func expect(_ condition: @autoclosure () -> Bool, _ message: String) {
+        if condition() {
+            passes += 1
+        } else {
+            failures += 1
+            print("FAIL: \(message)")
+        }
     }
 
     // MARK: - Fixed clock for deterministic date/time tests (Fri 2026-07-24 00:18:00 UTC)

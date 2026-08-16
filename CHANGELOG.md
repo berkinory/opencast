@@ -6,6 +6,7 @@
 
 - Calculator no longer shows an error for unsupported conversions.
 - Removed redundant checks from the standalone test tools.
+- Kept exchange-rate parsing small, shared, and easier to verify without network access.
 
 ## [0.2.1]
 
