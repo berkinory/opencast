@@ -154,6 +154,11 @@ enum ClipboardActionsMenu {
                 PopoverMenuItem(title: "Show in Finder", systemImage: "folder") {
                     coordinator.revealImage(item)
                 })
+        } else if let url = FilePathResolver.resolve(item.text ?? "") {
+            items.append(
+                PopoverMenuItem(title: "Reveal in Finder", systemImage: "folder") {
+                    coordinator.revealFile(url)
+                })
         }
         items.append(
             PopoverMenuItem(title: "Delete Entry", systemImage: "trash", isDestructive: true) {

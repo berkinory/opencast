@@ -102,6 +102,7 @@
 		BC4DE96FAB6633B60633ACBA /* VisualEffectView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D11ED0BE89DE989696E6748A /* VisualEffectView.swift */; };
 		BE32E6E4A265FA24A26A1A4F /* WindowLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 231C81AD238DE6D68FD61543 /* WindowLayout.swift */; };
 		BEABF0E6BFF1455FC2EAC728 /* opencast.icon in Resources */ = {isa = PBXBuildFile; fileRef = EF13092E0848178BCF935120 /* opencast.icon */; };
+		C103B3D75756496B0D89CD6C /* FilePathResolver.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDA5F77ACEFD8C044CD373C4 /* FilePathResolver.swift */; };
 		C23CF1344E41D598320856D8 /* ClipboardCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = FCC7F18143B7C379084A9555 /* ClipboardCoordinator.swift */; };
 		C279BED9932E0CDD175BB56C /* AppPaths.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8DDB33FADBABB5C580F93E6A /* AppPaths.swift */; };
 		C7BBD88284A433C5B742DD67 /* NativeConfirmation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8B576C0D3BF5065648605C07 /* NativeConfirmation.swift */; };
@@ -254,6 +255,7 @@
 		E7FFF18ECC57AAC9678FA168 /* HotKeyManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HotKeyManager.swift; sourceTree = "<group>"; };
 		E9299D3A11818FC0597CACB6 /* VisibilityStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VisibilityStore.swift; sourceTree = "<group>"; };
 		E988E0784C404426D4E2076C /* UninstallCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UninstallCoordinator.swift; sourceTree = "<group>"; };
+		EDA5F77ACEFD8C044CD373C4 /* FilePathResolver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FilePathResolver.swift; sourceTree = "<group>"; };
 		EF13092E0848178BCF935120 /* opencast.icon */ = {isa = PBXFileReference; lastKnownFileType = wrapper.icon; path = opencast.icon; sourceTree = "<group>"; };
 		EFB627B29E6DD1FE01D27B00 /* PaletteFooterControls.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PaletteFooterControls.swift; sourceTree = "<group>"; };
 		F207135F1CF766FD9A4491E0 /* RootPaletteView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RootPaletteView.swift; sourceTree = "<group>"; };
@@ -542,6 +544,7 @@
 				BBE44AD7CADBDEDE80F3ACB7 /* CalculatorCoordinator.swift */,
 				C6CCAFA1285E322F00F12165 /* CommandRegistry.swift */,
 				940E10C0761D9267184C8EBD /* FavoritesStore.swift */,
+				EDA5F77ACEFD8C044CD373C4 /* FilePathResolver.swift */,
 				AF824A314057E4C193483274 /* InlineArgument.swift */,
 				DBFE29D81E7FCB405F53F073 /* LauncherCoordinator.swift */,
 				0F7D1A5D76D5B45283D2BA36 /* LauncherRankingStore.swift */,
@@ -714,6 +717,7 @@
 				23E5DB23DDFA2DC54550D828 /* EmojiSettingsView.swift in Sources */,
 				05574C825EA3722248A37879 /* FavoritesStore.swift in Sources */,
 				A8DB8C4F5C63787C17DDEB2C /* FeedbackToastView.swift in Sources */,
+				C103B3D75756496B0D89CD6C /* FilePathResolver.swift in Sources */,
 				FD1E47D09EF5686803D9DFFC /* FrequentEmojiStore.swift in Sources */,
 				F721F63A6940A983F12C41FE /* GeneralSettingsView.swift in Sources */,
 				B7853593700B36F107AF4EB1 /* HealthTicker.swift in Sources */,

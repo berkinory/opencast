@@ -94,6 +94,11 @@ final class LauncherCoordinator {
         AppLauncher.showInFinder(app.url)
     }
 
+    func revealFile(_ url: URL) {
+        hidePalette(false)
+        AppLauncher.showInFinder(url)
+    }
+
     func copyPath(_ app: AppEntry) {
         hidePalette(false)
         Paster.copyPlainText(app.url.path)

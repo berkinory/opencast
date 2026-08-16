@@ -3,8 +3,10 @@ import SwiftUI
 struct LauncherList: View {
     let results: [AppEntry]
     let quicklinks: [Quicklink]
+    let filePath: URL?
     let selectedID: AppEntry.ID?
     let selectedQuicklinkID: Quicklink.ID?
+    let filePathSelected: Bool
     let favoriteCount: Int
     let pinnedQuicklinkCount: Int
     let favoriteQuicklinkCount: Int
@@ -20,6 +22,7 @@ struct LauncherList: View {
     let onActions: (AppEntry) -> Void
     let onActivateQuicklink: (Quicklink) -> Void
     let onActionsQuicklink: (Quicklink) -> Void
+    let onActivateFilePath: (URL) -> Void
     @EnvironmentObject private var runningApps: RunningAppsMonitor
 
     private nonisolated static let calcRowID = "calc-card"
@@ -29,12 +32,14 @@ struct LauncherList: View {
         case calc(CalcResult)
         case app(AppEntry)
         case quicklink(Quicklink)
+        case file(URL)
         var id: String {
             switch self {
             case .header(let title): return "header-" + title
             case .calc: return LauncherList.calcRowID
             case .app(let app): return app.id
             case .quicklink(let quicklink): return quicklink.id.uuidString
+            case .file(let url): return "file-" + url.path
             }
         }
     }
@@ -43,9 +48,16 @@ struct LauncherList: View {
         var calcRows: [Row] = []
         if let calc { calcRows = [.header("Calculator"), .calc(calc)] }
         guard showSections else {
-            guard !results.isEmpty || !quicklinks.isEmpty else { return calcRows }
-            return calcRows + [.header("Results")] + results.map(Row.app)
-                + quicklinks.map(Row.quicklink)
+            guard !results.isEmpty || !quicklinks.isEmpty || filePath != nil else { return calcRows }
+            var rows = calcRows
+            if !results.isEmpty || !quicklinks.isEmpty {
+                rows += [.header("Results")] + results.map(Row.app) + quicklinks.map(Row.quicklink)
+            }
+            if let filePath {
+                rows.append(.header("File"))
+                rows.append(.file(filePath))
+            }
+            return rows
         }
         var rows: [Row] = calcRows
         let favorites = results.prefix(favoriteCount)
@@ -80,13 +92,17 @@ struct LauncherList: View {
                 rows.append(contentsOf: restQuicklinks.map(Row.quicklink))
             }
         }
+        if let filePath {
+            rows.append(.header("File"))
+            rows.append(.file(filePath))
+        }
         return rows
     }
 
     var body: some View {
         let rows = rows
         return Group {
-            if results.isEmpty && quicklinks.isEmpty && calc == nil {
+            if results.isEmpty && quicklinks.isEmpty && calc == nil && filePath == nil {
                 EmptyResults(text: "No apps found")
             } else {
                 ScrollViewReader { proxy in
@@ -120,6 +136,10 @@ struct LauncherList: View {
                                         .contentShape(Rectangle())
                                         .onTapGesture { onActivateQuicklink(quicklink) }
                                         .onRightClick { onActionsQuicklink(quicklink) }
+                                    case .file(let url):
+                                        FilePathRow(url: url, selected: filePathSelected)
+                                            .contentShape(Rectangle())
+                                            .onTapGesture { onActivateFilePath(url) }
                                     }
                                 }
                             }
@@ -142,11 +162,41 @@ struct LauncherList: View {
                             proxy.scrollTo(selectedID)
                         } else if let selectedQuicklinkID {
                             proxy.scrollTo(selectedQuicklinkID.uuidString)
+                        } else if filePathSelected, let filePath {
+                            proxy.scrollTo("file-" + filePath.path)
                         }
                     }
                 }
             }
         }
+    }
+}
+
+private struct FilePathRow: View {
+    let url: URL
+    let selected: Bool
+
+    var body: some View {
+        PaletteRow(
+            selected: selected,
+            leading: {
+                CommandIcon(systemImage: "folder", tint: Theme.Colors.systemAccent, size: Theme.Size.rowIcon)
+            },
+            content: {
+                Text(url.lastPathComponent.isEmpty ? url.path : url.lastPathComponent)
+                    .font(Theme.Typography.rowTitle)
+                    .lineLimit(1)
+                Text(url.path)
+                    .font(Theme.Typography.caption)
+                    .foregroundStyle(.secondary)
+                    .lineLimit(1)
+            },
+            trailing: {
+                Text("File")
+                    .font(Theme.Typography.rowTrailing)
+                    .foregroundStyle(Theme.Colors.rowKind)
+            }
+        )
     }
 }
 

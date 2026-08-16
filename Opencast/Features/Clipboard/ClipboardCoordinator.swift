@@ -52,6 +52,11 @@ final class ClipboardCoordinator {
         AppLauncher.showInFinder(url)
     }
 
+    func revealFile(_ url: URL) {
+        hidePalette(false)
+        AppLauncher.showInFinder(url)
+    }
+
     func togglePinned(_ item: ClipboardItem) {
         store.togglePinned(item)
         select(item)

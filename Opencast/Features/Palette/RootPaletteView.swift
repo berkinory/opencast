@@ -66,6 +66,9 @@ struct RootPaletteView: View {
                         .contains(app.id)
             }
     }
+    private var filePathResult: URL? {
+        vm.mode == .launcher ? FilePathResolver.resolve(vm.query) : nil
+    }
     private var clipResults: [ClipboardItem] { store.search(vm.query, filter: clipboardFilter) }
     private var snippetResults: [Snippet] { snippetStore.search(vm.query) }
     private var quicklinkResults: [Quicklink] {
@@ -107,12 +110,20 @@ struct RootPaletteView: View {
         selectionIndex.clamped(vm.selection)
     }
 
+    private var filePathSelectionIndex: Int? {
+        guard filePathResult != nil else { return nil }
+        return calcCount + appResults.count + launcherQuicklinkResults.count
+    }
+
     private var selectionIndex: PaletteSelectionIndex {
         switch vm.mode {
         case .launcher:
             return PaletteSelectionIndex(
                 hasCalculator: calcResult != nil,
-                sectionCounts: [appResults.count, launcherQuicklinkResults.count])
+                sectionCounts: [
+                    appResults.count,
+                    launcherQuicklinkResults.count + (filePathResult == nil ? 0 : 1),
+                ])
         case .clipboard:
             return PaletteSelectionIndex(sectionCounts: [clipResults.count])
         case .emoji:
@@ -280,11 +291,13 @@ struct RootPaletteView: View {
         // Every count/selection below derives from this one calc/offset pair — the flat selection index must always match the visible row order, calc card included.
         let calc = calcResult
         let offset = calc == nil ? 0 : 1
+        let filePath = filePathResult
         // Only the active mode is non-empty.
         let count =
             apps.count + launcherQuicklinks.count + offset + clips.count + snippets.count
             + quicklinks.count
             + emojis.count + uninstallItems.count
+            + (filePath == nil ? 0 : 1)
         let sel = count == 0 ? 0 : min(max(vm.selection, 0), count - 1)
         let calcSelected = calc != nil && sel == 0
         // An error card is selectable but has no action: it must not drive the Copy Answer pill, ⌘K menu, or Enter.
@@ -303,11 +316,13 @@ struct RootPaletteView: View {
             launcherQuicklinks.indices.contains(sel - offset - apps.count)
             ? launcherQuicklinks[sel - offset - apps.count]
             : nil
+        let selectedFilePath = filePath != nil && sel == offset + apps.count + launcherQuicklinks.count
         // Derive the footer label from the already-resolved selection so `bottomBar` doesn't re-run `appResults` (its filter/sort aren't memoized). The primary/Actions group is hidden when there's nothing to act on: no results in any mode, or an error calc card (selectable but action-less).
         let pillLabel = actionPillLabel(
             selectedApp: selectedApp,
             selectedQuicklink: selectedRootQuicklink,
-            calcActionable: calcActionable
+            calcActionable: calcActionable,
+            filePathSelected: selectedFilePath
         )
         let showActionGroup = showsActionGroup(
             count: count, calcBlocked: calcSelected && !calcActionable)
@@ -323,7 +338,8 @@ struct RootPaletteView: View {
                     emojiSections: emojiSections, uninstallItems: uninstallItems, calc: calc,
                     selection: sel, favoriteCount: favoriteCount,
                     pinnedQuicklinkCount: pinnedQuicklinkCount,
-                    favoriteQuicklinkCount: favoriteQuicklinkCount, showSections: showSections
+                    favoriteQuicklinkCount: favoriteQuicklinkCount, showSections: showSections,
+                    filePath: filePath, filePathSelected: selectedFilePath
                 )
             }
         }
@@ -802,7 +818,7 @@ struct RootPaletteView: View {
         snippets: [Snippet], quicklinks: [Quicklink],
         emojiSections: [EmojiGridSection], uninstallItems: [LeftoverItem], calc: CalcResult?,
         selection: Int, favoriteCount: Int, pinnedQuicklinkCount: Int,
-        favoriteQuicklinkCount: Int, showSections: Bool
+        favoriteQuicklinkCount: Int, showSections: Bool, filePath: URL?, filePathSelected: Bool
     ) -> some View {
         switch vm.mode {
         case .launcher:
@@ -813,12 +829,14 @@ struct RootPaletteView: View {
             LauncherList(
                 results: apps,
                 quicklinks: launcherQuicklinks,
+                filePath: filePath,
                 selectedID: calcSelected ? nil : selectedID,
                 selectedQuicklinkID: calcSelected
                     ? nil
                     : launcherQuicklinks.indices.contains(selection - offset - apps.count)
                         ? launcherQuicklinks[selection - offset - apps.count].id
                         : nil,
+                filePathSelected: filePathSelected,
                 favoriteCount: favoriteCount,
                 pinnedQuicklinkCount: pinnedQuicklinkCount,
                 favoriteQuicklinkCount: favoriteQuicklinkCount,
@@ -851,7 +869,8 @@ struct RootPaletteView: View {
                         vm.selection = index + offset + apps.count
                     }
                     openActions()
-                }
+                },
+                onActivateFilePath: { url in core.launcher.revealFile(url) }
             )
         case .clipboard:
             clipboardScreen(items: clips, selection: selection)
@@ -949,7 +968,8 @@ struct RootPaletteView: View {
 
     /// Pill label for the current selection, derived from the selection already resolved in `body` so it never re-runs the (unmemoized) `appResults` filter/sort.
     private func actionPillLabel(
-        selectedApp: AppEntry?, selectedQuicklink: Quicklink?, calcActionable: Bool
+        selectedApp: AppEntry?, selectedQuicklink: Quicklink?, calcActionable: Bool,
+        filePathSelected: Bool
     ) -> String {
         switch vm.mode {
         case .clipboard, .emoji:
@@ -964,6 +984,7 @@ struct RootPaletteView: View {
             return "Save Quicklink"
         case .launcher:
             if calcActionable { return "Copy Answer" }
+            if filePathSelected { return "Reveal in Finder" }
             if selectedQuicklink != nil { return "Open Quicklink" }
             return selectedApp?.primaryActionTitle ?? "Open Application"
         case .uninstall:
@@ -1117,6 +1138,10 @@ struct RootPaletteView: View {
         case .snippetEditor, .quicklinkEditor:
             return false
         case .launcher:
+            if command, let filePath = filePathResult, selection == filePathSelectionIndex {
+                core.launcher.revealFile(filePath)
+                return true
+            }
             guard command, let app = selectedAppEntry else { return false }
             let canShowInFinder = app.kind == .application || app.kind == .systemSettings
             guard canShowInFinder else { return false }
@@ -1399,8 +1424,13 @@ struct RootPaletteView: View {
                 return
             }
             let quicklinkIndex = index - appResults.count
-            guard launcherQuicklinkResults.indices.contains(quicklinkIndex) else { return }
-            core.quicklinks.open(launcherQuicklinkResults[quicklinkIndex])
+            if launcherQuicklinkResults.indices.contains(quicklinkIndex) {
+                core.quicklinks.open(launcherQuicklinkResults[quicklinkIndex])
+                return
+            }
+            if let filePath = filePathResult, selection == filePathSelectionIndex {
+                core.launcher.revealFile(filePath)
+            }
         case .clipboard:
             clipboardScreen(items: clipResults, selection: selection).activate()
         case .snippets:

@@ -1,5 +1,5 @@
 // Standalone test for the clipboard store — compiles the *real* source (no copy to sync):
-// swiftc -swift-version 6 Opencast/Features/Clipboard/ClipboardStore.swift Tools/clipboard-test.swift -o /tmp/clipboard-test && /tmp/clipboard-test
+// swiftc -swift-version 6 Opencast/Features/Launcher/FilePathResolver.swift Opencast/Features/Clipboard/ClipboardStore.swift Tools/clipboard-test.swift -o /tmp/clipboard-test && /tmp/clipboard-test
 //
 // Every store here is built on a throwaway directory under the system temp dir, so a run can never
 // see or touch a real clipboard history.
@@ -37,6 +37,12 @@ struct ClipboardTests {
         expect(plain.contentFilter == .text, "plain text remains text")
         expect(ClipboardFilter.link.matches(link), "link filter accepts links")
         expect(!ClipboardFilter.email.matches(link), "email filter rejects links")
+        expect(
+            FilePathResolver.resolve(FileManager.default.currentDirectoryPath)?.isFileURL == true,
+            "an existing absolute path resolves for Finder actions")
+        expect(
+            FilePathResolver.resolve("/path/that/does/not/exist") == nil,
+            "missing paths are ignored")
     }
 
     // MARK: - Cases

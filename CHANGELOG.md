@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.2.3]
+
+### Added
+
+- Added a quick way to reveal existing file and folder paths in Finder from the launcher and clipboard actions.
+
 ## [0.2.2]
 
 ### Removed

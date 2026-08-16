@@ -56,7 +56,7 @@ test: tools
 	$(TEST_BIN_DIR)/scopes-test
 	swiftc Opencast/Features/Calculator/Engine/*.swift Tools/calc-test.swift -o $(TEST_BIN_DIR)/calc-test
 	$(TEST_BIN_DIR)/calc-test
-	swiftc -swift-version 6 Opencast/Features/Clipboard/ClipboardStore.swift Tools/clipboard-test.swift -o $(TEST_BIN_DIR)/clipboard-test
+	swiftc -swift-version 6 Opencast/Features/Launcher/FilePathResolver.swift Opencast/Features/Clipboard/ClipboardStore.swift Tools/clipboard-test.swift -o $(TEST_BIN_DIR)/clipboard-test
 	$(TEST_BIN_DIR)/clipboard-test
 	swiftc Opencast/Features/Emoji/EmojiCatalog.swift Opencast/Features/Emoji/EmojiData.generated.swift Tools/emoji-test.swift -o $(TEST_BIN_DIR)/emoji-test
 	$(TEST_BIN_DIR)/emoji-test
