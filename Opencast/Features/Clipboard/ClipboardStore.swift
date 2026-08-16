@@ -334,7 +334,8 @@ final class ClipboardStore: ObservableObject {
             return searchCache.result
         }
         // Pins are matched in memory rather than taken from the FTS result: they are all resident (see `items`), and the statement's LIMIT would otherwise drop one out of a busy query's matches.
-        let result = pinnedItems.filter { filter.matches($0) && $0.matches(q) }
+        let result =
+            pinnedItems.filter { filter.matches($0) && $0.matches(q) }
             + runSearch(q).filter { !$0.isPinned && filter.matches($0) }
         searchCache = (q, filter, result)
         return result

@@ -110,14 +110,93 @@ struct PaletteGridLayout<Item, Cell: View, Footer: View>: View {
             }
             .edgeDissolve()
             .thinScrollbar()
+            .modifier(
+                GridSelectionFollowing(
+                    scroll: scroll,
+                    selectedRowID: selectedRowID,
+                    firstItemID: firstItemID,
+                    contentInsets: contentInsets,
+                    proxy: proxy
+                )
+            )
             .task(id: scroll) {
-                switch scroll.kind {
-                case .top:
-                    if let firstItemID { proxy.scrollTo(firstItemID, anchor: .top) }
-                case .follow:
-                    if let selectedRowID { proxy.scrollTo(selectedRowID) }
+                if scroll.kind == .top, let firstItemID {
+                    proxy.scrollTo(firstItemID, anchor: .top)
                 }
             }
+        }
+    }
+}
+
+private struct GridSelectionFrameKey: PreferenceKey {
+    static var defaultValue: CGRect? { nil }
+
+    static func reduce(value: inout CGRect?, nextValue: () -> CGRect?) {
+        value = value ?? nextValue()
+    }
+}
+
+private struct GridSelectionBand: Equatable {
+    let top: CGFloat
+    let bottom: CGFloat
+}
+
+private struct GridSelectionFollowing: ViewModifier {
+    let scroll: ListScrollIntent
+    let selectedRowID: String?
+    let firstItemID: String?
+    let contentInsets: EdgeInsets
+    let proxy: ScrollViewProxy
+
+    @State private var selectedFrame: CGRect?
+    @State private var band = GridSelectionBand(top: 0, bottom: 0)
+    @State private var following = false
+
+    func body(content: Content) -> some View {
+        content
+            .onPreferenceChange(GridSelectionFrameKey.self) { frame in
+                selectedFrame = frame
+                align()
+            }
+            .onScrollGeometryChange(for: GridSelectionBand.self) {
+                GridSelectionBand(
+                    top: $0.contentInsets.top,
+                    bottom: $0.containerSize.height - $0.contentInsets.bottom
+                )
+            } action: { _, newBand in
+                band = newBand
+                align()
+            }
+            .onChange(of: scroll) { _, value in
+                switch value.kind {
+                case .top:
+                    following = false
+                    if let firstItemID { proxy.scrollTo(firstItemID, anchor: .top) }
+                case .follow:
+                    following = true
+                    align()
+                }
+            }
+            .onAppear {
+                if scroll.kind == .follow {
+                    following = true
+                    align()
+                }
+            }
+    }
+
+    private func align() {
+        guard following, let selectedRowID, let selectedFrame else { return }
+        let top = selectedFrame.minY - band.top
+        let bottom = selectedFrame.maxY - band.top
+        let visibleHeight = band.bottom - band.top
+        switch SelectionReveal.edge(rowTop: top, rowBottom: bottom, band: visibleHeight) {
+        case .top:
+            proxy.scrollTo(selectedRowID, anchor: .top)
+        case .bottom:
+            proxy.scrollTo(selectedRowID, anchor: .bottom)
+        case nil:
+            following = false
         }
     }
 }
@@ -154,6 +233,16 @@ private struct PaletteGridRow<Item, Cell: View>: View {
             }
         }
         .contentShape(Rectangle())
+        .overlay {
+            GeometryReader { geometry in
+                Color.clear.preference(
+                    key: GridSelectionFrameKey.self,
+                    value: row.start <= selection && selection < row.start + row.items.count
+                        ? geometry.frame(in: .scrollView)
+                        : nil
+                )
+            }
+        }
         .onGeometryChange(for: CGFloat.self) {
             $0.size.width
         } action: {

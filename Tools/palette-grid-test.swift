@@ -16,6 +16,10 @@ struct PaletteGridTests {
         precondition(geometry.up(from: 3) == 3)
         precondition(geometry.up(from: 18) == 10)
         precondition(geometry.up(from: 23) == 15)
+        precondition(SelectionReveal.edge(rowTop: 0, rowBottom: 36, band: 369) == nil)
+        precondition(SelectionReveal.edge(rowTop: -1, rowBottom: 35, band: 369) == .top)
+        precondition(SelectionReveal.edge(rowTop: 369, rowBottom: 405, band: 369) == .bottom)
+        precondition(SelectionReveal.edge(rowTop: 0, rowBottom: 500, band: 369) == nil)
 
         let single = PaletteGridGeometry(counts: [5], columns: 5)
         precondition(single.down(from: 2) == 2)

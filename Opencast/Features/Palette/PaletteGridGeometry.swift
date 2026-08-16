@@ -1,3 +1,5 @@
+import CoreGraphics
+
 struct PaletteGridGeometry {
     let counts: [Int]
     let columns: Int
@@ -42,6 +44,21 @@ struct PaletteGridGeometry {
         for (index, start) in starts.enumerated().reversed() where selection >= start {
             return counts[index] > 0 && selection < start + counts[index] ? index : nil
         }
+        return nil
+    }
+}
+
+enum SelectionReveal {
+    enum Edge: Equatable {
+        case top
+        case bottom
+    }
+
+    static func edge(rowTop: CGFloat, rowBottom: CGFloat, band: CGFloat) -> Edge? {
+        guard band > 0 else { return nil }
+        if rowTop <= 0 && rowBottom >= band { return nil }
+        if rowTop < 0 { return .top }
+        if rowBottom > band { return .bottom }
         return nil
     }
 }
