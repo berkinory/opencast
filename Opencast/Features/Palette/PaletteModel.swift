@@ -115,6 +115,8 @@ final class PaletteViewModel: ObservableObject {
     @Published var pasteTarget: PasteTarget?
     /// Gates the mouse-hover highlight: true only while the pointer is physically moving (armed on `.mouseMoved`, disarmed on any `.keyDown` in `PalettePanel.sendEvent`). Plain, not `@Published` — read at hover time, never drives a re-render.
     var hoverHighlightArmed = false
+    /// The main search field's SwiftUI frame, used by `PalettePanel` to settle the cursor after AppKit has applied its cursor rects.
+    var searchFieldFrame: CGRect = .zero
     /// True while a footer popover menu (⌘K Actions or the app menu) is open, so `PalettePanel.sendEvent` swallows text-editing keystrokes the field editor would otherwise consume — the query must stay frozen while a menu owns the keyboard (matches Raycast). Plain, not `@Published` — read at event time, mirrored from the view's menu state.
     var menuOpen = false { didSet { onMenuOpenChanged?(menuOpen) } }
     /// Fired when `menuOpen` flips so `PalettePanel` can hide/show the search field's caret while it keeps first-responder status (no focus swap, so the placeholder never reflows).

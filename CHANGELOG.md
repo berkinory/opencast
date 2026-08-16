@@ -9,6 +9,7 @@
 - Kept exchange-rate parsing small, shared, and easier to verify without network access.
 - Added clipboard filters for text, images, links, and email while keeping pinned items in order.
 - Kept selected grid items visible while navigating around the palette bars.
+- Made the palette cursor settle consistently between the search field and the rest of the window.
 
 ## [0.2.1]
 

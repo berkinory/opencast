@@ -848,7 +848,11 @@ struct RootPaletteView: View {
         .textFieldStyle(.plain)
         .font(Theme.Typography.searchField)
         .tint(Theme.Colors.textPrimary)
-        .paletteTextInputCursor()
+        .onGeometryChange(for: CGRect.self) {
+            $0.frame(in: .global)
+        } action: { frame in
+            vm.searchFieldFrame = frame
+        }
         .focused($searchFocused)
         .onSubmit(activateSelection)
     }
@@ -862,6 +866,7 @@ struct RootPaletteView: View {
             scrollIntent: listScroll,
             store: store,
             coordinator: core.clipboard,
+            filter: clipboardFilter,
             pasteTarget: vm.pasteTarget,
             followKey: ClipFollowKey(id: store.items.first?.id, token: vm.followToken),
             isQueryEmpty: isQueryEmpty,

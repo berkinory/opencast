@@ -22,6 +22,35 @@ final class PalettePanel: NSPanel {
         kVK_Return, kVK_ANSI_KeypadEnter, kVK_Escape, kVK_Tab,
     ]
 
+    private static let cursorEvents: Set<NSEvent.EventType> = [
+        .mouseMoved, .mouseEntered, .mouseExited, .cursorUpdate,
+        .leftMouseDown, .leftMouseUp, .leftMouseDragged,
+    ]
+
+    private static let fieldEditorSlack: CGFloat = 2
+
+    private var searchFieldRect: CGRect {
+        guard let frame = paletteViewModel?.searchFieldFrame,
+            !frame.isEmpty,
+            let height = contentView?.bounds.height
+        else { return .zero }
+        return CGRect(
+            x: frame.minX,
+            y: height - frame.maxY,
+            width: frame.width,
+            height: frame.height
+        )
+    }
+
+    private func applyCursorPolicy(for event: NSEvent) {
+        guard Self.cursorEvents.contains(event.type) else { return }
+        let field = searchFieldRect.insetBy(dx: -Self.fieldEditorSlack, dy: -Self.fieldEditorSlack)
+        let point = convertPoint(fromScreen: NSEvent.mouseLocation)
+        let cursor: NSCursor = field.contains(point) ? .iBeam : .arrow
+        guard NSCursor.current !== cursor else { return }
+        cursor.set()
+    }
+
     /// Hide/show the caret on SwiftUI's *own* live field editor (the current first responder) without replacing it — SwiftUI force-casts the field editor to a private subclass, so vending our own crashes; we can only tune the existing one. The field never resigns first responder, so its text/placeholder never reflows.
     private func setSearchCaretHidden(_ hidden: Bool) {
         guard let editor = firstResponder as? NSTextView else { return }
@@ -31,6 +60,7 @@ final class PalettePanel: NSPanel {
     }
 
     override func sendEvent(_ event: NSEvent) {
+        defer { applyCursorPolicy(for: event) }
         switch event.type {
         case .mouseMoved: paletteViewModel?.hoverHighlightArmed = true
         case .keyDown: paletteViewModel?.hoverHighlightArmed = false
