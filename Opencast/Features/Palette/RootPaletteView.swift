@@ -34,6 +34,7 @@ struct RootPaletteView: View {
     @State private var showActions = false
     @State private var showAppMenu = false
     @State private var showSortMenu = false
+    @State private var clipboardFilter: ClipboardFilter = .all
     @State private var storeSort: ExtensionStoreSort = .installed
     /// The selection's running state, sampled once by `openActions` — an app launching or quitting elsewhere must not add or drop the Quit row while the menu is up. `RunningAppsMonitor` is deliberately not observed here: only `LauncherList` needs live running state, and observing it would re-render the whole palette on every workspace launch/terminate.
     @State private var selectionIsRunning = false
@@ -68,7 +69,7 @@ struct RootPaletteView: View {
                         .contains(app.id)
             }
     }
-    private var clipResults: [ClipboardItem] { store.search(vm.query) }
+    private var clipResults: [ClipboardItem] { store.search(vm.query, filter: clipboardFilter) }
     private var snippetResults: [Snippet] { snippetStore.search(vm.query) }
     private var quicklinkResults: [Quicklink] {
         guard settings.quicklinksEnabled else { return [] }
@@ -499,6 +500,7 @@ struct RootPaletteView: View {
             showActions = false
             showSortMenu = false
             listScroll = ListScrollIntent(kind: .top)
+            if vm.mode != .clipboard { clipboardFilter = .all }
         }
         // Pop-to-root can leave query and mode unchanged, so explicitly restore the content origin.
         .onChange(of: vm.resetToken) {
@@ -869,7 +871,12 @@ struct RootPaletteView: View {
                 listScroll = ListScrollIntent(kind: .follow)
             },
             onOpenActions: openActions,
-            onFeedback: { showFeedback($0) }
+            onFeedback: { showFeedback($0) },
+            onFilterChange: { filter in
+                clipboardFilter = filter
+                vm.selection = 0
+                listScroll = ListScrollIntent(kind: .top)
+            }
         )
     }
 

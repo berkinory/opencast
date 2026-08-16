@@ -18,11 +18,25 @@ struct ClipboardTests {
         pasteLeavesPinsAlone()
         pinsSurvivePruningAndTheWindow()
         pinsLeadFilteredSearches()
+        filters()
         persistence()
         migrationFromShippedDatabase()
 
         print("\(passes)/\(passes + failures) passed")
         if failures > 0 { exit(1) }
+    }
+
+    static func filters() {
+        let link = ClipboardItem(text: "https://example.com/docs", sourceBundleID: nil)
+        let email = ClipboardItem(text: "berk@example.com", sourceBundleID: nil)
+        let domain = ClipboardItem(text: "www.example.com", sourceBundleID: nil)
+        let plain = ClipboardItem(text: "hello world", sourceBundleID: nil)
+        expect(link.contentFilter == .link, "https links are classified as links")
+        expect(domain.contentFilter == .link, "bare domains are classified as links")
+        expect(email.contentFilter == .email, "email addresses are classified as email")
+        expect(plain.contentFilter == .text, "plain text remains text")
+        expect(ClipboardFilter.link.matches(link), "link filter accepts links")
+        expect(!ClipboardFilter.email.matches(link), "email filter rejects links")
     }
 
     // MARK: - Cases

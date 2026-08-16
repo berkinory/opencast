@@ -7,6 +7,7 @@
 - Calculator no longer shows an error for unsupported conversions.
 - Removed redundant checks from the standalone test tools.
 - Kept exchange-rate parsing small, shared, and easier to verify without network access.
+- Added clipboard filters for text, images, links, and email while keeping pinned items in order.
 
 ## [0.2.1]
 

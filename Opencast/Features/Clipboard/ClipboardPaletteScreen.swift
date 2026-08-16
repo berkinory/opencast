@@ -12,6 +12,7 @@ struct ClipboardPaletteScreen: PaletteScreen {
     let scrollIntent: ListScrollIntent?
     let store: ClipboardStore
     let coordinator: ClipboardCoordinator
+    let filter: ClipboardFilter
     let pasteTarget: PasteTarget?
     let followKey: ClipFollowKey
     let isQueryEmpty: Bool
@@ -19,6 +20,7 @@ struct ClipboardPaletteScreen: PaletteScreen {
     let onFollow: (Int?) -> Void
     let onOpenActions: () -> Void
     let onFeedback: (String) -> Void
+    let onFilterChange: (ClipboardFilter) -> Void
 
     var selectedItem: ClipboardItem? {
         items.indices.contains(selection) ? items[selection] : nil
@@ -39,20 +41,37 @@ struct ClipboardPaletteScreen: PaletteScreen {
     var body: some View {
         Group {
             if items.isEmpty {
-                EmptyResults(text: "Clipboard history is empty")
+                EmptyResults(
+                    text: filter == .all
+                        ? "Clipboard history is empty"
+                        : "No \(filter.title.lowercased()) entries"
+                )
             } else {
                 PaletteDetailLayout(
                     listWidth: Theme.Size.clipboardListWidth,
                     detailTitle: "Preview",
                     sidebar: {
-                        ClipboardList(
-                            results: items,
-                            selectedID: selectedItem?.id,
-                            scrollIntent: scrollIntent,
-                            onSelect: select,
-                            onActivate: activate,
-                            onActions: openActions
-                        )
+                        VStack(spacing: 0) {
+                            HStack {
+                                Text("History")
+                                    .font(Theme.Typography.sectionHeader)
+                                    .foregroundStyle(.secondary)
+                                Spacer()
+                                ClipboardFilterMenu(filter: filter, onChange: onFilterChange)
+                            }
+                            .padding(.horizontal, Theme.Spacing.md)
+                            .padding(.top, Theme.Spacing.md)
+                            .padding(.bottom, Theme.Spacing.xs)
+
+                            ClipboardList(
+                                results: items,
+                                selectedID: selectedItem?.id,
+                                scrollIntent: scrollIntent,
+                                onSelect: select,
+                                onActivate: activate,
+                                onActions: openActions
+                            )
+                        }
                     },
                     detail: {
                         ClipboardPreview(item: selectedItem)
@@ -120,5 +139,28 @@ struct ClipboardPaletteScreen: PaletteScreen {
         guard let index = items.firstIndex(of: item) else { return }
         onSelect(index)
         onOpenActions()
+    }
+}
+
+private struct ClipboardFilterMenu: View {
+    let filter: ClipboardFilter
+    let onChange: (ClipboardFilter) -> Void
+
+    var body: some View {
+        Menu {
+            ForEach(ClipboardFilter.allCases) { option in
+                Button {
+                    onChange(option)
+                } label: {
+                    Label(option.title, systemImage: option.systemImage)
+                    if option == filter { Image(systemName: "checkmark") }
+                }
+            }
+        } label: {
+            Label(filter.title, systemImage: filter.systemImage)
+                .font(Theme.Typography.callout)
+        }
+        .menuStyle(.borderlessButton)
+        .fixedSize()
     }
 }

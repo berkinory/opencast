@@ -56,6 +56,74 @@ struct ClipboardItem: Identifiable, Hashable, Sendable {
     func matches(_ query: String) -> Bool {
         text?.localizedCaseInsensitiveContains(query) ?? false
     }
+
+    var contentFilter: ClipboardFilter {
+        switch kind {
+        case .image: return .image
+        case .text: return ClipboardFilter.detect(text ?? "")
+        }
+    }
+}
+
+enum ClipboardFilter: String, CaseIterable, Identifiable, Sendable {
+    case all
+    case text
+    case image
+    case link
+    case email
+
+    var id: String { rawValue }
+
+    var title: String {
+        switch self {
+        case .all: return "All"
+        case .text: return "Text"
+        case .image: return "Images"
+        case .link: return "Links"
+        case .email: return "Email"
+        }
+    }
+
+    var systemImage: String {
+        switch self {
+        case .all: return "square.grid.2x2"
+        case .text: return "doc.text"
+        case .image: return "photo"
+        case .link: return "link"
+        case .email: return "envelope"
+        }
+    }
+
+    func matches(_ item: ClipboardItem) -> Bool {
+        self == .all || item.contentFilter == self
+    }
+
+    fileprivate static func detect(_ value: String) -> ClipboardFilter {
+        let text = value.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !text.isEmpty, text.utf8.count <= 2_048 else { return .text }
+        let lowercased = text.lowercased()
+        if lowercased.hasPrefix("mailto:") || isEmail(text) { return .email }
+        if isLink(text) { return .link }
+        return .text
+    }
+
+    private static func isEmail(_ value: String) -> Bool {
+        let parts = value.split(separator: "@", omittingEmptySubsequences: false)
+        guard parts.count == 2, !parts[0].isEmpty, !parts[1].isEmpty else { return false }
+        let domain = parts[1]
+        return !domain.contains(" ") && domain.contains(".")
+    }
+
+    private static func isLink(_ value: String) -> Bool {
+        let lowercased = value.lowercased()
+        if lowercased.hasPrefix("http://") || lowercased.hasPrefix("https://") {
+            return URL(string: value)?.host != nil
+        }
+        guard !value.contains(where: { $0.isWhitespace }), value.contains(".") else {
+            return false
+        }
+        return URL(string: "https://" + value)?.host != nil
+    }
 }
 
 /// How long clipboard history is kept before pruning; raw value is the age in days persisted to UserDefaults, and `forever` is -1 so an unset key (0) falls through to the default.
@@ -100,7 +168,7 @@ final class ClipboardStore: ObservableObject {
     var maxAge: TimeInterval = ClipboardRetention.threeMonths.maxAge
 
     /// One-entry memo so repeated renders (e.g. arrow-key nav) for the same query reuse the FTS result instead of re-querying SQLite every frame; invalidated whenever `items` changes.
-    private var searchCache: (query: String, result: [ClipboardItem])?
+    private var searchCache: (query: String, filter: ClipboardFilter, result: [ClipboardItem])?
     /// Same memo for the empty query — every render reads the full display order, so the pinned/unpinned split runs once per mutation.
     private var orderedCache: [ClipboardItem]?
 
@@ -259,13 +327,16 @@ final class ClipboardStore: ObservableObject {
     }
 
     /// Display order for `query`: pinned entries first, each block newest-first.
-    func search(_ query: String) -> [ClipboardItem] {
+    func search(_ query: String, filter: ClipboardFilter = .all) -> [ClipboardItem] {
         let q = query.trimmingCharacters(in: .whitespaces)
-        guard !q.isEmpty else { return orderedItems }
-        if let searchCache, searchCache.query == q { return searchCache.result }
+        guard !q.isEmpty else { return orderedItems.filter(filter.matches) }
+        if let searchCache, searchCache.query == q, searchCache.filter == filter {
+            return searchCache.result
+        }
         // Pins are matched in memory rather than taken from the FTS result: they are all resident (see `items`), and the statement's LIMIT would otherwise drop one out of a busy query's matches.
-        let result = pinnedItems.filter { $0.matches(q) } + runSearch(q).filter { !$0.isPinned }
-        searchCache = (q, result)
+        let result = pinnedItems.filter { filter.matches($0) && $0.matches(q) }
+            + runSearch(q).filter { !$0.isPinned && filter.matches($0) }
+        searchCache = (q, filter, result)
         return result
     }
 
