@@ -108,6 +108,8 @@ final class PaletteViewModel: ObservableObject {
     var hoverHighlightArmed = false
     /// The main search field's SwiftUI frame, used by `PalettePanel` to settle the cursor after AppKit has applied its cursor rects.
     var searchFieldFrame: CGRect = .zero
+    /// True while the search field owns an active IME composition.
+    @Published var searchIsComposing = false
     /// True while a footer popover menu (⌘K Actions or the app menu) is open, so `PalettePanel.sendEvent` swallows text-editing keystrokes the field editor would otherwise consume — the query must stay frozen while a menu owns the keyboard (matches Raycast). Plain, not `@Published` — read at event time, mirrored from the view's menu state.
     var menuOpen = false { didSet { onMenuOpenChanged?(menuOpen) } }
     /// Fired when `menuOpen` flips so `PalettePanel` can hide/show the search field's caret while it keeps first-responder status (no focus swap, so the placeholder never reflows).
@@ -122,6 +124,7 @@ final class PaletteViewModel: ObservableObject {
         launcherQueryForReturn = nil
         self.mode = mode
         query = ""
+        searchIsComposing = false
         selection = 0
         forceExpanded = false
         snippetEditingID = nil
@@ -139,6 +142,7 @@ final class PaletteViewModel: ObservableObject {
         launcherQueryForReturn = self.mode == .launcher ? query : launcherQueryForReturn
         self.mode = mode
         query = ""
+        searchIsComposing = false
         selection = 0
         forceExpanded = false
         snippetEditingID = nil
@@ -157,6 +161,7 @@ final class PaletteViewModel: ObservableObject {
         launcherQueryForReturn = nil
         mode = .launcher
         query = queryToRestore
+        searchIsComposing = false
         selection = 0
         forceExpanded = false
         snippetEditingID = nil

@@ -59,8 +59,15 @@ final class PalettePanel: NSPanel {
         editor.updateInsertionPointStateAndRestartTimer(!hidden)
     }
 
+    private func updateSearchComposition() {
+        paletteViewModel?.searchIsComposing = (firstResponder as? NSTextView)?.hasMarkedText() == true
+    }
+
     override func sendEvent(_ event: NSEvent) {
-        defer { applyCursorPolicy(for: event) }
+        defer {
+            applyCursorPolicy(for: event)
+            updateSearchComposition()
+        }
         switch event.type {
         case .mouseMoved: paletteViewModel?.hoverHighlightArmed = true
         case .keyDown: paletteViewModel?.hoverHighlightArmed = false

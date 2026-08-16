@@ -723,8 +723,10 @@ struct RootPaletteView: View {
     private var searchField: some View {
         TextField(
             "", text: $vm.query,
-            prompt: Text(vm.mode.placeholder)
-                .foregroundStyle(Theme.Colors.searchPlaceholder)
+            prompt: vm.searchIsComposing
+                ? nil
+                : Text(vm.mode.placeholder)
+                    .foregroundStyle(Theme.Colors.searchPlaceholder)
         )
         .textFieldStyle(.plain)
         .font(Theme.Typography.searchField)
