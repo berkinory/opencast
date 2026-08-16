@@ -40,16 +40,22 @@ enum CurrencyFeed {
 
     static func fiat(data: Data, fetchedAt: Date = Date()) throws -> CurrencyRates {
         let rows = try JSONDecoder().decode([FiatRow].self, from: data)
-        guard let base = rows.first?.base else { throw DecodingError.dataCorrupted(.init(
-            codingPath: [], debugDescription: "Currency feed has no base currency")) }
+        guard let base = rows.first?.base else {
+            throw DecodingError.dataCorrupted(
+                .init(
+                    codingPath: [], debugDescription: "Currency feed has no base currency"))
+        }
 
         var rates: [String: Double] = [:]
         rates.reserveCapacity(rows.count + 1)
         for row in rows where row.base == base && row.rate > 0 && row.rate.isFinite {
             rates[row.quote] = row.rate
         }
-        guard !rates.isEmpty else { throw DecodingError.dataCorrupted(.init(
-            codingPath: [], debugDescription: "Currency feed has no valid rates")) }
+        guard !rates.isEmpty else {
+            throw DecodingError.dataCorrupted(
+                .init(
+                    codingPath: [], debugDescription: "Currency feed has no valid rates"))
+        }
         rates[base] = 1
         return CurrencyRates(base: base, rates: rates, fetchedAt: fetchedAt)
     }
@@ -63,8 +69,11 @@ enum CurrencyFeed {
             guard let price = payload[asset.id]?.usd, price > 0, price.isFinite else { continue }
             rates[asset.code] = 1 / price
         }
-        guard !rates.isEmpty else { throw DecodingError.dataCorrupted(.init(
-            codingPath: [], debugDescription: "Crypto feed has no valid rates")) }
+        guard !rates.isEmpty else {
+            throw DecodingError.dataCorrupted(
+                .init(
+                    codingPath: [], debugDescription: "Crypto feed has no valid rates"))
+        }
         return rates
     }
 }

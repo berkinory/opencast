@@ -392,17 +392,19 @@ struct CalcTests {
     }
 
     static func currencyFeed() {
-        let fiat = Data("""
-        [{"base":"USD","quote":"EUR","rate":0.92},{"base":"USD","quote":"GBP","rate":0.79}]
-        """.utf8)
+        let fiat = Data(
+            """
+            [{"base":"USD","quote":"EUR","rate":0.92},{"base":"USD","quote":"GBP","rate":0.79}]
+            """.utf8)
         let snapshot = try? CurrencyFeed.fiat(data: fiat, fetchedAt: Date(timeIntervalSince1970: 10))
         expect(snapshot?.base == "USD", "fiat feed keeps its base")
         expect(snapshot?.rate(for: "USD") == 1, "fiat feed adds the base rate")
         expect(snapshot?.rate(for: "EUR") == 0.92, "fiat feed decodes quoted rates")
 
-        let crypto = Data("""
-        {"bitcoin":{"usd":50000},"ethereum":{"usd":2500}}
-        """.utf8)
+        let crypto = Data(
+            """
+            {"bitcoin":{"usd":50000},"ethereum":{"usd":2500}}
+            """.utf8)
         let assets = [
             CalcCurrency.CryptoAsset(code: "BTC", name: "Bitcoin", id: "bitcoin", symbol: "₿", aliases: []),
             CalcCurrency.CryptoAsset(code: "ETH", name: "Ethereum", id: "ethereum", symbol: "Ξ", aliases: []),
