@@ -26,8 +26,6 @@ struct RootPaletteView: View {
     @EnvironmentObject private var emojiIndex: EmojiIndex
     @EnvironmentObject private var frequentEmoji: FrequentEmojiStore
     @EnvironmentObject private var uninstall: UninstallSession
-    @EnvironmentObject private var extensionHost: ExtensionHostManager
-    @ObservedObject private var extensionStore = AppCore.shared.extensionStore
     /// Observed so a skin tone changed in Settings re-renders the grid glyphs immediately.
     @ObservedObject private var settings = AppCore.shared.settings
     @FocusState private var searchFocused: Bool
@@ -35,7 +33,6 @@ struct RootPaletteView: View {
     @State private var showAppMenu = false
     @State private var showSortMenu = false
     @State private var clipboardFilter: ClipboardFilter = .all
-    @State private var storeSort: ExtensionStoreSort = .installed
     /// The selection's running state, sampled once by `openActions` — an app launching or quitting elsewhere must not add or drop the Quit row while the menu is up. `RunningAppsMonitor` is deliberately not observed here: only `LauncherList` needs live running state, and observing it would re-render the whole palette on every workspace launch/terminate.
     @State private var selectionIsRunning = false
     /// Highlighted row of whichever popover menu is open; reset to the first row on open, moved by ↑/↓ and hover, activated by ↵/click.
@@ -127,10 +124,6 @@ struct RootPaletteView: View {
         case .uninstall:
             return PaletteSelectionIndex(
                 sectionCounts: [uninstall.phase == .selecting ? uninstallResults.count : 0])
-        case .extensionCommand:
-            return PaletteSelectionIndex(sectionCounts: [extensionResults.count])
-        case .store:
-            return PaletteSelectionIndex(sectionCounts: [storeResults.count])
         case .snippetEditor, .quicklinkEditor:
             return PaletteSelectionIndex(sectionCounts: [])
         }
@@ -165,71 +158,16 @@ struct RootPaletteView: View {
     private var selectedQuicklink: Quicklink? {
         quicklinkResults.indices.contains(selection) ? quicklinkResults[selection] : nil
     }
-    private var extensionResults: [ExtensionRenderItem] {
-        guard vm.mode == .extensionCommand else { return [] }
-        let query = vm.query.trimmingCharacters(in: .whitespacesAndNewlines)
-        let items = extensionHost.snapshot?.items ?? []
-        guard extensionHost.snapshot?.filtering != false else { return items }
-        guard !query.isEmpty else { return items }
-        return items.filter { item in
-            [item.title, item.subtitle ?? "", item.keywords.joined(separator: " ")]
-                .joined(separator: " ")
-                .localizedCaseInsensitiveContains(query)
-        }
-    }
-    private var selectedExtensionItem: ExtensionRenderItem? {
-        extensionResults.indices.contains(selection) ? extensionResults[selection] : nil
-    }
     private var gridGeometry: PaletteGridGeometry? {
         switch vm.mode {
         case .emoji:
             return PaletteGridGeometry(
                 counts: emojiSections.map(\.entries.count), columns: EmojiGrid.columns)
-        case .extensionCommand where extensionHost.snapshot?.root == "grid":
-            return PaletteGridGeometry(
-                counts: [extensionResults.count], columns: ExtensionSessionView.gridColumns)
         default:
             return nil
         }
     }
     private var isGridMode: Bool { gridGeometry != nil }
-    private var storeResults: [ExtensionStoreItem] {
-        guard vm.mode == .store else { return [] }
-        let installedByName = Dictionary(uniqueKeysWithValues: extensionStore.installed.map { ($0.name, $0) })
-        let remoteNames = Set(extensionStore.remotePackages.map(\.name))
-        let remoteItems = extensionStore.remotePackages.map {
-            ExtensionStoreItem(id: $0.id, package: $0, installed: installedByName[$0.name])
-        }
-        let localItems = extensionStore.installed
-            .filter { !remoteNames.contains($0.name) }
-            .map { ExtensionStoreItem(id: "installed:\($0.name)", package: nil, installed: $0) }
-        let items = remoteItems + localItems
-        let query = vm.query.trimmingCharacters(in: .whitespacesAndNewlines)
-        let filtered =
-            query.isEmpty
-            ? items
-            : items.filter { item in
-                [item.title, item.id, item.description]
-                    .joined(separator: " ")
-                    .localizedCaseInsensitiveContains(query)
-            }
-        switch storeSort {
-        case .installed:
-            return filtered.sorted {
-                if ($0.installed != nil) != ($1.installed != nil) {
-                    return $0.installed != nil
-                }
-                return $0.title.localizedCaseInsensitiveCompare($1.title) == .orderedAscending
-            }
-        case .name:
-            return filtered.sorted {
-                $0.title.localizedCaseInsensitiveCompare($1.title) == .orderedAscending
-            }
-        }
-    }
-    private var selectedStoreItem: ExtensionStoreItem? {
-        storeResults.indices.contains(selection) ? storeResults[selection] : nil
-    }
     private var selectedInlineCommand: CommandID? {
         guard let app = selectedAppEntry else { return nil }
         let command = CommandRegistry.command(for: app)
@@ -294,32 +232,6 @@ struct RootPaletteView: View {
             return nil
         case .uninstall:
             return uninstallScreen(items: uninstallResults, selection: selection).actionsContent
-        case .extensionCommand:
-            guard let item = selectedExtensionItem else { return nil }
-            return ExtensionActionsMenu.content(item: item, host: extensionHost)
-        case .store:
-            guard let item = selectedStoreItem else { return nil }
-            let package = item.package
-            let installed = item.installed
-            var items: [PopoverMenuItem] = []
-            if let package, item.isCurrent == false {
-                items.append(
-                    PopoverMenuItem(
-                        title: installed == nil ? "Install" : "Update",
-                        systemImage: installed == nil ? "arrow.down.circle" : "arrow.clockwise"
-                    ) {
-                        extensionStore.installRemote(package)
-                    })
-            }
-            if let installed {
-                items.append(
-                    PopoverMenuItem(
-                        title: "Uninstall", systemImage: "trash", isDestructive: true
-                    ) {
-                        extensionStore.remove(installed.name)
-                    })
-            }
-            return items.isEmpty ? nil : PopoverMenuContent(header: item.title, items: items)
         }
     }
 
@@ -328,37 +240,6 @@ struct RootPaletteView: View {
             core.uninstaller.setSort(sort)
             listScroll = ListScrollIntent(kind: .top)
         }
-    }
-
-    private var extensionSortMenuContent: PopoverMenuContent? {
-        guard let dropdown = extensionHost.snapshot?.listDropdown else { return nil }
-        return PopoverMenuContent(
-            header: dropdown.tooltip,
-            items: dropdown.options.map { option in
-                PopoverMenuItem(
-                    title: option.title,
-                    systemImage: option.value == dropdown.value ? "checkmark" : "arrow.up.arrow.down"
-                ) {
-                    extensionHost.changeDropdown(id: dropdown.id, value: option.value)
-                    listScroll = ListScrollIntent(kind: .top)
-                }
-            }
-        )
-    }
-
-    private var storeSortMenuContent: PopoverMenuContent {
-        PopoverMenuContent(
-            header: "Sort",
-            items: ExtensionStoreSort.allCases.map { sort in
-                PopoverMenuItem(
-                    title: sort.title,
-                    systemImage: sort == storeSort ? "checkmark" : sort.systemImage
-                ) {
-                    storeSort = sort
-                    listScroll = ListScrollIntent(kind: .top)
-                }
-            }
-        )
     }
 
     /// The bottom-left app menu content (About / Settings).
@@ -380,8 +261,7 @@ struct RootPaletteView: View {
         if showSortMenu {
             switch vm.mode {
             case .uninstall: return sortMenuContent
-            case .store: return storeSortMenuContent
-            default: return extensionSortMenuContent
+            default: return nil
             }
         }
         return nil
@@ -394,8 +274,6 @@ struct RootPaletteView: View {
         let clips = vm.mode == .clipboard ? clipResults : []
         let snippets = vm.mode == .snippets ? snippetResults : []
         let quicklinks = vm.mode == .quicklinks ? quicklinkResults : []
-        let extensions = vm.mode == .extensionCommand ? extensionResults : []
-        let storeItems = vm.mode == .store ? storeResults : []
         let emojiSections = vm.mode == .emoji ? emojiSections : []
         let emojis = emojiSections.flatMap(\.entries)
         let uninstallItems = vm.mode == .uninstall ? uninstallResults : []
@@ -403,11 +281,10 @@ struct RootPaletteView: View {
         let calc = calcResult
         let offset = calc == nil ? 0 : 1
         // Only the active mode is non-empty.
-        let extensionCount = extensions.count + storeItems.count
         let count =
             apps.count + launcherQuicklinks.count + offset + clips.count + snippets.count
             + quicklinks.count
-            + emojis.count + uninstallItems.count + extensionCount
+            + emojis.count + uninstallItems.count
         let sel = count == 0 ? 0 : min(max(vm.selection, 0), count - 1)
         let calcSelected = calc != nil && sel == 0
         // An error card is selectable but has no action: it must not drive the Copy Answer pill, ⌘K menu, or Enter.
@@ -442,8 +319,7 @@ struct RootPaletteView: View {
             } else {
                 content(
                     apps: apps, launcherQuicklinks: launcherQuicklinks, clips: clips,
-                    snippets: snippets, quicklinks: quicklinks, extensions: extensions,
-                    storeItems: storeItems,
+                    snippets: snippets, quicklinks: quicklinks,
                     emojiSections: emojiSections, uninstallItems: uninstallItems, calc: calc,
                     selection: sel, favoriteCount: favoriteCount,
                     pinnedQuicklinkCount: pinnedQuicklinkCount,
@@ -488,9 +364,6 @@ struct RootPaletteView: View {
             inlineArgumentFocus = nil
             inlineArgumentFocusRequest = nil
             listScroll = ListScrollIntent(kind: .top)
-            if vm.mode == .extensionCommand {
-                extensionHost.search(text: vm.query)
-            }
         }
         .onChange(of: vm.mode) {
             searchFocused = vm.mode != .snippetEditor && vm.mode != .quicklinkEditor
@@ -635,7 +508,7 @@ struct RootPaletteView: View {
         }
         .onKeyPress(.tab) {
             if menuOpen { return .handled }
-            if vm.mode == .uninstall || vm.mode == .store { return .handled }
+            if vm.mode == .uninstall { return .handled }
             toggleMode()
             return .handled
         }
@@ -674,8 +547,7 @@ struct RootPaletteView: View {
             switch vm.mode {
             case .clipboard:
                 _ = clipboardScreen(items: clipResults, selection: selection).delete()
-            case .launcher, .emoji, .snippets, .snippetEditor, .quicklinks, .quicklinkEditor, .uninstall,
-                .extensionCommand, .store:
+            case .launcher, .emoji, .snippets, .snippetEditor, .quicklinks, .quicklinkEditor, .uninstall:
                 return .ignored
             }
             return .handled
@@ -744,8 +616,7 @@ struct RootPaletteView: View {
     private var sortMenuOverlayContent: PopoverMenuContent? {
         switch vm.mode {
         case .uninstall: return sortMenuContent
-        case .store: return storeSortMenuContent
-        default: return extensionSortMenuContent
+        default: return nil
         }
     }
 
@@ -820,12 +691,6 @@ struct RootPaletteView: View {
         if vm.mode == .uninstall, uninstall.phase == .selecting, !uninstall.items.isEmpty {
             UninstallSortButton(sort: uninstall.sort, action: toggleSortMenu)
         }
-        if vm.mode == .extensionCommand, let dropdown = extensionHost.snapshot?.listDropdown {
-            ExtensionSortButton(dropdown: dropdown, action: toggleSortMenu)
-        }
-        if vm.mode == .store, !storeResults.isEmpty {
-            ExtensionStoreSortButton(sort: storeSort, action: toggleSortMenu)
-        }
         if isCollapsed, settings.showFavoritesInCompactMode {
             let slots = compactFavoriteSlots
             if !slots.isEmpty {
@@ -842,7 +707,7 @@ struct RootPaletteView: View {
     private var searchField: some View {
         TextField(
             "", text: $vm.query,
-            prompt: Text(extensionHost.snapshot?.searchBarPlaceholder ?? vm.mode.placeholder)
+            prompt: Text(vm.mode.placeholder)
                 .foregroundStyle(Theme.Colors.searchPlaceholder)
         )
         .textFieldStyle(.plain)
@@ -934,8 +799,7 @@ struct RootPaletteView: View {
     @ViewBuilder
     private func content(
         apps: [AppEntry], launcherQuicklinks: [Quicklink], clips: [ClipboardItem],
-        snippets: [Snippet], quicklinks: [Quicklink], extensions: [ExtensionRenderItem],
-        storeItems: [ExtensionStoreItem],
+        snippets: [Snippet], quicklinks: [Quicklink],
         emojiSections: [EmojiGridSection], uninstallItems: [LeftoverItem], calc: CalcResult?,
         selection: Int, favoriteCount: Int, pinnedQuicklinkCount: Int,
         favoriteQuicklinkCount: Int, showSections: Bool
@@ -1022,48 +886,6 @@ struct RootPaletteView: View {
             emojiScreen(sections: emojiSections, selection: selection)
         case .uninstall:
             uninstallScreen(items: uninstallItems, selection: selection)
-        case .extensionCommand:
-            ExtensionSessionView(
-                command: vm.extensionCommand
-                    ?? ExtensionCommand(
-                        id: "unknown", title: "Extension", subtitle: nil, bundleID: "unknown"
-                    ),
-                host: extensionHost,
-                snapshot: extensionHost.snapshot,
-                errorMessage: extensionHost.errorMessage,
-                items: extensions,
-                selection: selection,
-                scrollIntent: listScroll,
-                onSelect: {
-                    vm.selection = $0
-                    if extensions.indices.contains($0) {
-                        extensionHost.select(itemID: extensions[$0].id)
-                    }
-                },
-                onActivate: { index in
-                    vm.selection = index
-                    activateSelection()
-                },
-                onActions: { index in
-                    vm.selection = index
-                    if extensions.indices.contains(index) {
-                        extensionHost.select(itemID: extensions[index].id)
-                    }
-                    openActions()
-                }
-            )
-        case .store:
-            ExtensionStorePaletteView(
-                items: storeItems,
-                selection: selection,
-                scroll: listScroll ?? ListScrollIntent(kind: .top),
-                onSelect: { vm.selection = $0 },
-                onActivate: activateSelection,
-                onActions: { index in
-                    vm.selection = index
-                    openActions()
-                }
-            )
         }
     }
 
@@ -1104,7 +926,7 @@ struct RootPaletteView: View {
         } else {
             PaletteModeMenuButton(
                 mode: vm.mode,
-                title: vm.mode == .extensionCommand ? vm.extensionCommand?.title : nil,
+                title: nil,
                 action: toggleAppMenu
             )
         }
@@ -1151,15 +973,6 @@ struct RootPaletteView: View {
             case .removing: return "Removing…"
             case .done: return "Back to Search"
             }
-        case .extensionCommand:
-            return vm.extensionCommand?.title ?? "Extension"
-        case .store:
-            guard let item = selectedStoreItem else { return "Install" }
-            guard let package = item.package else { return "Installed" }
-            if let installed = item.installed {
-                return installed.report.version == package.version ? "Installed" : "Update"
-            }
-            return "Install"
         }
     }
 
@@ -1311,10 +1124,6 @@ struct RootPaletteView: View {
         case .uninstall:
             guard command else { return false }
             return uninstallScreen(items: uninstallResults, selection: selection).reveal()
-        case .extensionCommand:
-            return false
-        case .store:
-            return false
         }
         return true
     }
@@ -1400,9 +1209,6 @@ struct RootPaletteView: View {
             searchFocused = true
         }
         vm.selection = nextSelection
-        if vm.mode == .extensionCommand, extensionResults.indices.contains(nextSelection) {
-            extensionHost.select(itemID: extensionResults[nextSelection].id)
-        }
         let kind: ListScrollIntent.Kind = delta < 0 && nextSelection == 0 ? .top : .follow
         listScroll = ListScrollIntent(kind: kind)
     }
@@ -1437,9 +1243,6 @@ struct RootPaletteView: View {
             ? gridGeometry.down(from: selection)
             : gridGeometry.up(from: selection)
         vm.selection = nextSelection
-        if vm.mode == .extensionCommand, extensionResults.indices.contains(nextSelection) {
-            extensionHost.select(itemID: extensionResults[nextSelection].id)
-        }
         listScroll = ListScrollIntent(kind: .follow)
     }
 
@@ -1456,9 +1259,6 @@ struct RootPaletteView: View {
     private func moveGridToEdge(_ direction: Int) {
         guard resultCount > 0 else { return }
         vm.selection = direction < 0 ? 0 : resultCount - 1
-        if vm.mode == .extensionCommand, extensionResults.indices.contains(selection) {
-            extensionHost.select(itemID: extensionResults[selection].id)
-        }
         listScroll = ListScrollIntent(kind: .follow)
     }
 
@@ -1482,9 +1282,6 @@ struct RootPaletteView: View {
         if vm.mode == .quicklinkEditor {
             core.quicklinks.exitEditor()
             return
-        }
-        if vm.mode == .extensionCommand {
-            extensionHost.stop()
         }
         vm.returnToLauncher()
     }
@@ -1620,16 +1417,6 @@ struct RootPaletteView: View {
             emojiScreen(sections: emojiSections, selection: selection).activate()
         case .uninstall:
             uninstallScreen(items: uninstallResults, selection: selection).activate()
-        case .extensionCommand:
-            guard let item = selectedExtensionItem else { return }
-            if let action = item.primaryAction {
-                extensionHost.invoke(actionID: action.id, itemID: item.id)
-            } else {
-                extensionHost.select(itemID: item.id)
-            }
-        case .store:
-            guard let package = selectedStoreItem?.package else { return }
-            extensionStore.installRemote(package)
         }
     }
 
@@ -1663,8 +1450,6 @@ private struct PaletteModeMenuButton: View {
         case .snippets, .snippetEditor, .quicklinks, .quicklinkEditor:
             return Theme.Colors.systemAccent
         case .uninstall: return Theme.Colors.textSecondary
-        case .extensionCommand: return Theme.Colors.systemAccent
-        case .store: return Theme.Colors.systemAccent
         }
     }
 

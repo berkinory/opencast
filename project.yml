@@ -8,7 +8,7 @@ options:
 
 settings:
   base:
-    MARKETING_VERSION: "0.2.1"
+    MARKETING_VERSION: "0.2.2"
     CURRENT_PROJECT_VERSION: "1"
     SWIFT_VERSION: "6.0"
     ARCHS: "arm64 x86_64"
@@ -39,18 +39,7 @@ targets:
     type: application
     platform: macOS
     dependencies:
-      - target: OpencastExtensionHost
       - package: Sparkle
-    postBuildScripts:
-      - name: Embed Extension Host
-        basedOnDependencyAnalysis: false
-        script: |
-          mkdir -p "${TARGET_BUILD_DIR}/${CONTENTS_FOLDER_PATH}/Helpers"
-          cp "${BUILT_PRODUCTS_DIR}/OpencastExtensionHost" "${TARGET_BUILD_DIR}/${CONTENTS_FOLDER_PATH}/Helpers/OpencastExtensionHost"
-          rm -f "${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/OpencastExtensionHost"
-          if [ "${CODE_SIGNING_ALLOWED}" = "YES" ]; then
-            codesign --force --sign "${EXPANDED_CODE_SIGN_IDENTITY}" --options runtime "${TARGET_BUILD_DIR}/${CONTENTS_FOLDER_PATH}/Helpers/OpencastExtensionHost"
-          fi
     sources:
       - path: Opencast
     settings:
@@ -70,17 +59,3 @@ targets:
         Debug:
           PRODUCT_NAME: Opencast Dev
           PRODUCT_BUNDLE_IDENTIFIER: com.opencast.app.dev
-  OpencastExtensionHost:
-    type: tool
-    platform: macOS
-    sources:
-      - path: ExtensionHost
-    settings:
-      base:
-        PRODUCT_NAME: OpencastExtensionHost
-        PRODUCT_BUNDLE_IDENTIFIER: com.opencast.extension-host
-        GENERATE_INFOPLIST_FILE: YES
-        OTHER_LDFLAGS:
-          - "$(inherited)"
-          - "-framework"
-          - "JavaScriptCore"

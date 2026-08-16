@@ -15,7 +15,6 @@ struct AppEntry: Identifiable, Hashable, Sendable {
     let bundleID: String?
     let kind: Kind
     let searchAliases: [String]
-    let symbolIconOverride: String?
 
     init(
         id: String,
@@ -23,8 +22,7 @@ struct AppEntry: Identifiable, Hashable, Sendable {
         url: URL,
         bundleID: String?,
         kind: Kind,
-        searchAliases: [String] = [],
-        symbolIconOverride: String? = nil
+        searchAliases: [String] = []
     ) {
         self.id = id
         self.name = name
@@ -32,7 +30,6 @@ struct AppEntry: Identifiable, Hashable, Sendable {
         self.bundleID = bundleID
         self.kind = kind
         self.searchAliases = searchAliases
-        self.symbolIconOverride = symbolIconOverride
     }
 
     /// Stable identity for learned ranking, favorites, and other per-entry preferences.
@@ -43,7 +40,6 @@ struct AppEntry: Identifiable, Hashable, Sendable {
         case .application: return "Application"
         case .systemSettings: return "System Setting"
         case .command:
-            if isExtensionCommand { return "Extension" }
             if WindowCommandCatalog.command(forEntryID: id) != nil { return "Window Command" }
             if SystemCommandCatalog.command(forEntryID: id) != nil { return "System Command" }
             return "Command"
@@ -57,15 +53,10 @@ struct AppEntry: Identifiable, Hashable, Sendable {
         case .systemSettings:
             return "Open System Setting"
         case .command:
-            if isExtensionCommand { return "Open Extension" }
             if WindowCommandCatalog.command(forEntryID: id) != nil { return "Move Window" }
             if SystemCommandCatalog.command(forEntryID: id) != nil { return "Run Command" }
             return CommandRegistry.command(for: self)?.primaryActionTitle ?? "Open Command"
         }
-    }
-
-    var isExtensionCommand: Bool {
-        kind == .command && id.hasPrefix("extension:")
     }
 
     /// The global-hotkey action that opens this entry.
@@ -89,7 +80,6 @@ struct AppEntry: Identifiable, Hashable, Sendable {
     /// Synthetic command entries expose an SF Symbol name; row renderers apply the shared feature-icon surface. Everything else uses its file icon.
     var isSymbolIcon: Bool { kind == .command }
     var symbolIconName: String {
-        if isExtensionCommand { return symbolIconOverride ?? "puzzlepiece.extension" }
         return SystemCommandCatalog.command(forEntryID: id)?.sfSymbol
             ?? CommandRegistry.command(for: self)?.sfSymbol
             ?? WindowCommandCatalog.command(forEntryID: id)?.sfSymbol
@@ -249,7 +239,6 @@ final class AppIndex: ObservableObject {
     private var refreshPending = false
     private var windowCommandsVisible = false
     private var caffeinationActive = false
-    private var extensionCommands: [ExtensionCommand] = []
     private let ranking: LauncherRankingStore
     private weak var settings: AppSettings?
     private var cancellables = Set<AnyCancellable>()
@@ -301,12 +290,6 @@ final class AppIndex: ObservableObject {
         entriesRevision &+= 1
     }
 
-    func setExtensionCommands(_ commands: [ExtensionCommand]) {
-        guard extensionCommands != commands else { return }
-        extensionCommands = commands
-        entriesRevision &+= 1
-    }
-
     /// Re-scan (called on every launcher open); overlapping scans collapse into one trailing scan and an unchanged result does no UI work.
     func refresh() async {
         guard !isRefreshing else {
@@ -321,7 +304,6 @@ final class AppIndex: ObservableObject {
             let scopes = settings?.searchScopes ?? SearchScopes.defaults
             let includeWindowCommands = windowCommandsVisible
             let caffeinationActive = self.caffeinationActive
-            let extensionCommands = self.extensionCommands
             let featureAvailability = FeatureAvailability(
                 clipboard: settings?.clipboardEnabled ?? true,
                 snippets: settings?.snippetsEnabled ?? true,
@@ -336,7 +318,6 @@ final class AppIndex: ObservableObject {
                     includeWindowCommands: includeWindowCommands,
                     caffeinationActive: caffeinationActive,
                     featureAvailability: featureAvailability,
-                    extensionCommands: extensionCommands,
                     paneCache: reusingPaneCache,
                     appCache: reusingAppCache)
             }.value
@@ -350,7 +331,7 @@ final class AppIndex: ObservableObject {
 
     nonisolated private static func scan(
         scopes: [String], includeWindowCommands: Bool, caffeinationActive: Bool,
-        featureAvailability: FeatureAvailability, extensionCommands: [ExtensionCommand],
+        featureAvailability: FeatureAvailability,
         paneCache: SettingsPaneScanner.Cache?,
         appCache: AppScanCache?
     ) -> ScanResult {
@@ -385,16 +366,6 @@ final class AppIndex: ObservableObject {
         let commands = (systemCommands + windowCommands).sorted {
             $0.name.localizedCaseInsensitiveCompare($1.name) == .orderedAscending
         }
-        let extensionEntries = extensionCommands.map { command in
-            AppEntry(
-                id: command.id,
-                name: command.title,
-                url: command.bundleURL,
-                bundleID: nil,
-                kind: .command,
-                searchAliases: [command.extensionName, command.title],
-                symbolIconOverride: command.icon)
-        }
         let launcherCommands = CommandRegistry.all.compactMap { entry -> AppEntry? in
             guard let command = CommandRegistry.command(for: entry),
                 featureAvailability.includes(command)
@@ -416,7 +387,7 @@ final class AppIndex: ObservableObject {
             }
         }
         let (panes, updatedPaneCache) = SettingsPaneScanner.scan(cache: paneCache)
-        let entries = apps + panes + commands + extensionEntries + launcherCommands
+        let entries = apps + panes + commands + launcherCommands
         return ScanResult(
             entries: entries,
             panesCache: updatedPaneCache,

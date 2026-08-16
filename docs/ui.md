@@ -1,8 +1,8 @@
 # UI
 
-Opencast uses one keyboard-first visual system across the palette, settings, auxiliary windows, and
-extension surfaces. The interface should feel native to macOS, dense enough for fast scanning, and
-clear without decorative structure.
+Opencast uses one keyboard-first visual system across the palette, settings, and auxiliary windows.
+The interface should feel native to macOS, dense enough for fast scanning, and clear without
+decorative structure.
 
 ## Source of truth
 
@@ -35,8 +35,8 @@ Keep these invariants:
 
 Use `PaletteListLayout` for vertical results and `PaletteGridLayout` for sectioned grids. Use shared
 row, section header, detail, action, footer, scrollbar, edge dissolve, and right-click components.
-Built-in features and extensions should receive the same selection, hover, activation, scrolling,
-and action behavior.
+Built-in features should receive the same selection, hover, activation, scrolling, and action
+behavior.
 
 ## Rows and actions
 

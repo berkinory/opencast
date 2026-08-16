@@ -12,7 +12,7 @@ CODE_SIGNING_ALLOWED ?= NO
 
 SWIFT_FILES := $(shell find Opencast Tools -type f -name '*.swift' ! -name '*generated.swift' -print)
 
-.PHONY: check tools format lint build run release unsigned-dmg test extensions-test extension-provider-test extension-host-build extension-store-test extension-budget-test generate clean
+.PHONY: check tools format lint build run release unsigned-dmg test generate clean
 
 check: lint test build
 
@@ -75,50 +75,9 @@ test: tools
 	swiftc -swift-version 6 Opencast/Features/Uninstall/AppLeftovers.swift Tools/uninstall-test.swift -o $(TEST_BIN_DIR)/uninstall-test
 	$(TEST_BIN_DIR)/uninstall-test
 
-extensions-test: extension-host-build
-	@command -v node >/dev/null || { echo "error: node is required" >&2; exit 1; }
-	@command -v bun >/dev/null || { echo "error: bun is required" >&2; exit 1; }
-	rm -rf build/extensions
-	node Tools/extensions/build-extension.js --package Extensions/Packages/kill-process --out build/extensions/kill-process.ocx
-	node Tools/extensions/build-extension.js --package Extensions/Packages/port-manager --out build/extensions/port-manager.ocx
-	node Tools/extensions/build-extension.js --package Extensions/Packages/system-monitor --out build/extensions/system-monitor.ocx
-	node Tools/extensions/host-contract-test.js
-	$(MAKE) extension-provider-test
-
-extension-provider-test: tools
-	@mkdir -p $(TEST_BIN_DIR)
-	swiftc -swift-version 6 \
-		Opencast/Features/Extensions/ExtensionSystemCommand.swift \
-		Opencast/Features/Extensions/ExtensionProcessProvider.swift \
-		Opencast/Features/Extensions/ExtensionPortProvider.swift \
-		Opencast/Features/Extensions/ExtensionSystemMetricsProvider.swift \
-		Opencast/Features/Extensions/ExtensionProcessJobManager.swift \
-		Tools/extensions/provider-test.swift \
-		-o $(TEST_BIN_DIR)/extension-provider-test
-	$(TEST_BIN_DIR)/extension-provider-test
-
-extension-host-build:
-	xcodebuild -project $(PROJECT) -scheme OpencastExtensionHost -configuration Debug -derivedDataPath build/ExtensionHostDerived CODE_SIGNING_ALLOWED=NO build
-
-extension-store-test: extension-host-build
-	rm -rf build/extensions
-	node Tools/extensions/build-extension.js --package Extensions/Packages/kill-process --out build/extensions/kill-process.ocx
-	node Tools/extensions/build-extension.js --package Extensions/Packages/port-manager --out build/extensions/port-manager.ocx
-	node Tools/extensions/build-extension.js --package Extensions/Packages/system-monitor --out build/extensions/system-monitor.ocx
-	@mkdir -p $(TEST_BIN_DIR)
-	cp Tools/extensions/store-test.swift $(TEST_BIN_DIR)/main.swift
-	swiftc -swift-version 6 Opencast/Features/Extensions/ExtensionModels.swift Opencast/Features/Extensions/ExtensionPackageValidator.swift $(TEST_BIN_DIR)/main.swift -o $(TEST_BIN_DIR)/extension-store-test
-	$(TEST_BIN_DIR)/extension-store-test build/extensions/kill-process.ocx
-	$(TEST_BIN_DIR)/extension-store-test build/extensions/port-manager.ocx
-	$(TEST_BIN_DIR)/extension-store-test build/extensions/system-monitor.ocx
-
-extension-budget-test:
-	@command -v node >/dev/null || { echo "error: node is required" >&2; exit 1; }
-	node Tools/extensions/budget-test.js
-
 generate:
 	@command -v xcodegen >/dev/null || { echo "error: xcodegen is required" >&2; exit 1; }
 	xcodegen generate
 
 clean:
-	rm -rf $(DERIVED_DATA) build/ExtensionHostDerived build/extensions $(TEST_BIN_DIR)
+	rm -rf $(DERIVED_DATA) $(TEST_BIN_DIR)

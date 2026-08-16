@@ -25,30 +25,6 @@ final class AppCore: ObservableObject {
     let windowMover = WindowMover()
     let updates = UpdateStore()
     let palette = PaletteViewModel()
-    let extensionCatalog: ExtensionCatalog
-    let extensionStore: ExtensionStoreManager
-    lazy var extensionCapabilities = ExtensionCapabilityBroker(
-        previousApplication: { [weak self] in self?.windowController.previousApp },
-        confirmAction: { [weak self] message, informativeText, confirmTitle in
-            self?.confirmExtensionAction(
-                message: message,
-                informativeText: informativeText,
-                confirmTitle: confirmTitle) ?? false
-        }
-    )
-    lazy var extensionHost = ExtensionHostManager(
-        capabilityBroker: extensionCapabilities,
-        showHUD: { [weak self] message, id, style in
-            self?.showHUD(message, id: id, style: style)
-        },
-        confirmAction: { [weak self] message, informativeText, confirmTitle in
-            self?.confirmExtensionAction(
-                message: message,
-                informativeText: informativeText,
-                confirmTitle: confirmTitle) ?? false
-        }
-    )
-    lazy var extensionScheduler = ExtensionScheduler(capabilityBroker: extensionCapabilities)
     lazy var snippets = SnippetCoordinator(
         store: snippetStore,
         settings: settings,
@@ -134,9 +110,6 @@ final class AppCore: ObservableObject {
         appIndex: appIndex,
         settings: settings,
         palette: palette,
-        extensionCatalog: extensionCatalog,
-        extensionStore: extensionStore,
-        extensionHost: extensionHost,
         snippets: snippets,
         quicklinks: quicklinks,
         windowCommands: windowCommands,
@@ -145,16 +118,13 @@ final class AppCore: ObservableObject {
         showPalette: { [weak self] mode in self?.showPalette(mode: mode) },
         paletteIsVisible: { [weak self] in self?.windowController.isVisible ?? false },
         showSettings: { [weak self] in self?.showSettings() },
-        checkForUpdates: { [weak self] in self?.checkForUpdates() },
-        importExtension: { [weak self] in self?.importExtension() }
+        checkForUpdates: { [weak self] in self?.checkForUpdates() }
     )
     private let toastWindowController = ToastWindowController()
 
     private let dialogs = DialogController()
     private let healthTicker = HealthTicker()
     private lazy var windowController = PaletteWindowController(core: self, dialogs: dialogs)
-
-    var previousApplicationForExtension: NSRunningApplication? { windowController.previousApp }
 
     func presentDialog(
         message: String,
@@ -174,16 +144,6 @@ final class AppCore: ObservableObject {
         )
     }
 
-    func confirmExtensionAction(
-        message: String, informativeText: String, confirmTitle: String
-    ) -> Bool {
-        windowController.presentConfirmation(
-            message: message,
-            informativeText: informativeText,
-            confirmTitle: confirmTitle
-        )
-    }
-
     private let auxWindows = AuxWindowController()
 
     private init() {
@@ -193,14 +153,6 @@ final class AppCore: ObservableObject {
         hotKeys = HotKeyManager(entries: { [weak appIndex] in appIndex?.apps ?? [] })
         clipboardManager = ClipboardManager(store: clipboardStore, settings: settings)
         snippetExpansionMonitor = SnippetExpansionMonitor(store: snippetStore, settings: settings)
-        extensionCatalog = ExtensionCatalog()
-        extensionStore = ExtensionStoreManager(directory: extensionCatalog.directory)
-        extensionHost.onNoViewFinished = { [weak self] in
-            self?.hidePalette()
-        }
-        extensionStore.onChange = { [weak self] in
-            self?.reloadExtensions()
-        }
     }
 
     func start() {
@@ -216,11 +168,6 @@ final class AppCore: ObservableObject {
         snippetExpansionMonitor.healthTicker = healthTicker
         clipboardManager.start()
         snippetExpansionMonitor.start()
-
-        extensionStore.start()
-        extensionCatalog.setDisabledNames(extensionStore.disabledNames)
-        appIndex.setExtensionCommands(extensionCatalog.commands)
-        extensionScheduler.start(commands: extensionCatalog.commands)
 
         appIndex.start(settings: settings)
         Task {
@@ -245,29 +192,6 @@ final class AppCore: ObservableObject {
             OnboardingState.markShown()
             showOnboarding()
         }
-    }
-
-    func shutdown() {
-        extensionHost.stop()
-        extensionScheduler.stop()
-    }
-
-    func reloadExtensions() {
-        extensionHost.stop()
-        extensionCatalog.setDisabledNames(extensionStore.disabledNames)
-        appIndex.setExtensionCommands(extensionCatalog.commands)
-        extensionScheduler.reload(commands: extensionCatalog.commands)
-        Task { await appIndex.refresh() }
-    }
-
-    func importExtension() {
-        let panel = NSOpenPanel()
-        panel.canChooseFiles = true
-        panel.canChooseDirectories = true
-        panel.allowsMultipleSelection = false
-        panel.message = "Choose an .ocx extension package"
-        guard panel.runModal() == .OK, let url = panel.url else { return }
-        extensionStore.install(from: url)
     }
 
     private func applyDarkAppearance() {
@@ -317,10 +241,8 @@ final class AppCore: ObservableObject {
             }
             uninstall.end()
         }
-        let previousMode = palette.mode
         let preserved = windowController.consumePreservedState()
         if !(preserved && (restoreAnyMode || palette.mode == mode)) {
-            if previousMode == .extensionCommand { extensionHost.stop() }
             palette.prepare(mode: mode)
         }
         windowController.show()
@@ -354,7 +276,6 @@ final class AppCore: ObservableObject {
     }
 
     func resetPaletteToLauncher() {
-        extensionHost.stop()
         palette.prepare(mode: .launcher)
     }
 
@@ -365,9 +286,6 @@ final class AppCore: ObservableObject {
             return
         }
         if palette.mode != .launcher {
-            if palette.mode == .extensionCommand {
-                extensionHost.stop()
-            }
             palette.returnToLauncher()
             return
         }

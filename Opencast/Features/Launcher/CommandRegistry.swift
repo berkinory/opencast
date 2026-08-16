@@ -8,8 +8,6 @@ enum CommandID: String, CaseIterable, Sendable {
     case searchQuicklinks = "command:search-quicklinks"
     case createQuicklink = "command:create-quicklink"
     case searchEmoji = "command:search-emoji"
-    case store = "command:store"
-    case importExtension = "command:import-extension"
     case settings = "command:settings"
     case checkForUpdates = "command:check-for-updates"
     case quit = "command:quit"
@@ -25,8 +23,6 @@ enum CommandID: String, CaseIterable, Sendable {
         case .searchQuicklinks: return "Search Quicklinks"
         case .createQuicklink: return "Create Quicklink"
         case .searchEmoji: return "Search Emoji & Symbols"
-        case .store: return "Store"
-        case .importExtension: return "Import Extension"
         case .settings: return "Settings"
         case .checkForUpdates: return "Check for Updates"
         case .quit: return "Quit Opencast"
@@ -44,8 +40,6 @@ enum CommandID: String, CaseIterable, Sendable {
         case .searchQuicklinks: return "link"
         case .createQuicklink: return "link.badge.plus"
         case .searchEmoji: return "face.smiling"
-        case .store: return "puzzlepiece.extension"
-        case .importExtension: return "tray.and.arrow.down"
         case .settings: return "slider.horizontal.3"
         case .checkForUpdates: return "arrow.triangle.2.circlepath"
         case .quit: return "xmark.circle"
@@ -66,7 +60,7 @@ enum CommandID: String, CaseIterable, Sendable {
 
     var isRunnable: Bool {
         switch self {
-        case .store, .importExtension, .caffeinate, .decaffeinate, .caffeinateFor: return true
+        case .caffeinate, .decaffeinate, .caffeinateFor: return true
         default: return false
         }
     }
@@ -87,8 +81,6 @@ enum CommandID: String, CaseIterable, Sendable {
         case .searchQuicklinks: return "Open Quicklinks"
         case .createQuicklink: return "Create Quicklink"
         case .searchEmoji: return "Open Emoji & Symbols"
-        case .store: return "Open Store"
-        case .importExtension: return "Import Extension"
         case .settings: return "Open Settings"
         case .checkForUpdates: return "Check for Updates"
         case .quit: return "Quit Opencast"

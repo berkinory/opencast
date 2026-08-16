@@ -2,6 +2,13 @@
 
 ## [0.2.2]
 
+### Removed
+
+- Removed the experimental extension platform, including its JavaScript host, capability broker,
+  package store, scheduler, and CI tooling. The platform did not reach the compatibility and
+  security bar required for a stable release and added disproportionate runtime and maintenance
+  surface to the core application.
+
 ### Improved
 
 - Calculator no longer shows an error for unsupported conversions.

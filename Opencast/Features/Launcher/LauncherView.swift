@@ -236,7 +236,6 @@ struct AppIconView: View {
         case .searchSnippets, .createSnippet, .searchQuicklinks, .createQuicklink:
             return Theme.Colors.systemAccent
         case .settings: return Theme.Colors.systemAccent
-        case .store, .importExtension: return Theme.Colors.systemAccent
         case .checkForUpdates: return Theme.Colors.systemAccent
         case .quit: return Theme.Colors.textSecondary
         case .caffeinate, .caffeinateFor: return Theme.Colors.systemAccent

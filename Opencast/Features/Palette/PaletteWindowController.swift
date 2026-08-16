@@ -204,7 +204,6 @@ final class PaletteWindowController: NSObject, NSWindowDelegate {
             .environmentObject(core.runningApps)
             .environmentObject(core.hotKeys)
             .environmentObject(core.uninstall)
-            .environmentObject(core.extensionHost)
         let panel = PalettePanel(rootView: root)
         panel.delegate = self
         panel.paletteViewModel = core.palette

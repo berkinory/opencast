@@ -6,12 +6,12 @@
 - Xcode 26 with the macOS SDK selected by `xcode-select`
 - [XcodeGen](https://github.com/yonaskolb/XcodeGen)
 - Apple's `swift-format`
-- Node.js and Bun when working on extensions or generated data
+- Node.js when regenerating data files
 
 Install the command-line tools with Homebrew:
 
 ```sh
-brew install xcodegen swift-format node bun
+brew install xcodegen swift-format node
 ```
 
 ## Daily workflow
@@ -56,14 +56,6 @@ Some files deliberately have narrow dependencies so a harness can compile them d
 `Tools/fuzz-test.swift` contains the harness copy of launcher fuzzy matching. When scoring changes,
 update the production implementation and its test copy together.
 
-Extension changes use additional checks:
-
-```sh
-make extensions-test
-make extension-store-test
-make extension-budget-test
-```
-
 ## Generated sources
 
 Do not edit generated Swift files by hand:
@@ -87,7 +79,7 @@ or command output.
 
 Before a release:
 
-1. Run `make check` and all extension checks.
+1. Run `make check`.
 2. Confirm `project.yml`, the generated Xcode project, and release notes agree.
 3. Verify the signed app, update archive, appcast, and DMG produced by CI.
 4. Test both a direct update and the Homebrew upgrade instructions.

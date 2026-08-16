@@ -6,9 +6,6 @@ final class LauncherCoordinator {
     private let appIndex: AppIndex
     private let settings: AppSettings
     private let palette: PaletteViewModel
-    private let extensionCatalog: ExtensionCatalog
-    private let extensionStore: ExtensionStoreManager
-    private let extensionHost: ExtensionHostManager
     private let snippets: SnippetCoordinator
     private let quicklinks: QuicklinkCoordinator
     private let windowCommands: WindowCommandCoordinator
@@ -18,16 +15,12 @@ final class LauncherCoordinator {
     private let paletteIsVisible: () -> Bool
     private let showSettings: () -> Void
     private let checkForUpdates: () -> Void
-    private let importExtension: () -> Void
 
     init(
         ranking: LauncherRankingStore,
         appIndex: AppIndex,
         settings: AppSettings,
         palette: PaletteViewModel,
-        extensionCatalog: ExtensionCatalog,
-        extensionStore: ExtensionStoreManager,
-        extensionHost: ExtensionHostManager,
         snippets: SnippetCoordinator,
         quicklinks: QuicklinkCoordinator,
         windowCommands: WindowCommandCoordinator,
@@ -36,16 +29,12 @@ final class LauncherCoordinator {
         showPalette: @escaping (PaletteMode) -> Void,
         paletteIsVisible: @escaping () -> Bool,
         showSettings: @escaping () -> Void,
-        checkForUpdates: @escaping () -> Void,
-        importExtension: @escaping () -> Void
+        checkForUpdates: @escaping () -> Void
     ) {
         self.ranking = ranking
         self.appIndex = appIndex
         self.settings = settings
         self.palette = palette
-        self.extensionCatalog = extensionCatalog
-        self.extensionStore = extensionStore
-        self.extensionHost = extensionHost
         self.snippets = snippets
         self.quicklinks = quicklinks
         self.windowCommands = windowCommands
@@ -55,7 +44,6 @@ final class LauncherCoordinator {
         self.paletteIsVisible = paletteIsVisible
         self.showSettings = showSettings
         self.checkForUpdates = checkForUpdates
-        self.importExtension = importExtension
     }
 
     func launch(
@@ -64,10 +52,6 @@ final class LauncherCoordinator {
         inlineArgumentValues: [String] = []
     ) {
         ranking.record(itemKey: app.preferenceKey, query: searchQuery ?? "")
-        if let command = extensionCatalog.command(forEntryID: app.id) {
-            openExtension(command)
-            return
-        }
         if app.kind == .command {
             runCommand(app, inlineArgumentValues: inlineArgumentValues)
             return
@@ -115,16 +99,7 @@ final class LauncherCoordinator {
         Paster.copyPlainText(app.url.path)
     }
 
-    func openExtension(_ command: ExtensionCommand) {
-        palette.enterExtension(command)
-        extensionHost.start(command)
-    }
-
     private func runCommand(_ entry: AppEntry, inlineArgumentValues: [String]) {
-        if let command = extensionCatalog.command(forEntryID: entry.id) {
-            openExtension(command)
-            return
-        }
         if let command = WindowCommandCatalog.command(forEntryID: entry.id) {
             windowCommands.run(command.id)
             return
@@ -148,11 +123,6 @@ final class LauncherCoordinator {
         case .searchEmoji:
             guard settings.emojiEnabled else { return }
             palette.enterSubscreen(.emoji)
-        case .store:
-            palette.enterSubscreen(.store)
-            extensionStore.refreshRemoteCatalog()
-        case .importExtension:
-            importExtension()
         case .settings:
             hidePalette(false)
             showSettings()

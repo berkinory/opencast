@@ -10,8 +10,6 @@ enum PaletteMode: String, CaseIterable, Identifiable {
     case quicklinks
     case quicklinkEditor
     case uninstall
-    case extensionCommand
-    case store
 
     var id: String { rawValue }
     var title: String {
@@ -24,8 +22,6 @@ enum PaletteMode: String, CaseIterable, Identifiable {
         case .quicklinks: return "Quicklinks"
         case .quicklinkEditor: return "Quicklink"
         case .uninstall: return "Uninstall"
-        case .extensionCommand: return "Extension"
-        case .store: return "Store"
         }
     }
     var systemImage: String {
@@ -36,8 +32,6 @@ enum PaletteMode: String, CaseIterable, Identifiable {
         case .snippets, .snippetEditor: return "text.quote"
         case .quicklinks, .quicklinkEditor: return "link"
         case .uninstall: return "trash"
-        case .extensionCommand: return "puzzlepiece.extension"
-        case .store: return "shippingbox.fill"
         }
     }
     var placeholder: String {
@@ -50,8 +44,6 @@ enum PaletteMode: String, CaseIterable, Identifiable {
         case .quicklinks: return "Search quicklinks…"
         case .quicklinkEditor: return ""
         case .uninstall: return "Filter files and folders by name…"
-        case .extensionCommand: return "Search extension items…"
-        case .store: return "Search extensions…"
         }
     }
 }
@@ -105,7 +97,6 @@ final class PaletteViewModel: ObservableObject {
     @Published var snippetEditorReturnsToSearch = false
     @Published var quicklinkEditingID: Quicklink.ID?
     @Published var quicklinkEditorReturnsToSearch = false
-    @Published var extensionCommand: ExtensionCommand?
     /// Changes when an action reorders the list under the selection (pinning a clip lifts it into the Pinned section), so the list scrolls the highlight back into view.
     @Published var followToken = UUID()
     /// Set by the compact bar's "…" overflow to expand into the full launcher without a query; cleared on every `prepare`.
@@ -137,7 +128,6 @@ final class PaletteViewModel: ObservableObject {
         snippetEditorReturnsToSearch = false
         quicklinkEditingID = nil
         quicklinkEditorReturnsToSearch = false
-        extensionCommand = nil
         onCommandEnter = nil
         hoverHighlightArmed = false
         menuOpen = false
@@ -155,7 +145,6 @@ final class PaletteViewModel: ObservableObject {
         snippetEditorReturnsToSearch = false
         quicklinkEditingID = nil
         quicklinkEditorReturnsToSearch = false
-        extensionCommand = nil
         onCommandEnter = nil
         hoverHighlightArmed = false
         menuOpen = false
@@ -174,31 +163,12 @@ final class PaletteViewModel: ObservableObject {
         snippetEditorReturnsToSearch = false
         quicklinkEditingID = nil
         quicklinkEditorReturnsToSearch = false
-        extensionCommand = nil
         onCommandEnter = nil
         hoverHighlightArmed = false
         menuOpen = false
         focusToken = UUID()
         resetToken = UUID()
         selectQueryToken = UUID()
-    }
-
-    func enterExtension(_ command: ExtensionCommand) {
-        launcherQueryForReturn = self.mode == .launcher ? query : launcherQueryForReturn
-        extensionCommand = command
-        mode = .extensionCommand
-        query = ""
-        selection = 0
-        forceExpanded = false
-        snippetEditingID = nil
-        snippetEditorReturnsToSearch = false
-        quicklinkEditingID = nil
-        quicklinkEditorReturnsToSearch = false
-        onCommandEnter = nil
-        hoverHighlightArmed = false
-        menuOpen = false
-        focusToken = UUID()
-        resetToken = UUID()
     }
 
     func postFeedback(_ message: String, tone: PaletteFeedback.Tone = .success) {

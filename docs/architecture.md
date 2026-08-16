@@ -10,9 +10,6 @@ Opencast/App          composition root and application lifecycle
 Opencast/Features     feature state, behavior, and views
 Opencast/DesignSystem shared visual tokens and UI primitives
 Opencast/Platform     macOS integration and AppKit adapters
-ExtensionHost        isolated JavaScriptCore command process
-Extensions           runtime shims, schemas, and first-party packages
-Store                reviewed extension catalog
 Tools                tests, generators, and build utilities
 ```
 
@@ -22,8 +19,7 @@ and design-system components, but should not reach into another feature's view h
 ## Composition root
 
 `AppCore` is a `@MainActor` singleton and the only owner of long-lived application state. It creates
-stores, managers, coordinators, window controllers, and the extension runtime. `AppDelegate` calls
-`start()` at launch and `shutdown()` at termination.
+stores, managers, coordinators, and window controllers. `AppDelegate` calls `start()` at launch.
 
 A feature normally contains:
 
@@ -79,10 +75,6 @@ existing bindings remain valid.
 Networked features ship disabled. The owning store controls consent, checks it at every entry point,
 and checks it again after suspension points. Use an ephemeral, cacheless `URLSession` when user data
 or opt-out deletion is involved. A missing consent value must select the safe, offline behavior.
-
-Extensions use the same principle at a package boundary. `opencast.json` declares capabilities,
-the builder validates them, the package hash binds them, and the native broker enforces them at run
-time. Commands execute in the helper process; privileged work stays in narrow Swift providers.
 
 ## Concurrency
 

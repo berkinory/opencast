@@ -5,7 +5,7 @@ Opencast is a native macOS command palette built with SwiftUI and AppKit. It run
 ## Read first
 
 - [Architecture](docs/architecture.md) covers ownership, feature boundaries, windows, persistence,
-  extensions, and concurrency.
+  and concurrency.
 - [UI](docs/ui.md) covers design tokens, shared palette components, interaction rules, and visual
   review.
 - [Development](docs/development.md) covers setup, tests, generated files, and releases.
@@ -16,7 +16,6 @@ Opencast is a native macOS command palette built with SwiftUI and AppKit. It run
 - `Opencast/Features/`: feature models, coordinators, stores, and views.
 - `Opencast/DesignSystem/`: shared theme and UI primitives.
 - `Opencast/Platform/`: AppKit and operating-system integration.
-- `ExtensionHost/`, `Extensions/`, `Store/`: extension runtime, packages, and catalog.
 - `Tools/`: standalone test harnesses and generators.
 
 ## Working rules
@@ -34,7 +33,5 @@ Opencast is a native macOS command palette built with SwiftUI and AppKit. It run
 
 ```sh
 make check
-make extensions-test          # when extension runtime or packages change
-make extension-store-test     # when package validation or catalog data changes
 make generate                 # after editing project.yml
 ```
