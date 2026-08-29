@@ -290,6 +290,8 @@ struct CalcTests {
         expectDisplay("100 dollars to yen", "¥15,700.00")
         expectDisplay("100 usd -> eur", "€92.00")
         expectDisplay("2*50 usd to eur", "€92.00")  // expression on the value side
+        expectDisplay("(20 eur to usd) * 30", "$652.17")
+        expectDisplay("2 * (20 eur to usd)", "$43.48")
         expectDisplay("$10 + 5€", "€14.20")
         expectExpression("$10 + 5€", "$10 + 5€")
         expectDisplay("10 kg + 500g in pound", "23.14853753 lb")

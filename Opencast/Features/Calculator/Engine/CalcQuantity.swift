@@ -10,6 +10,9 @@ enum CalcQuantity {
 
         var parser = QuantityParser(tokens: split.expressionTokens, currency: currency)
         guard let value = parser.parse() else {
+            if let issue = parser.issue {
+                return CalcResult(expression: query, payload: .error(message: issue))
+            }
             return nil
         }
         guard parser.dimensionCount > 0 else { return nil }
@@ -253,6 +256,7 @@ private struct QuantityParser {
     var dimensionCount = 0
     var usedCurrency = false
     var currencyCodes: [String] = []
+    var issue: String?
 
     private var current: CalcToken? { position < tokens.count ? tokens[position] : nil }
     private var currencyEnabled: Bool { currency.isOn }
@@ -435,11 +439,7 @@ private struct QuantityParser {
             position += 1
             return parseExpression(minBindingPower: 25)
         case .op("("):
-            position += 1
-            guard let value = parseExpression(minBindingPower: 0), case .op(")") = current
-            else { return nil }
-            position += 1
-            return value
+            return parseGrouped()
         case .ident(let name):
             guard currencyEnabled, CalcUnits.byName[name] == nil,
                 let definition = CalcCurrency.byName[name],
@@ -452,6 +452,69 @@ private struct QuantityParser {
             return QuantityValue(amount: amount, kind: .currency(definition))
         default:
             return nil
+        }
+    }
+
+    private mutating func parseGrouped() -> QuantityValue? {
+        guard let close = matchingParenthesis() else { return nil }
+        let targetName = groupedTarget(before: close)
+        let valueEnd = targetName == nil ? close : close - 2
+        position += 1
+        guard let value = parseGroupedValue(upTo: valueEnd), position == valueEnd else { return nil }
+        position = close + 1
+        guard let targetName else { return value }
+        operationCount += 1
+        return converted(value, to: targetName)
+    }
+
+    private mutating func parseGroupedValue(upTo end: Int) -> QuantityValue? {
+        if end == position + 1, case .ident(let name) = tokens[position],
+            let kind = dimension(named: name)
+        {
+            position += 1
+            dimensionCount += 1
+            return QuantityValue(amount: 1, kind: kind)
+        }
+        return parseExpression(minBindingPower: 0)
+    }
+
+    private func matchingParenthesis() -> Int? {
+        var depth = 0
+        for index in position..<tokens.count {
+            if case .op("(") = tokens[index] { depth += 1 }
+            if case .op(")") = tokens[index] {
+                depth -= 1
+                if depth == 0 { return index }
+            }
+        }
+        return nil
+    }
+
+    private func groupedTarget(before close: Int) -> String? {
+        guard close >= position + 4,
+            CalcUnits.isConnector(tokens[close - 2]),
+            case .ident(let targetName) = tokens[close - 1]
+        else { return nil }
+        return targetName
+    }
+
+    private mutating func converted(_ value: QuantityValue, to targetName: String) -> QuantityValue? {
+        switch value.kind {
+        case .scalar:
+            return nil
+        case .unit(let from):
+            guard let to = CalcUnits.byName[targetName], from.category == to.category else {
+                return nil
+            }
+            let output = CalcQuantity.convertUnit(value.amount, from: from, to: to)
+            guard output.isFinite else { return nil }
+            return QuantityValue(amount: output, kind: .unit(to))
+        case .currency(let from):
+            guard currencyEnabled, let to = CalcCurrency.byName[targetName],
+                cryptoEnabled || (!CalcCurrency.isCryptoCode(from.code) && !CalcCurrency.isCryptoCode(to.code)),
+                let output = convertedCurrency(value.amount, from: from, to: to)
+            else { return nil }
+            return QuantityValue(amount: output, kind: .currency(to))
         }
     }
 
@@ -472,9 +535,18 @@ private struct QuantityParser {
         guard currency.isOn,
             cryptoEnabled || (!CalcCurrency.isCryptoCode(from.code) && !CalcCurrency.isCryptoCode(to.code))
         else { return nil }
-        guard let rates = currency.rates else { return nil }
-        guard rates.rate(for: from.code) != nil else { return nil }
-        guard rates.rate(for: to.code) != nil else { return nil }
+        guard let rates = currency.rates else {
+            issue = "Exchange rates unavailable — check your connection."
+            return nil
+        }
+        guard rates.rate(for: from.code) != nil else {
+            issue = "No exchange rate for (from.code)."
+            return nil
+        }
+        guard rates.rate(for: to.code) != nil else {
+            issue = "No exchange rate for (to.code)."
+            return nil
+        }
         return rates.convert(amount, from: from.code, to: to.code)
     }
 
@@ -504,7 +576,8 @@ private struct QuantityParser {
         return false
     }
 
-    private func fail(_ message: String) -> QuantityValue? {
+    private mutating func fail(_ message: String) -> QuantityValue? {
+        issue = message
         return nil
     }
 }

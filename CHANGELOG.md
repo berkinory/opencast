@@ -15,6 +15,8 @@
 - Reduced repeated work during launcher and feature searches.
 - Added three-quarter window layouts for wider side-by-side workspaces.
 - Prevented menus from selecting a row beneath the pointer when they open.
+- Made it possible to use a currency conversion inside a larger calculation.
+- Recognized RMB and Renminbi as names for the Chinese Yuan.
 
 ### Fixed
 
