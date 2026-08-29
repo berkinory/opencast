@@ -1074,6 +1074,7 @@ struct RootPaletteView: View {
             selectionIsRunning = false
         }
         guard actionsContent != nil else { return }
+        core.palette.hoverHighlightArmed = false
         withAnimation(Self.menuAnimation) {
             showAppMenu = false
             showSortMenu = false
@@ -1093,6 +1094,7 @@ struct RootPaletteView: View {
     private func toggleAppMenu() {
         withAnimation(Self.menuAnimation) {
             let opening = !showAppMenu
+            if opening { core.palette.hoverHighlightArmed = false }
             showActions = false
             showSortMenu = false
             menuSelection = 0
@@ -1103,6 +1105,7 @@ struct RootPaletteView: View {
     private func toggleSortMenu() {
         withAnimation(Self.menuAnimation) {
             let opening = !showSortMenu
+            if opening { core.palette.hoverHighlightArmed = false }
             showActions = false
             showAppMenu = false
             menuSelection = 0

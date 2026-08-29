@@ -14,6 +14,7 @@
 - Added a safe restart action for running applications.
 - Reduced repeated work during launcher and feature searches.
 - Added three-quarter window layouts for wider side-by-side workspaces.
+- Prevented menus from selecting a row beneath the pointer when they open.
 
 ### Fixed
 
