@@ -51,6 +51,24 @@ enum SearchScopes {
             for app in apps {
                 result.append(contentsOf: embeddedAppBundles(in: app))
             }
+
+            let groupedDirectories = items.filter {
+                $0.hasDirectoryPath && $0.pathExtension.lowercased() != "app"
+            }
+            for directory in groupedDirectories {
+                guard
+                    let groupedItems = try? fileManager.contentsOfDirectory(
+                        at: directory,
+                        includingPropertiesForKeys: nil,
+                        options: [.skipsHiddenFiles]
+                    )
+                else { continue }
+                let groupedApps = groupedItems.filter { $0.pathExtension.lowercased() == "app" }
+                result.append(contentsOf: groupedApps)
+                for app in groupedApps {
+                    result.append(contentsOf: embeddedAppBundles(in: app))
+                }
+            }
         }
         return result
     }

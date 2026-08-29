@@ -10,6 +10,7 @@
 
 - Kept clipboard history and learned launcher preferences safe from automatic cache cleanup.
 - Kept hidden or disabled launcher categories from responding to their global shortcuts.
+- Found applications stored one folder deep inside application directories.
 
 ### Fixed
 
