@@ -8,7 +8,7 @@ struct LauncherRankingRecord: Codable, Hashable, Sendable {
     var lastUsed: Date
 }
 
-/// Learns launcher choices and persists bounded, on-device-only adaptive history under `~/Library/Caches/<bundle-id>/`.
+/// Learns launcher choices and persists bounded, on-device-only adaptive history under `~/Library/Application Support/<bundle-id>/`.
 @MainActor
 final class LauncherRankingStore: ObservableObject {
     private static let cap = 1_000
@@ -187,11 +187,6 @@ final class LauncherRankingStore: ObservableObject {
     }
 
     private static func defaultFileURL() -> URL {
-        let bundleID = Bundle.main.bundleIdentifier ?? "com.opencast.app"
-        let base = FileManager.default
-            .urls(for: .cachesDirectory, in: .userDomainMask)[0]
-            .appendingPathComponent(bundleID, isDirectory: true)
-        try? FileManager.default.createDirectory(at: base, withIntermediateDirectories: true)
-        return base.appendingPathComponent("launcher-ranking.json")
+        AppPaths.applicationSupport().appendingPathComponent("launcher-ranking.json")
     }
 }

@@ -7,7 +7,7 @@ struct FrequentEmoji: Codable, Hashable, Sendable {
     var lastUsed: Date
 }
 
-/// Persists emoji usage counts as a capped JSON file under `~/Library/Caches/<bundle-id>/`, feeding the grid's "Frequently Used" section.
+/// Persists emoji usage counts as a capped JSON file under `~/Library/Application Support/<bundle-id>/`, feeding the grid's "Frequently Used" section.
 @MainActor
 final class FrequentEmojiStore: ObservableObject {
     private static let cap = 300
@@ -20,7 +20,7 @@ final class FrequentEmojiStore: ObservableObject {
     private var sortedGlyphs: [String]?
 
     init() {
-        fileURL = AppPaths.caches().appendingPathComponent("emoji-frequency.json")
+        fileURL = AppPaths.applicationSupport().appendingPathComponent("emoji-frequency.json")
 
         if let data = try? Data(contentsOf: fileURL),
             let decoded = try? JSONDecoder().decode([FrequentEmoji].self, from: data)

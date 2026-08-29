@@ -6,6 +6,10 @@
 
 - Added a quick way to reveal existing file and folder paths in Finder from the launcher and clipboard actions.
 
+### Improved
+
+- Kept clipboard history and learned launcher preferences safe from automatic cache cleanup.
+
 ### Fixed
 
 - Fixed the search hint overlapping text while typing with an input method.

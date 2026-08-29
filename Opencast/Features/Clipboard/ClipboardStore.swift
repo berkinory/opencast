@@ -208,7 +208,7 @@ final class ClipboardStore: ObservableObject {
     private var staleImagesStmt: OpaquePointer?
     private var deleteStaleStmt: OpaquePointer?
 
-    /// `directory` defaults to the per-bundle cache; `Tools/clipboard-test.swift` passes a throwaway one so a harness run can never reach a real history.
+    /// `directory` defaults to the per-bundle application-support directory; `Tools/clipboard-test.swift` passes a throwaway one so a harness run can never reach a real history.
     init(directory: URL? = nil) {
         let base = directory ?? Self.defaultDirectory
         imagesDir = base.appendingPathComponent("images", isDirectory: true)
@@ -224,12 +224,9 @@ final class ClipboardStore: ObservableObject {
         }
     }
 
-    /// Under ~/Library/Caches/<bundle-id> since clipboard history is regenerable; "Clear History" is the durable control.
+    /// Under ~/Library/Application Support/<bundle-id> because clipboard history is user data, not disposable cache data.
     private static var defaultDirectory: URL {
-        let bundleID = Bundle.main.bundleIdentifier ?? "com.opencast.app"
-        return FileManager.default
-            .urls(for: .cachesDirectory, in: .userDomainMask)[0]
-            .appendingPathComponent(bundleID, isDirectory: true)
+        AppPaths.applicationSupport()
     }
 
     // Isolated so teardown may touch the main-actor statement/db pointers; AppCore only ever releases the store on the main actor, so no hop.
