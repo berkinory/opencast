@@ -297,6 +297,8 @@ struct CalcTests {
         expectDisplay("10 kg + 500g in pound", "23.14853753 lb")
         expectExpression("10 kg + 500g in pound", "10 kg + 500g in pound")
         expectDisplay("eur to usd", "$1.09")  // implied amount of 1
+        expectError("1 rmb to usd", "No exchange rate for CNY.")
+        expectError("1 renminbi to usd", "No exchange rate for CNY.")
         expectCopy("100 dollars to yen", "15700.00 JPY")
         // Currency signs, prefixed and suffixed
         expectDisplay("€20 to GBP", "£17.17")

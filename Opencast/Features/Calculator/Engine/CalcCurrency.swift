@@ -313,8 +313,13 @@ enum CalcCurrency {
         "SAR": ["riyal", "riyals"],  // 2
     ]
 
+    private static let standardAliases: [String: String] = [
+        "rmb": "CNY",
+        "renminbi": "CNY",
+    ]
+
     /// Lookup by lowercased ident. Codes, display names and uncontested nouns come from
-    /// `CurrencyData.generated.swift`; `contested` above is applied last so its choices win.
+    /// `CurrencyData.generated.swift`; hand-written aliases are applied last so their choices win.
     static let byName: [String: CurrencyDef] = {
         var defs: [String: CurrencyDef] = [:]
         var table: [String: CurrencyDef] = [:]
@@ -335,6 +340,9 @@ enum CalcCurrency {
         for (code, words) in contested {
             guard let def = defs[code] else { continue }
             for word in words { table[word] = def }
+        }
+        for (word, code) in standardAliases {
+            if let def = defs[code] { table[word] = def }
         }
         return table
     }()
