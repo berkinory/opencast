@@ -187,6 +187,11 @@ final class LauncherRankingStore: ObservableObject {
     }
 
     private static func defaultFileURL() -> URL {
-        AppPaths.applicationSupport().appendingPathComponent("launcher-ranking.json")
+        let bundleID = Bundle.main.bundleIdentifier ?? "com.opencast.app"
+        let base = FileManager.default
+            .urls(for: .applicationSupportDirectory, in: .userDomainMask)[0]
+            .appendingPathComponent(bundleID, isDirectory: true)
+        try? FileManager.default.createDirectory(at: base, withIntermediateDirectories: true)
+        return base.appendingPathComponent("launcher-ranking.json")
     }
 }
