@@ -484,12 +484,13 @@ final class AppIndex: ObservableObject {
     }
 
     private func rank(_ q: String, limit: Int) -> [AppEntry] {
+        guard let query = FuzzyMatch.Query(q) else { return [] }
         let learned = ranking.affinities(query: q)
         let global = ranking.globalAffinities()
         let scored = apps.compactMap { app -> RankedApp? in
             guard
                 let match = FuzzyMatch.match(
-                    query: q, candidate: app.name, aliases: app.searchAliases,
+                    query: query, candidate: app.name, aliases: app.searchAliases,
                     preferAlias: app.kind == .command
                 )
             else { return nil }
@@ -574,11 +575,24 @@ enum FuzzyMatch {
         }
     }
 
+    struct Query: Sendable {
+        fileprivate let normalized: String
+
+        init?(_ value: String) {
+            let normalized = FuzzyMatch.normalized(value)
+            guard !normalized.isEmpty else { return nil }
+            self.normalized = normalized
+        }
+    }
+
     /// Tiered relevance score retained for callers and the standalone matcher harness.
     static func score(query: String, candidate: String) -> Int? {
-        let q = normalized(query)
-        guard !q.isEmpty else { return 0 }
-        return match(normalizedQuery: q, candidate: normalized(candidate))?.score
+        guard let query = Query(query) else { return 0 }
+        return score(query: query, candidate: candidate)
+    }
+
+    static func score(query: Query, candidate: String) -> Int? {
+        match(normalizedQuery: query.normalized, candidate: normalized(candidate))?.score
     }
 
     static func match(query: String, candidate: String) -> Result? {
@@ -588,11 +602,16 @@ enum FuzzyMatch {
     static func match(
         query: String, candidate: String, aliases: [String], preferAlias: Bool = false
     ) -> Result? {
-        let q = normalized(query)
-        guard !q.isEmpty else { return nil }
-        let literal = match(normalizedQuery: q, candidate: normalized(candidate))
+        guard let query = Query(query) else { return nil }
+        return match(query: query, candidate: candidate, aliases: aliases, preferAlias: preferAlias)
+    }
+
+    static func match(
+        query: Query, candidate: String, aliases: [String], preferAlias: Bool = false
+    ) -> Result? {
+        let literal = match(normalizedQuery: query.normalized, candidate: normalized(candidate))
         let aliasMatches = aliases.compactMap {
-            match(normalizedQuery: q, candidate: normalized($0)).map {
+            match(normalizedQuery: query.normalized, candidate: normalized($0)).map {
                 Result(kind: $0.kind, detailScore: $0.detailScore, isAlias: true)
             }
         }

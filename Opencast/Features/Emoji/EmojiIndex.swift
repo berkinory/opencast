@@ -30,14 +30,15 @@ final class EmojiIndex: ObservableObject {
         let q = query.trimmingCharacters(in: .whitespaces)
         guard !q.isEmpty else { return [] }
         if let searchCache, searchCache.query == q { return searchCache.result }
+        guard let matchQuery = FuzzyMatch.Query(q) else { return [] }
 
         // A keyword hit is penalized just under half a tier so an equal-quality name match always outranks it.
         var scored: [(entry: EmojiEntry, score: Int, order: Int)] = []
         for (order, entry) in entries.enumerated() {
-            let nameScore = FuzzyMatch.score(query: q, candidate: entry.name)
+            let nameScore = FuzzyMatch.score(query: matchQuery, candidate: entry.name)
             var best = nameScore
             if !entry.keywords.isEmpty,
-                let keywordScore = FuzzyMatch.score(query: q, candidate: entry.keywords)
+                let keywordScore = FuzzyMatch.score(query: matchQuery, candidate: entry.keywords)
             {
                 best = max(best ?? Int.min, keywordScore - 500)
             }

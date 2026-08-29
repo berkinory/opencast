@@ -56,12 +56,13 @@ final class QuicklinkStore: ObservableObject {
     func search(_ query: String) -> [Quicklink] {
         let query = query.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !query.isEmpty else { return ordered(quicklinks) }
+        guard let matchQuery = FuzzyMatch.Query(query) else { return [] }
 
         let matched =
             quicklinks
             .compactMap { quicklink -> (Quicklink, Int)? in
                 let scores = [quicklink.name].compactMap {
-                    FuzzyMatch.score(query: query, candidate: $0)
+                    FuzzyMatch.score(query: matchQuery, candidate: $0)
                 }
                 guard let score = scores.max() else { return nil }
                 return (quicklink, score)

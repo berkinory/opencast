@@ -58,12 +58,13 @@ final class SnippetStore: ObservableObject {
     func search(_ query: String) -> [Snippet] {
         let query = query.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !query.isEmpty else { return ordered(snippets) }
+        guard let matchQuery = FuzzyMatch.Query(query) else { return [] }
 
         let matched =
             snippets
             .compactMap { snippet -> (Snippet, Int)? in
                 let scores = [snippet.name, snippet.keyword, snippet.content].compactMap {
-                    FuzzyMatch.score(query: query, candidate: $0)
+                    FuzzyMatch.score(query: matchQuery, candidate: $0)
                 }
                 guard let score = scores.max() else { return nil }
                 return (snippet, score)

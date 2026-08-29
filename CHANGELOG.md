@@ -12,6 +12,7 @@
 - Kept hidden or disabled launcher categories from responding to their global shortcuts.
 - Found applications stored one folder deep inside application directories.
 - Added a safe restart action for running applications.
+- Reduced repeated work during launcher and feature searches.
 
 ### Fixed
 
