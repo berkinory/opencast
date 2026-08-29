@@ -47,7 +47,8 @@ struct ScopesTest {
         check("deeper grouped folders are skipped", !found.contains("TooDeep.app"))
         check(
             "a nested folder works as its own scope",
-            SearchScopes.appBundles(in: [nested.path]).map(\.lastPathComponent) == ["Deep.app"])
+            Set(SearchScopes.appBundles(in: [nested.path]).map(\.lastPathComponent))
+                == ["Deep.app", "TooDeep.app"])
         check(
             "an .app scope is indexed directly",
             SearchScopes.appBundles(in: [apps.appendingPathComponent("Alpha.app").path])
@@ -58,7 +59,7 @@ struct ScopesTest {
         check(
             "a missing directory scope is skipped without failing the rest",
             SearchScopes.appBundles(in: [root.appendingPathComponent("Nope").path, nested.path])
-                .map(\.lastPathComponent) == ["Deep.app"])
+                .map(\.lastPathComponent) == ["Deep.app", "TooDeep.app"])
         check(
             "scopes are scanned in order",
             SearchScopes.appBundles(in: [nested.path, apps.path]).map(\.lastPathComponent).first

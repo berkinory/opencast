@@ -514,6 +514,19 @@ struct RootPaletteView: View {
             closeMenus()
             return .handled
         }
+        .onKeyPress(keys: ["r"], phases: .down) { press in
+            guard showActions else { return .ignored }
+            guard press.modifiers.contains(.command),
+                press.modifiers.intersection([.shift, .option, .control]).isEmpty,
+                vm.mode == .launcher,
+                let app = selectedAppEntry,
+                app.kind == .application,
+                selectionIsRunning
+            else { return .ignored }
+            core.launcher.restart(app)
+            closeMenus()
+            return .handled
+        }
         .onKeyPress(.escape) {
             if menuOpen {
                 closeMenus()

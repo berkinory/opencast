@@ -379,6 +379,12 @@ enum AppActionsMenu {
         if running, app.kind == .application {
             items.append(
                 PopoverMenuItem(
+                    title: "Restart Application", systemImage: "arrow.clockwise", shortcut: "⌘R"
+                ) {
+                    core.launcher.restart(app)
+                })
+            items.append(
+                PopoverMenuItem(
                     title: "Quit Application", systemImage: "power", isDestructive: true
                 ) {
                     core.systemCommands.quit(app)

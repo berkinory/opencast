@@ -104,6 +104,20 @@ final class LauncherCoordinator {
         Paster.copyPlainText(app.url.path)
     }
 
+    func restart(_ app: AppEntry) {
+        guard app.kind == .application, let bundleID = app.bundleID else { return }
+        hidePalette(false)
+        Task { [weak self] in
+            do {
+                try await AppLauncher.restart(bundleID: bundleID)
+            } catch {
+                guard let self else { return }
+                showPalette(.launcher)
+                palette.postFeedback("Could not restart (app.name)", tone: .error)
+            }
+        }
+    }
+
     private func runCommand(_ entry: AppEntry, inlineArgumentValues: [String]) {
         if let command = WindowCommandCatalog.command(forEntryID: entry.id) {
             windowCommands.run(command.id)

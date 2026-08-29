@@ -2,6 +2,18 @@ import AppKit
 
 enum AppLauncher {
 
+    enum RestartError: LocalizedError {
+        case notRunning
+        case didNotTerminate
+
+        var errorDescription: String? {
+            switch self {
+            case .notRunning: return "The application is not running."
+            case .didNotTerminate: return "The application did not close in time."
+            }
+        }
+    }
+
     @MainActor
     static func launch(_ url: URL) async throws {
         let workspace = NSWorkspace.shared
@@ -69,6 +81,30 @@ enum AppLauncher {
             running.unhide()
             running.activate()
         }
+    }
+
+    @MainActor
+    static func restart(bundleID: String) async throws {
+        let running = NSRunningApplication.runningApplications(withBundleIdentifier: bundleID)
+        guard !running.isEmpty else { throw RestartError.notRunning }
+        guard
+            let url = running.compactMap({ $0.bundleURL }).first
+                ?? NSWorkspace.shared.urlForApplication(withBundleIdentifier: bundleID)
+        else { throw RestartError.notRunning }
+
+        let processIDs = Set(running.map({ $0.processIdentifier }))
+        for app in running { app.terminate() }
+
+        let deadline = Date().addingTimeInterval(5)
+        while true {
+            let remaining = NSRunningApplication.runningApplications(withBundleIdentifier: bundleID)
+                .contains { processIDs.contains($0.processIdentifier) }
+            if !remaining { break }
+            guard Date() < deadline else { throw RestartError.didNotTerminate }
+            try await Task.sleep(for: .milliseconds(50))
+        }
+
+        try await launch(url)
     }
 
     /// Asks every running instance of a bundle ID to quit — graceful, so an app with unsaved work still gets to put its own sheet up. False when nothing was running.
