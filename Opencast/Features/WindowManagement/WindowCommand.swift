@@ -15,6 +15,8 @@ struct WindowCommand: Identifiable, Hashable, Sendable {
         case lastThird = "last-third"
         case firstTwoThirds = "first-two-thirds"
         case lastTwoThirds = "last-two-thirds"
+        case firstThreeFourths = "first-three-fourths"
+        case lastThreeFourths = "last-three-fourths"
         case maximize
         case maximizeHeight = "maximize-height"
         case maximizeWidth = "maximize-width"
@@ -45,6 +47,7 @@ struct WindowCommand: Identifiable, Hashable, Sendable {
         case halves
         case quarters
         case thirds
+        case fourths
         case sizing
         case moving
         case fullscreen
@@ -54,6 +57,7 @@ struct WindowCommand: Identifiable, Hashable, Sendable {
             case .halves: return "Halves"
             case .quarters: return "Quarters"
             case .thirds: return "Thirds"
+            case .fourths: return "Fourths"
             case .sizing: return "Sizing"
             case .moving: return "Moving"
             case .fullscreen: return "Fullscreen"
@@ -112,6 +116,8 @@ enum WindowCommandCatalog {
         case .lastThird: return "Last Third"
         case .firstTwoThirds: return "First Two Thirds"
         case .lastTwoThirds: return "Last Two Thirds"
+        case .firstThreeFourths: return "First Three Fourths"
+        case .lastThreeFourths: return "Last Three Fourths"
         case .maximize: return "Maximize"
         case .maximizeHeight: return "Maximize Height"
         case .maximizeWidth: return "Maximize Width"
@@ -141,6 +147,8 @@ enum WindowCommandCatalog {
         case .firstThird, .firstTwoThirds: return "rectangle.leadingthird.inset.filled"
         case .centerThird: return "rectangle.center.inset.filled"
         case .lastThird, .lastTwoThirds: return "rectangle.trailingthird.inset.filled"
+        case .firstThreeFourths: return "rectangle.lefthalf.inset.filled"
+        case .lastThreeFourths: return "rectangle.righthalf.inset.filled"
         case .maximize: return "arrow.up.left.and.arrow.down.right"
         case .maximizeHeight: return "arrow.up.and.down"
         case .maximizeWidth: return "arrow.left.and.right"
@@ -173,6 +181,8 @@ enum WindowCommandCatalog {
             return .quarters
         case .firstThird, .centerThird, .lastThird, .firstTwoThirds, .lastTwoThirds:
             return .thirds
+        case .firstThreeFourths, .lastThreeFourths:
+            return .fourths
         case .maximize, .maximizeHeight, .maximizeWidth, .center, .centerHalf, .restore:
             return .sizing
         case .moveLeft, .moveRight, .moveUp, .moveDown, .nextDisplay, .previousDisplay:

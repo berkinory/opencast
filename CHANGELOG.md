@@ -13,6 +13,7 @@
 - Found applications stored one folder deep inside application directories.
 - Added a safe restart action for running applications.
 - Reduced repeated work during launcher and feature searches.
+- Added three-quarter window layouts for wider side-by-side workspaces.
 
 ### Fixed
 
