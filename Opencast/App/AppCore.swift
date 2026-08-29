@@ -185,6 +185,19 @@ final class AppCore: ObservableObject {
         hotKeys.onToggleEmoji = { [weak self] in self?.toggleEmoji() }
         hotKeys.onRunCommand = { [weak self] id in self?.launcher.runHotKey(id: id) }
         hotKeys.onRunWindowCommand = { [weak self] id in self?.windowCommands.run(id) }
+        hotKeys.allowsAction = { [weak self] action in
+            guard let self, self.visibility.allowsHotKey(action) else { return false }
+            switch action {
+            case .toggleClipboard:
+                return self.settings.clipboardEnabled
+            case .toggleEmoji:
+                return self.settings.emojiEnabled
+            case .windowCommand:
+                return self.settings.windowManagementEnabled
+            default:
+                return true
+            }
+        }
         hotKeys.start()
 
         // First launch has no palette hotkey bound and shows nothing but the menu-bar icon; guide the user once. Marker is written at show-time so it stays one-time even if they Cmd-Q mid-flow.

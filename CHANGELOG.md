@@ -9,6 +9,7 @@
 ### Improved
 
 - Kept clipboard history and learned launcher preferences safe from automatic cache cleanup.
+- Kept hidden or disabled launcher categories from responding to their global shortcuts.
 
 ### Fixed
 

@@ -52,6 +52,34 @@ final class VisibilityStore: ObservableObject {
         !hiddenKinds.contains(kind.rawValue)
     }
 
+    func allowsHotKey(_ action: HotKeyAction) -> Bool {
+        let kind: AppEntry.Kind
+        let itemKey: String
+        switch action {
+        case .togglePalette:
+            return true
+        case .toggleClipboard:
+            kind = .command
+            itemKey = CommandID.clipboardHistory.rawValue
+        case .toggleEmoji:
+            kind = .command
+            itemKey = CommandID.searchEmoji.rawValue
+        case .app(let bundleID):
+            kind = .application
+            itemKey = bundleID
+        case .settingsPane(let bundleID):
+            kind = .systemSettings
+            itemKey = bundleID
+        case .command(let id):
+            kind = .command
+            itemKey = id
+        case .windowCommand(let id):
+            kind = .command
+            itemKey = "window-command:" + id.rawValue
+        }
+        return isKindVisible(kind) && !hiddenItemKeys.contains(itemKey)
+    }
+
     func setKindVisible(_ visible: Bool, for kind: AppEntry.Kind) {
         let before = hiddenKinds
         if visible { hiddenKinds.remove(kind.rawValue) } else { hiddenKinds.insert(kind.rawValue) }

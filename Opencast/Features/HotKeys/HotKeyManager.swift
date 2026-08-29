@@ -8,6 +8,7 @@ final class HotKeyManager: ObservableObject, HealthCheckable {
     var onToggleEmoji: (() -> Void)?
     var onRunCommand: ((String) -> Void)?
     var onRunWindowCommand: ((WindowCommand.ID) -> Void)?
+    var allowsAction: ((HotKeyAction) -> Bool)?
 
     /// The recorder currently capturing keystrokes, or `nil`; keeping this as plain app state makes recorders glitch-free, and any active recorder pauses Carbon so the typed combo can't fire a hotkey.
     @Published var recordingAction: HotKeyAction? {
@@ -243,6 +244,7 @@ final class HotKeyManager: ObservableObject, HealthCheckable {
     }
 
     private func perform(_ action: HotKeyAction) {
+        guard allowsAction?(action) ?? true else { return }
         switch action {
         case .togglePalette: onTogglePalette?()
         case .toggleClipboard: onToggleClipboard?()
