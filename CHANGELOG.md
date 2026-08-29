@@ -5,6 +5,7 @@
 ### Added
 
 - Added a quick way to reveal existing file and folder paths in Finder from the launcher and clipboard actions.
+- Added Hyper Key support with selectable keys and tap behavior.
 
 ### Improved
 

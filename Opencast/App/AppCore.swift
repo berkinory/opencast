@@ -14,6 +14,7 @@ final class AppCore: ObservableObject {
     let snippetExpansionMonitor: SnippetExpansionMonitor
     let clipboardManager: ClipboardManager
     let hotKeys: HotKeyManager
+    let hyperKey: HyperKeyManager
     let settings = AppSettings()
     let favorites = FavoritesStore()
     let visibility = VisibilityStore()
@@ -151,6 +152,9 @@ final class AppCore: ObservableObject {
         self.launcherRanking = launcherRanking
         appIndex = AppIndex(ranking: launcherRanking)
         hotKeys = HotKeyManager(entries: { [weak appIndex] in appIndex?.apps ?? [] })
+        let hyperKey = HyperKeyManager(settings: settings)
+        self.hyperKey = hyperKey
+        settings.onHyperKeySettingsChanged = { [weak hyperKey] in hyperKey?.restart() }
         clipboardManager = ClipboardManager(store: clipboardStore, settings: settings)
         snippetExpansionMonitor = SnippetExpansionMonitor(store: snippetStore, settings: settings)
     }
@@ -165,6 +169,7 @@ final class AppCore: ObservableObject {
         // Defer the initial SQLite read + stale-image prune off the synchronous launch path so the menu bar is interactive immediately; `items` is @Published, so the palette fills in when it lands.
         Task { clipboardStore.load() }
         hotKeys.healthTicker = healthTicker
+        healthTicker.subscribe(hyperKey)
         snippetExpansionMonitor.healthTicker = healthTicker
         clipboardManager.start()
         snippetExpansionMonitor.start()
@@ -199,6 +204,7 @@ final class AppCore: ObservableObject {
             }
         }
         hotKeys.start()
+        hyperKey.start()
 
         // First launch has no palette hotkey bound and shows nothing but the menu-bar icon; guide the user once. Marker is written at show-time so it stays one-time even if they Cmd-Q mid-flow.
         if !OnboardingState.hasOnboarded {

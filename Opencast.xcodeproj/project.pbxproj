@@ -35,9 +35,11 @@
 		33C2862B8FA034D7B6629E43 /* UninstallSession.swift in Sources */ = {isa = PBXBuildFile; fileRef = 91D28AED6648315A46CD89C3 /* UninstallSession.swift */; };
 		3B0091B23F62C6BEF7D71CE3 /* AppSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = E5FFCD6A8CF234A14631EA33 /* AppSettings.swift */; };
 		3B619A3C3A2C100CEA52FDC9 /* InlineArgument.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF824A314057E4C193483274 /* InlineArgument.swift */; };
+		3CBE26F2A4FFB99C47309E05 /* HyperKeySettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E1196C02466FCBC5ACB7105D /* HyperKeySettingsView.swift */; };
 		3E1749B1DF98F13F2E7A3867 /* PaletteFooterControls.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFB627B29E6DD1FE01D27B00 /* PaletteFooterControls.swift */; };
 		42FBE731682681251121D21F /* QuicklinkPaletteScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = C30F6729865EB380623B6909 /* QuicklinkPaletteScreen.swift */; };
 		432F53FC304B86D7F48B1EC7 /* AppLauncher.swift in Sources */ = {isa = PBXBuildFile; fileRef = 16EF20D6D40812470F28F1A2 /* AppLauncher.swift */; };
+		46E1C96103F41F17F9E761AF /* HyperKeyManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 288427E0A9F1D99848E3C20C /* HyperKeyManager.swift */; };
 		4B2265767404C02D0088F41C /* PaletteListLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30278F74390991460390F76B /* PaletteListLayout.swift */; };
 		4BE8F596C87E28C20A958FBF /* ClipboardSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6D2CEC6B747A3F7FDA120991 /* ClipboardSettingsView.swift */; };
 		4C3EE7AEF172CF321F383BFC /* SearchScopes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F2A51A0280BDE282048EDFA /* SearchScopes.swift */; };
@@ -160,6 +162,7 @@
 		254B654315E0066980461CBA /* PopoverMenu.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PopoverMenu.swift; sourceTree = "<group>"; };
 		27005C975775529D2439B4A4 /* LauncherView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LauncherView.swift; sourceTree = "<group>"; };
 		27F2FC2999A872CED0B69D3A /* CalcFormatter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CalcFormatter.swift; sourceTree = "<group>"; };
+		288427E0A9F1D99848E3C20C /* HyperKeyManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HyperKeyManager.swift; sourceTree = "<group>"; };
 		2CF30906FA0CB69CAE9012EB /* Romanization.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Romanization.swift; sourceTree = "<group>"; };
 		30278F74390991460390F76B /* PaletteListLayout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PaletteListLayout.swift; sourceTree = "<group>"; };
 		31A0FDBB98365DA92EA6AFE4 /* SettingsRootView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsRootView.swift; sourceTree = "<group>"; };
@@ -251,6 +254,7 @@
 		DCCF4ED60F487B6C9945F732 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		DD7828F8E8D06ABDF3E82E4A /* SnippetActionsMenu.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SnippetActionsMenu.swift; sourceTree = "<group>"; };
 		DFFA196847EC88A7B596C25F /* ClipboardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClipboardView.swift; sourceTree = "<group>"; };
+		E1196C02466FCBC5ACB7105D /* HyperKeySettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HyperKeySettingsView.swift; sourceTree = "<group>"; };
 		E5FFCD6A8CF234A14631EA33 /* AppSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppSettings.swift; sourceTree = "<group>"; };
 		E7FFF18ECC57AAC9678FA168 /* HotKeyManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HotKeyManager.swift; sourceTree = "<group>"; };
 		E9299D3A11818FC0597CACB6 /* VisibilityStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VisibilityStore.swift; sourceTree = "<group>"; };
@@ -427,6 +431,7 @@
 				3641C2AEB1E4DC3B3066DC2A /* DoubleCommandMonitor.swift */,
 				B19CF7194BA319940855490A /* HotKeyCenter.swift */,
 				E7FFF18ECC57AAC9678FA168 /* HotKeyManager.swift */,
+				288427E0A9F1D99848E3C20C /* HyperKeyManager.swift */,
 				99B8D42FF35FB483E493A33E /* KeyShortcut.swift */,
 			);
 			path = HotKeys;
@@ -452,6 +457,7 @@
 				6D2CEC6B747A3F7FDA120991 /* ClipboardSettingsView.swift */,
 				6CBDBDA7A914809B55FF32FE /* EmojiSettingsView.swift */,
 				F9B757ECE8217E75C25E12B2 /* GeneralSettingsView.swift */,
+				E1196C02466FCBC5ACB7105D /* HyperKeySettingsView.swift */,
 				F48F4C32ACE0359047A8CD3B /* LauncherSettingsView.swift */,
 				B8A31A5225BDE8E7012E20D3 /* PermissionsSettingsView.swift */,
 				75436CB1E5583DCA4C5B448A /* QuicklinkSettingsView.swift */,
@@ -723,6 +729,8 @@
 				B7853593700B36F107AF4EB1 /* HealthTicker.swift in Sources */,
 				80E9D647D2B8CD2EDF6A9568 /* HotKeyCenter.swift in Sources */,
 				F1466C52915F3F6D3CB31B58 /* HotKeyManager.swift in Sources */,
+				46E1C96103F41F17F9E761AF /* HyperKeyManager.swift in Sources */,
+				3CBE26F2A4FFB99C47309E05 /* HyperKeySettingsView.swift in Sources */,
 				530B4CB03AEDD68CC41E5F4D /* ImageThumbnail.swift in Sources */,
 				3B619A3C3A2C100CEA52FDC9 /* InlineArgument.swift in Sources */,
 				8586F03BA9F0A81BB8F72C94 /* KeyShortcut.swift in Sources */,
@@ -863,7 +871,7 @@
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				MACOSX_DEPLOYMENT_TARGET = 15.0;
-				MARKETING_VERSION = 0.2.2;
+				MARKETING_VERSION = 0.2.3;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
@@ -930,7 +938,7 @@
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				MACOSX_DEPLOYMENT_TARGET = 15.0;
-				MARKETING_VERSION = 0.2.2;
+				MARKETING_VERSION = 0.2.3;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				OTHER_CODE_SIGN_FLAGS = "--timestamp";

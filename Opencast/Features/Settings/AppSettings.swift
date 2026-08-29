@@ -46,7 +46,12 @@ final class AppSettings: ObservableObject {
         static let windowRespectSystemMargins = "windowRespectSystemMargins"
         static let snippetDisabledApps = "snippetDisabledApps"
         static let quicklinksEnabled = "quicklinksEnabled"
+        static let hyperKeyEnabled = "hyperKeyEnabled"
+        static let hyperKey = "hyperKey"
+        static let hyperTapBehavior = "hyperTapBehavior"
     }
+
+    var onHyperKeySettingsChanged: (() -> Void)?
 
     @Published var searchScopes: [String] {
         didSet { defaults.set(searchScopes, forKey: Key.searchScopes) }
@@ -142,6 +147,27 @@ final class AppSettings: ObservableObject {
         didSet { defaults.set(quicklinksEnabled, forKey: Key.quicklinksEnabled) }
     }
 
+    @Published var hyperKeyEnabled: Bool {
+        didSet {
+            defaults.set(hyperKeyEnabled, forKey: Key.hyperKeyEnabled)
+            onHyperKeySettingsChanged?()
+        }
+    }
+
+    @Published var hyperKey: HyperKey {
+        didSet {
+            defaults.set(hyperKey.rawValue, forKey: Key.hyperKey)
+            onHyperKeySettingsChanged?()
+        }
+    }
+
+    @Published var hyperTapBehavior: HyperTapBehavior {
+        didSet {
+            defaults.set(hyperTapBehavior.rawValue, forKey: Key.hyperTapBehavior)
+            onHyperKeySettingsChanged?()
+        }
+    }
+
     init() {
         // integer(forKey:) returns 0 when unset, which no case matches — falls through to 3 Months.
         clipboardRetention =
@@ -186,6 +212,11 @@ final class AppSettings: ObservableObject {
         quicklinksEnabled =
             defaults.object(forKey: Key.quicklinksEnabled) == nil
             || defaults.bool(forKey: Key.quicklinksEnabled)
+        hyperKeyEnabled = defaults.bool(forKey: Key.hyperKeyEnabled)
+        hyperKey = HyperKey(rawValue: defaults.string(forKey: Key.hyperKey) ?? "") ?? .capsLock
+        hyperTapBehavior =
+            HyperTapBehavior(rawValue: defaults.string(forKey: Key.hyperTapBehavior) ?? "")
+            ?? .nothing
         searchScopes = SearchScopes.normalize(
             defaults.stringArray(forKey: Key.searchScopes) ?? SearchScopes.defaults)
     }

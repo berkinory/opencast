@@ -15,7 +15,7 @@ struct SettingsRoute: Hashable, Sendable {
 }
 
 enum SettingsTab: Int, CaseIterable, Identifiable, Sendable {
-    case general, launcher, commands, clipboard, snippets, quicklinks, emoji, calculator
+    case general, hyperKey, launcher, commands, clipboard, snippets, quicklinks, emoji, calculator
     case windowManagement, about
 
     var id: Int { rawValue }
@@ -23,6 +23,7 @@ enum SettingsTab: Int, CaseIterable, Identifiable, Sendable {
     var title: String {
         switch self {
         case .general: return "General"
+        case .hyperKey: return "Hyper Key"
         case .launcher: return "Launcher"
         case .commands: return "Commands"
         case .clipboard: return "Clipboard"
@@ -38,6 +39,7 @@ enum SettingsTab: Int, CaseIterable, Identifiable, Sendable {
     var systemImage: String {
         switch self {
         case .general: return "switch.2"
+        case .hyperKey: return "capslock"
         case .launcher: return "command"
         case .commands: return "terminal"
         case .clipboard: return "clipboard"
@@ -52,7 +54,7 @@ enum SettingsTab: Int, CaseIterable, Identifiable, Sendable {
 
     var group: SettingsGroup {
         switch self {
-        case .general, .launcher, .commands: return .preferences
+        case .general, .hyperKey, .launcher, .commands: return .preferences
         case .clipboard, .snippets, .quicklinks, .emoji, .calculator, .windowManagement:
             return .features
         case .about: return .about
@@ -62,6 +64,7 @@ enum SettingsTab: Int, CaseIterable, Identifiable, Sendable {
     var tint: Color {
         switch self {
         case .general: return Theme.Colors.systemAccent
+        case .hyperKey: return Theme.Colors.systemAccent
         case .launcher: return Theme.Colors.launcherAccent
         case .commands: return Theme.Colors.systemAccent
         case .clipboard: return Theme.Colors.clipboardAccent
@@ -154,6 +157,7 @@ struct SettingsRootView: View {
     private func pane(for tab: SettingsTab) -> some View {
         switch tab {
         case .general: GeneralSettingsView()
+        case .hyperKey: HyperKeySettingsView()
         case .launcher: LauncherSettingsView()
         case .commands: CommandsSettingsView()
         case .clipboard: ClipboardSettingsView()

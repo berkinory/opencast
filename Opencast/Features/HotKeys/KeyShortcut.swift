@@ -45,6 +45,9 @@ struct KeyShortcut: Hashable, Sendable {
 
     /// Modifier symbols in the fixed ⌃⌥⇧⌘ order every macOS surface uses.
     static func modifierSymbols(from flags: NSEvent.ModifierFlags) -> [String] {
+        if flags.contains([.command, .option, .control, .shift]) {
+            return ["Hyper"]
+        }
         var symbols: [String] = []
         if flags.contains(.control) { symbols.append("⌃") }
         if flags.contains(.option) { symbols.append("⌥") }
