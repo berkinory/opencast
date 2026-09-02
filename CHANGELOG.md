@@ -5,6 +5,7 @@
 ### Improved
 
 - Currency conversion now starts automatically, while crypto conversion stays off until enabled.
+- Applications can be found using their localized system display names.
 
 ### Fixed
 

@@ -441,9 +441,9 @@ final class AppIndex: ObservableObject {
 
     private nonisolated static func alternateNames(for url: URL, displayName: String) -> [String] {
         guard let item = MDItemCreateWithURL(nil, url as CFURL) else { return [] }
-        guard let values = MDItemCopyAttribute(item, "kMDItemAlternateNames" as CFString) as? [String]
-        else {
-            return []
+        var values = MDItemCopyAttribute(item, "kMDItemAlternateNames" as CFString) as? [String] ?? []
+        if let localizedName = MDItemCopyAttribute(item, "kMDItemDisplayName" as CFString) as? String {
+            values.append(localizedName)
         }
 
         var seen = Set<String>()
