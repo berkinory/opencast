@@ -156,8 +156,8 @@ enum CalcDateTime {
         _ query: String, echo: String, now: Date, calendar: Calendar
     ) -> CalcResult? {
         let phrase = String(query.dropLast(" ago".count))
-        guard let duration = parseDurationPhrase(phrase),
-            let date = calendar.date(byAdding: duration.component, value: -duration.count, to: now)
+        guard let duration = parseDurationPhrase(phrase), duration.count != .min,
+            let date = adding(duration, signedCount: -duration.count, to: now, calendar: calendar)
         else { return nil }
         let display = momentString(date, hasTime: duration.subDay, now: now, calendar: calendar)
         return CalcResult(
@@ -303,8 +303,7 @@ enum CalcDateTime {
         }
 
         guard let duration = parseDurationPhrase(durationPhrase),
-            let result = calendar.date(
-                byAdding: duration.component, value: duration.count, to: base.date)
+            let result = adding(duration, signedCount: duration.count, to: base.date, calendar: calendar)
         else { return nil }
         let display = momentString(
             result, hasTime: (!baseIsImplicitNow && base.hasTime) || duration.subDay, now: now, calendar: calendar)
@@ -356,9 +355,7 @@ enum CalcDateTime {
             sign == 1 || duration.count != .min
         else { return nil }
         let signed = sign == 1 ? duration.count : -duration.count
-        guard
-            let result = calendar.date(
-                byAdding: duration.component, value: signed, to: base.date)
+        guard let result = adding(duration, signedCount: signed, to: base.date, calendar: calendar)
         else { return nil }
 
         let hasTime = (!baseIsImplicitNow && base.hasTime) || duration.subDay
@@ -397,9 +394,7 @@ enum CalcDateTime {
             // Negating Int.min traps; degrade to no card on that edge.
             guard op == "+" || duration.count != .min else { return nil }
             let signed = op == "-" ? -duration.count : duration.count
-            guard
-                let result = calendar.date(
-                    byAdding: duration.component, value: signed, to: base.date)
+            guard let result = adding(duration, signedCount: signed, to: base.date, calendar: calendar)
             else { return nil }
             let hasTime = base.hasTime || duration.subDay
             let display = momentString(result, hasTime: hasTime, now: now, calendar: calendar)
@@ -628,6 +623,29 @@ enum CalcDateTime {
         var subDay: Bool { kind == .subSecond }
     }
 
+    private static func adding(
+        _ duration: (count: Int, component: Calendar.Component, subDay: Bool, businessDays: Bool),
+        signedCount: Int,
+        to date: Date,
+        calendar: Calendar
+    ) -> Date? {
+        guard signedCount != .min else { return nil }
+        guard duration.businessDays else {
+            return calendar.date(byAdding: duration.component, value: signedCount, to: date)
+        }
+        guard signedCount != 0 else { return date }
+        let step = signedCount > 0 ? 1 : -1
+        var remaining = abs(signedCount)
+        var result = date
+        while remaining > 0 {
+            guard let next = calendar.date(byAdding: .day, value: step, to: result) else { return nil }
+            result = next
+            let weekday = calendar.component(.weekday, from: result)
+            if (2...6).contains(weekday) { remaining -= 1 }
+        }
+        return result
+    }
+
     private static func durationUnit(_ phrase: String) -> DurUnit? {
         guard let last = phrase.split(separator: " ").last.map(String.init) else { return nil }
         switch last {
@@ -652,24 +670,30 @@ enum CalcDateTime {
 
     /// `<n> <unit>` for date arithmetic; weeks fold to days so `date(byAdding:)` stays DST-safe.
     private static func parseDurationPhrase(_ phrase: String) -> (
-        count: Int, component: Calendar.Component, subDay: Bool
+        count: Int, component: Calendar.Component, subDay: Bool, businessDays: Bool
     )? {
         let atoms = atomize(phrase)
         if atoms.count == 1, let count = Int(atoms[0]) {
-            return (count, .day, false)
+            return (count, .day, false, false)
+        }
+        if atoms.count == 3, let count = Int(atoms[0]),
+            ["business", "work", "working"].contains(atoms[1]),
+            ["day", "days", "weekday", "weekdays"].contains(atoms[2])
+        {
+            return (count, .day, false, true)
         }
         guard atoms.count == 2, let count = Int(atoms[0]) else { return nil }
         switch atoms[1] {
-        case "s", "sec", "secs", "second", "seconds": return (count, .second, true)
-        case "min", "mins", "minute", "minutes": return (count, .minute, true)
-        case "h", "hr", "hrs", "hour", "hours": return (count, .hour, true)
-        case "d", "day", "days": return (count, .day, false)
+        case "s", "sec", "secs", "second", "seconds": return (count, .second, true, false)
+        case "min", "mins", "minute", "minutes": return (count, .minute, true, false)
+        case "h", "hr", "hrs", "hour", "hours": return (count, .hour, true, false)
+        case "d", "day", "days": return (count, .day, false, false)
         case "wk", "week", "weeks":
             // Absurd counts overflow the fold to days; degrade to no card rather than trap.
             let (days, overflow) = count.multipliedReportingOverflow(by: 7)
-            return overflow ? nil : (days, .day, false)
-        case "mo", "mos", "month", "months": return (count, .month, false)
-        case "yr", "yrs", "year", "years": return (count, .year, false)
+            return overflow ? nil : (days, .day, false, false)
+        case "mo", "mos", "month", "months": return (count, .month, false, false)
+        case "yr", "yrs", "year", "years": return (count, .year, false, false)
         default: return nil
         }
     }
