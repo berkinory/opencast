@@ -116,6 +116,16 @@ enum AppLauncher {
         return !running.isEmpty
     }
 
+    /// Force-terminate every running instance of a bundle.
+    @MainActor
+    @discardableResult
+    static func forceQuit(bundleID: String) -> Bool {
+        let running = NSRunningApplication.runningApplications(withBundleIdentifier: bundleID)
+        var terminated = false
+        for app in running { terminated = app.forceTerminate() || terminated }
+        return terminated
+    }
+
     /// Finder is never a Quit All target: `terminate()` only makes it relaunch, and nobody means the desktop when they say "quit everything".
     private static let quitAllExclusions: Set<String> = ["com.apple.finder"]
 

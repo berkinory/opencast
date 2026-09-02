@@ -118,6 +118,12 @@ final class LauncherCoordinator {
         }
     }
 
+    func forceQuit(_ app: AppEntry) {
+        guard app.kind == .application, let bundleID = app.bundleID else { return }
+        hidePalette(false)
+        _ = AppLauncher.forceQuit(bundleID: bundleID)
+    }
+
     private func runCommand(_ entry: AppEntry, inlineArgumentValues: [String]) {
         if let command = WindowCommandCatalog.command(forEntryID: entry.id) {
             windowCommands.run(command.id)

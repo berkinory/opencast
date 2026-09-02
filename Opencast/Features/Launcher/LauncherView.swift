@@ -389,6 +389,12 @@ enum AppActionsMenu {
                 ) {
                     core.systemCommands.quit(app)
                 })
+            items.append(
+                PopoverMenuItem(
+                    title: "Force Quit Application", systemImage: "xmark.octagon", isDestructive: true
+                ) {
+                    core.launcher.forceQuit(app)
+                })
         }
         return PopoverMenuContent(header: app.name, items: items)
     }

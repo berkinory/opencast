@@ -2,6 +2,10 @@
 
 ## [0.2.4]
 
+### Added
+
+- Added a direct Force Quit action for running applications.
+
 ### Improved
 
 - Currency conversion now starts automatically, while crypto conversion stays off until enabled.
