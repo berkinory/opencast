@@ -9,6 +9,7 @@
 ### Fixed
 
 - Fixed currency conversion appearing enabled while exchange rates were not running.
+- Fixed Hyper Key tap replay carrying modifier keys into the next shortcut.
 
 ## [0.2.3]
 

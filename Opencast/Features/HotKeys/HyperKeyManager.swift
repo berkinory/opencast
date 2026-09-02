@@ -198,6 +198,8 @@ final class HyperKeyManager: ObservableObject, HealthCheckable {
         let source = CGEventSource(stateID: .combinedSessionState)
         let down = CGEvent(keyboardEventSource: source, virtualKey: keyCode, keyDown: true)
         let up = CGEvent(keyboardEventSource: source, virtualKey: keyCode, keyDown: false)
+        down?.flags = []
+        up?.flags = []
         down?.setIntegerValueField(.eventSourceUserData, value: Self.replayMarker)
         up?.setIntegerValueField(.eventSourceUserData, value: Self.replayMarker)
         down?.post(tap: .cghidEventTap)
