@@ -69,7 +69,7 @@ enum CommandID: String, CaseIterable, Sendable {
         switch self {
         case .clipboardHistory: return .toggleClipboard
         case .searchEmoji: return .toggleEmoji
-        default: return nil
+        default: return .command(id: rawValue)
         }
     }
 

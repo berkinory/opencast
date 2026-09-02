@@ -6,6 +6,7 @@
 
 - Currency conversion now starts automatically, while crypto conversion stays off until enabled.
 - Applications can be found using their localized system display names.
+- Every built-in command can now have its own keyboard shortcut.
 
 ### Fixed
 

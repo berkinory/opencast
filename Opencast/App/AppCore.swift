@@ -197,6 +197,19 @@ final class AppCore: ObservableObject {
                 return self.settings.clipboardEnabled
             case .toggleEmoji:
                 return self.settings.emojiEnabled
+            case .command(let id):
+                switch CommandID(rawValue: id) {
+                case .searchSnippets, .createSnippet:
+                    return self.settings.snippetsEnabled
+                case .searchQuicklinks, .createQuicklink:
+                    return self.settings.quicklinksEnabled
+                case .searchEmoji:
+                    return self.settings.emojiEnabled
+                case .clipboardHistory:
+                    return self.settings.clipboardEnabled
+                default:
+                    return true
+                }
             case .windowCommand:
                 return self.settings.windowManagementEnabled
             default:
