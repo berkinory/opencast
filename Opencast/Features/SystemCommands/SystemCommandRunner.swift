@@ -308,7 +308,7 @@ enum SystemCommandRunner {
     private static func ejectAllDisks() throws -> Int {
         let keys: Set<URLResourceKey> = [
             .volumeIsEjectableKey, .volumeIsInternalKey, .volumeIsLocalKey,
-            .volumeIsRootFileSystemKey
+            .volumeIsRootFileSystemKey,
         ]
         let urls =
             FileManager.default.mountedVolumeURLs(
