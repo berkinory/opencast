@@ -478,7 +478,7 @@ struct RootPaletteView: View {
             move(1)
             return .handled
         }
-        // With a menu open, plain ↵ activates its highlighted row. A modified ↵ always runs the selection's own action regardless of menu state: ⌘↵ the secondary copy action (each menu advertises it), ⌥↵ paste-in-place; plain ↵ (no menu) falls through to the field's onSubmit.
+        // With a menu open, plain ↵ activates its highlighted row. A modified ↵ always runs the selection's own action regardless of menu state: ⌘↵ the secondary copy action (each menu advertises it), ⌥↵ paste-in-place.
         .onKeyPress(keys: [.return], phases: .down) { press in
             handleModifiedReturn(press) ? .handled : .ignored
         }
@@ -750,7 +750,6 @@ struct RootPaletteView: View {
             vm.searchFieldFrame = frame
         }
         .focused($searchFocused)
-        .onSubmit(activateSelection)
     }
 
     private func clipboardScreen(
@@ -1139,7 +1138,11 @@ struct RootPaletteView: View {
             activateMenuItem(menuSelection)
             return true
         }
-        guard command || option else { return false }
+        guard command || option else {
+            guard searchFocused, !vm.searchIsComposing else { return false }
+            activateSelection()
+            return true
+        }
         switch vm.mode {
         case .emoji:
             let screen = emojiScreen(sections: emojiSections, selection: selection)

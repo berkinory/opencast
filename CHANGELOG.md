@@ -14,6 +14,7 @@
 - Fixed currency conversion appearing enabled while exchange rates were not running.
 - Fixed Hyper Key tap replay carrying modifier keys into the next shortcut.
 - Fixed Eject All Disks missing external drives that report fixed media.
+- Fixed plain Return occasionally submitting a stale launcher query instead of its selection.
 
 ## [0.2.3]
 
