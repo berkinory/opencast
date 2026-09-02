@@ -84,9 +84,7 @@ enum SystemCommandRunner {
                 try runAppleScript("tell application \"Finder\" to empty trash")
             }
         case .ejectAllDisks:
-            try runAppleScript(
-                "tell application \"Finder\" to eject (every disk whose ejectable is true and local volume is true)"
-            )
+            _ = try ejectAllDisks()
         case .toggleHiddenFiles:
             _ = try await toggleDefault(domain: "com.apple.finder", key: "AppleShowAllFiles")
             let output = try await process("/usr/bin/killall", arguments: ["Finder"])
@@ -304,6 +302,52 @@ enum SystemCommandRunner {
         }
         previousApp?.unhide()
         previousApp?.activate()
+    }
+
+    @discardableResult
+    private static func ejectAllDisks() throws -> Int {
+        let keys: Set<URLResourceKey> = [
+            .volumeIsEjectableKey, .volumeIsInternalKey, .volumeIsLocalKey,
+            .volumeIsRootFileSystemKey
+        ]
+        let urls =
+            FileManager.default.mountedVolumeURLs(
+                includingResourceValuesForKeys: Array(keys), options: [.skipHiddenVolumes]) ?? []
+        let ejectable = urls.filter { url in
+            guard let values = try? url.resourceValues(forKeys: keys),
+                values.volumeIsLocal != false,
+                values.volumeIsInternal != true,
+                values.volumeIsRootFileSystem != true
+            else { return false }
+            return values.volumeIsEjectable == true || values.volumeIsInternal == false
+        }
+        var failures: [String] = []
+        var ejected = 0
+        for url in ejectable {
+            guard mountedVolumeExists(url) else { continue }
+            do {
+                try NSWorkspace.shared.unmountAndEjectDevice(at: url)
+                ejected += 1
+            } catch {
+                guard !mountedVolumeExists(url) else {
+                    failures.append("\(url.lastPathComponent): \(error.localizedDescription)")
+                    continue
+                }
+                ejected += 1
+            }
+        }
+        guard failures.isEmpty else {
+            throw SystemCommandFailure(
+                "Some disks could not be ejected:\n\n" + failures.joined(separator: "\n"))
+        }
+        return ejected
+    }
+
+    private static func mountedVolumeExists(_ url: URL) -> Bool {
+        let mounted =
+            FileManager.default.mountedVolumeURLs(
+                includingResourceValuesForKeys: nil, options: [.skipHiddenVolumes]) ?? []
+        return mounted.contains { $0.standardizedFileURL == url.standardizedFileURL }
     }
 
     @discardableResult
