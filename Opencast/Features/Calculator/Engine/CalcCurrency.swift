@@ -80,10 +80,8 @@ enum CurrencyFeed {
 
 /// Whether the calculator may answer currency questions at all, and with what.
 ///
-/// `.off` is the shipped default and the *only* state that exists without explicit user consent:
-/// the currency path never engages, so a currency query falls through to no card — not an error
-/// explaining a feature the user never turned on. `.on(nil)` means consent was given but no
-/// snapshot has landed yet, which is the state that earns the "rates unavailable" message.
+/// `.off` disables the feature for callers that do not want currency conversion. `.on(nil)` means
+/// conversion is enabled but no snapshot has landed yet, which earns the "rates unavailable" message.
 enum CurrencySource: Equatable, Sendable {
     case off
     case on(CurrencyRates?)

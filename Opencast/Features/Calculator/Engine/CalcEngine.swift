@@ -32,8 +32,8 @@ struct CalcResult: Equatable, Sendable {
 
 /// Entry point turning a raw query into a calculator answer (or nil when it isn't calculator input), via a pure pre-filter → base → unit → arithmetic pipeline; kept Foundation-only so `Tools/calc-test.swift` compiles it standalone.
 enum CalcEngine {
-    /// Public entry: evaluates against the live clock. `currency` defaults to `.off` so any caller that
-    /// hasn't been handed a consented source gets the feature disabled rather than silently enabled.
+    /// Public entry: evaluates against the live clock. `currency` defaults to `.off` so callers can
+    /// opt out of currency conversion explicitly.
     static func evaluate(_ raw: String, currency: CurrencySource = .off) -> CalcResult? {
         var calendar = Calendar.current
         calendar.locale = Locale(identifier: "en_US_POSIX")
@@ -94,7 +94,7 @@ enum CalcEngine {
         }
 
         // Currency runs after units so an all-unit query keeps winning: `10 pounds to kg` is weight,
-        // `10 pounds to euros` is money. Returns nil outright when the user hasn't consented.
+        // `10 pounds to euros` is money.
         if let conversion = CalcCurrency.parseConversion(tokens, source: currency) {
             switch conversion {
             case .value(_, let from, let to, let output):

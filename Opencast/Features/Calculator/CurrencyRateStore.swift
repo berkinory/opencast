@@ -3,10 +3,6 @@ import Foundation
 /// Downloads, caches and periodically refreshes the exchange-rate table the calculator's currency
 /// conversions run on. Network and disk live here, never in `Core/Calculator/`: the engine is handed
 /// a finished `CurrencySource`, which is what keeps it Foundation-only and pure.
-///
-/// This reaches the network, so it is gated on explicit consent — off until the user enables currency
-/// conversion in Settings. Every path that could reach the network or surface a rate re-checks
-/// `isEnabled` rather than trusting a caller.
 @MainActor
 final class CurrencyRateStore: ObservableObject {
     static let fiatProvider = "Frankfurter"
@@ -31,11 +27,7 @@ final class CurrencyRateStore: ObservableObject {
     /// Shorter retry so a machine that was offline at launch picks rates up soon after it reconnects.
     private static let retryInterval: TimeInterval = 15 * 60
 
-    /// Explicit user consent, persisted under the bundle-scoped defaults. Deliberately *not* part of
-    /// `AppSettings`, so settings changes cannot silently grant network access.
-    @Published private(set) var isEnabled: Bool
-
-    /// The newest snapshot, or nil when none has landed — and always nil while consent is withheld.
+    /// The newest snapshot, or nil when none has landed.
     @Published private(set) var rates: CurrencyRates?
     private var cryptoEnabled = false
     private var fetchesAllowed = false
@@ -48,43 +40,34 @@ final class CurrencyRateStore: ObservableObject {
         return rates?.fetchedAt
     }
 
-    private static let consentKey = "currencyRatesEnabled"
-    private let defaults = UserDefaults.standard
     private let fileURL: URL
     private var pump: Task<Void, Never>?
 
     init() {
-        // Absent reads as false, which is the only safe default for a network feature.
-        isEnabled = defaults.bool(forKey: Self.consentKey)
         fileURL = AppPaths.caches().appendingPathComponent("currency-rates.json")
 
-        // Guard 1 — a disabled feature doesn't even read back a snapshot left on disk.
-        guard isEnabled, let data = try? Data(contentsOf: fileURL) else { return }
+        guard let data = try? Data(contentsOf: fileURL) else { return }
         rates = try? JSONDecoder().decode(CurrencyRates.self, from: data)
     }
 
-    /// What the calculator is allowed to use. Without provider consent the engine is handed `.off`;
-    /// crypto is independently filtered when its optional setting is disabled.
+    /// The calculator controls whether this source is used; crypto is independently filtered when
+    /// its optional setting is disabled.
     func source(cryptoEnabled: Bool) -> CurrencySource {
-        guard isEnabled else { return .off }
         return .onWithCrypto(rates, cryptoEnabled: cryptoEnabled)
     }
 
     /// Starts the refresh loop: fetch whenever the cached snapshot is older than `refreshInterval`,
     /// otherwise sleep exactly until it expires. A failed fetch keeps the stale snapshot and retries
-    /// sooner. Guard 3 — no consent, no loop, so `AppCore.start()` can call this unconditionally.
+    /// sooner.
     func start(cryptoEnabled: Bool = false) {
         self.cryptoEnabled = cryptoEnabled
         if !cryptoEnabled { removeCryptoRates() }
         fetchesAllowed = true
-        guard isEnabled else { return }
-        // Replace rather than bail on a live pump: a loop that has already exited still leaves a
-        // non-nil task behind, and a `pump == nil` guard would let that dead task block every restart.
         pump?.cancel()
         let fetchCryptoImmediately = cryptoEnabled && !hasCryptoRates
         pump = Task { [weak self] in
             var fetchImmediately = fetchCryptoImmediately
-            while !Task.isCancelled, let self, self.isEnabled {
+            while !Task.isCancelled, let self {
                 // Clamped: a snapshot stamped in the future (clock skew, an edited cache file) must
                 // not park the loop for longer than one interval.
                 let age = max(0, self.rates.map { Date().timeIntervalSince($0.fetchedAt) } ?? .infinity)
@@ -99,14 +82,11 @@ final class CurrencyRateStore: ObservableObject {
         }
     }
 
-    /// The Settings toggle's only entry point, called after the user accepts the consent dialog.
-    /// Disabling tears the loop down, drops the snapshot and deletes the cached file — opting out
-    /// shouldn't leave downloaded data behind.
     func setCryptoEnabled(_ enabled: Bool) {
         guard enabled != cryptoEnabled else { return }
         cryptoEnabled = enabled
         if !enabled { removeCryptoRates() }
-        if enabled, isEnabled, fetchesAllowed { start(cryptoEnabled: true) }
+        if enabled, fetchesAllowed { start(cryptoEnabled: true) }
     }
 
     func stop() {
@@ -115,35 +95,16 @@ final class CurrencyRateStore: ObservableObject {
         pump = nil
     }
 
-    func setEnabled(_ enabled: Bool) {
-        guard enabled != isEnabled else { return }
-        isEnabled = enabled
-        defaults.set(enabled, forKey: Self.consentKey)
-        if enabled {
-            start(cryptoEnabled: cryptoEnabled)
-        } else {
-            fetchesAllowed = false
-            pump?.cancel()
-            pump = nil
-            rates = nil
-            try? FileManager.default.removeItem(at: fileURL)
-        }
-    }
-
-    /// Manual "Update Now" from Settings. Returns whether a fresh table landed, so the pane can say
-    /// the fetch failed instead of leaving the button to spring back with nothing changed.
     func refreshNow() async -> Bool {
-        guard isEnabled, fetchesAllowed else { return false }
+        guard fetchesAllowed else { return false }
         return await fetchAndStore()
     }
 
     private func fetchAndStore() async -> Bool {
-        // Guard 4 — re-checked at the network boundary itself: the pump may have been sleeping when
-        // the user revoked consent, and this is the last line before a request goes out.
-        guard isEnabled, fetchesAllowed, let fiat = try? await Self.fetchFiat() else {
+        guard fetchesAllowed, let fiat = try? await Self.fetchFiat() else {
             return false
         }
-        guard isEnabled, fetchesAllowed else { return false }
+        guard fetchesAllowed else { return false }
         let shouldFetchCrypto = cryptoEnabled
         let crypto: [String: Double]?
         if shouldFetchCrypto {
@@ -152,8 +113,7 @@ final class CurrencyRateStore: ObservableObject {
         } else {
             crypto = nil
         }
-        // Re-check after every await: consent or the optional crypto feature can be withdrawn while a response is in flight.
-        guard isEnabled, fetchesAllowed, !shouldFetchCrypto || cryptoEnabled else { return false }
+        guard fetchesAllowed, !shouldFetchCrypto || cryptoEnabled else { return false }
 
         var merged = fiat.rates
         if let crypto {
@@ -168,8 +128,7 @@ final class CurrencyRateStore: ObservableObject {
     }
 
     /// Deliberately not `URLSession.shared`: the provider serves the table `Cache-Control: public,
-    /// max-age=…`, so the shared session would write a second copy into the on-disk `URLCache` that
-    /// `setEnabled(false)` never deletes. Cacheless, so revoking consent really does leave nothing behind.
+    /// max-age=…`, so the shared session would write a second copy into the on-disk `URLCache`.
     private nonisolated static let session: URLSession = {
         let config = URLSessionConfiguration.ephemeral
         config.urlCache = nil

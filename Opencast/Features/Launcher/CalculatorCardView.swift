@@ -1,7 +1,7 @@
 import SwiftUI
 
 /// One-deep memo over `CalcEngine.evaluate`, mirroring `AppIndex.matchCache`, so hover/selection
-/// re-renders with the same query don't re-run the evaluator. Keyed on the consent flag plus the
+/// re-renders with the same query don't re-run the evaluator. Keyed on the feature flag plus the
 /// snapshot's `fetchedAt`, so flipping the setting or landing a fresh table invalidates the memo
 /// without comparing the rate table itself.
 @MainActor

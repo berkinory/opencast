@@ -1,5 +1,15 @@
 # Changelog
 
+## [0.2.4]
+
+### Improved
+
+- Currency conversion now starts automatically, while crypto conversion stays off until enabled.
+
+### Fixed
+
+- Fixed currency conversion appearing enabled while exchange rates were not running.
+
 ## [0.2.3]
 
 ### Added

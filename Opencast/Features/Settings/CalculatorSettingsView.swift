@@ -3,7 +3,6 @@ import SwiftUI
 struct CalculatorSettingsView: View {
     @ObservedObject private var settings = AppCore.shared.settings
     @ObservedObject private var currencyRates = AppCore.shared.currencyRates
-    @State private var askingConsent = false
 
     var body: some View {
         SettingsPane(
@@ -67,30 +66,13 @@ struct CalculatorSettingsView: View {
                 currencyRates.stop()
             }
         }
-        .sheet(isPresented: $askingConsent) {
-            CurrencyConsentSheet(
-                includeCrypto: settings.cryptoConversionEnabled,
-                onCancel: { askingConsent = false },
-                onAccept: {
-                    askingConsent = false
-                    settings.currencyConversionEnabled = true
-                    currencyRates.setEnabled(true)
-                    currencyRates.start(cryptoEnabled: settings.cryptoConversionEnabled)
-                }
-            )
-        }
     }
 
     private func setCurrencyConversionEnabled(_ enabled: Bool) {
+        settings.currencyConversionEnabled = enabled
         if enabled {
-            guard currencyRates.isEnabled else {
-                askingConsent = true
-                return
-            }
-            settings.currencyConversionEnabled = true
             currencyRates.start(cryptoEnabled: settings.cryptoConversionEnabled)
         } else {
-            settings.currencyConversionEnabled = false
             currencyRates.stop()
         }
     }
@@ -98,37 +80,5 @@ struct CalculatorSettingsView: View {
     private func setCryptoConversionEnabled(_ enabled: Bool) {
         settings.cryptoConversionEnabled = enabled
         currencyRates.setCryptoEnabled(enabled)
-    }
-}
-
-private struct CurrencyConsentSheet: View {
-    let includeCrypto: Bool
-    let onCancel: () -> Void
-    let onAccept: () -> Void
-
-    var body: some View {
-        VStack(alignment: .leading, spacing: Theme.Spacing.xl) {
-            Text("Allow currency rate downloads?")
-                .font(Theme.Typography.headline)
-            Text(consentText)
-                .font(Theme.Typography.callout)
-                .foregroundStyle(.secondary)
-                .fixedSize(horizontal: false, vertical: true)
-            HStack {
-                Spacer()
-                Button("Cancel", action: onCancel)
-                    .keyboardShortcut(.cancelAction)
-                Button("Allow", action: onAccept)
-                    .keyboardShortcut(.defaultAction)
-            }
-        }
-        .padding(Theme.Spacing.xxl)
-        .frame(width: 420)
-    }
-
-    private var consentText: String {
-        includeCrypto
-            ? "Downloads fiat rates from Frankfurter and crypto rates from CoinGecko every three hours. Nothing you type is sent."
-            : "Downloads fiat rates from Frankfurter every three hours. Nothing you type is sent."
     }
 }
