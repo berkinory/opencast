@@ -5,6 +5,7 @@
 ### Fixed
 
 - Selected the preserved palette query when the palette is summoned again.
+- Collapsed pasted line breaks into spaces in palette search fields.
 
 ## [0.2.4]
 

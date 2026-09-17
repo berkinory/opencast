@@ -375,6 +375,7 @@ struct RootPaletteView: View {
             focusAndSelectQuery()
         }
         .onChange(of: vm.query) {
+            if vm.collapseQueryLineBreaks() { return }
             vm.selection = 0
             inlineArgumentValues.removeAll(keepingCapacity: true)
             inlineArgumentFocus = nil

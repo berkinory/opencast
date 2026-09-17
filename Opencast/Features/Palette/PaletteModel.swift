@@ -179,4 +179,14 @@ final class PaletteViewModel: ObservableObject {
     func postFeedback(_ message: String, tone: PaletteFeedback.Tone = .success) {
         feedback = PaletteFeedback(message: message, tone: tone)
     }
+
+    @discardableResult
+    func collapseQueryLineBreaks() -> Bool {
+        let collapsed = String(query.map { character in
+            character == "\n" || character == "\r" ? " " : character
+        })
+        guard collapsed != query else { return false }
+        query = collapsed
+        return true
+    }
 }
