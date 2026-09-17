@@ -1214,7 +1214,8 @@ struct RootPaletteView: View {
             let editor = NSApp.keyWindow?.firstResponder as? NSTextView
         else { return false }
         let range = editor.selectedRange
-        let atBoundary = delta < 0
+        let atBoundary =
+            delta < 0
             ? range.location == 0
             : NSMaxRange(range) == editor.string.utf16.count
         guard atBoundary else { return false }

@@ -209,9 +209,10 @@ enum CalcDateTime {
                 let parsedClock = parseClockPhrase(source.timePhrase)
             else { return nil }
             let sourceCalendar = calendarFor(source.zone, base: calendar)
-            guard let date = sourceCalendar.date(
-                bySettingHour: parsedClock.hour, minute: parsedClock.minute, second: 0,
-                of: sourceCalendar.startOfDay(for: now))
+            guard
+                let date = sourceCalendar.date(
+                    bySettingHour: parsedClock.hour, minute: parsedClock.minute, second: 0,
+                    of: sourceCalendar.startOfDay(for: now))
             else { return nil }
             let targetCalendar = calendarFor(calendar.timeZone, base: calendar)
             let display = timeStringWithDayNote(

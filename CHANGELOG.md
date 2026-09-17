@@ -2,11 +2,6 @@
 
 ## [0.2.5]
 
-### Fixed
-
-- Selected the preserved palette query when the palette is summoned again.
-- Collapsed pasted line breaks into spaces in palette search fields.
-
 ### Improved
 
 - Moved between inline argument fields with left and right arrow keys at their text boundaries.
@@ -17,6 +12,8 @@
 
 ### Fixed
 
+- Selected the preserved palette query when the palette is summoned again.
+- Collapsed pasted line breaks into spaces in palette search fields.
 - Kept the palette above application modal windows.
 
 ## [0.2.4]
