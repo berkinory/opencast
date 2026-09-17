@@ -264,6 +264,7 @@ enum WindowLayout {
 
     private static let oneThird: CGFloat = 1.0 / 3.0
     private static let twoThirds: CGFloat = 2.0 / 3.0
+    private static let oneSixth: CGFloat = 1.0 / 6.0
     private static let threeFourths: CGFloat = 3.0 / 4.0
 
     /// The fractional bounds of a tile command.
@@ -323,6 +324,10 @@ enum WindowLayout {
         case .centerHalf:
             return Fractions(
                 x0: 0.25, x1: 0.75, y0: 0, y1: 1,
+                anchor: Anchor(horizontal: .center, vertical: .min))
+        case .centerTwoThirds:
+            return Fractions(
+                x0: oneSixth, x1: oneSixth + twoThirds, y0: 0, y1: 1,
                 anchor: Anchor(horizontal: .center, vertical: .min))
 
         default:

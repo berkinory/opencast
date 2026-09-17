@@ -27,6 +27,7 @@
 		25D52944D0E133CD108CB844 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B8243C4190704B957722DE7C /* Assets.xcassets */; };
 		268A0AA46BDD9288633D3EE0 /* ThinScrollbar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AFF513A7B07382D36DBC6DE /* ThinScrollbar.swift */; };
 		27DD0CBDACC2576D50361390 /* RootPaletteView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F207135F1CF766FD9A4491E0 /* RootPaletteView.swift */; };
+		28013514B768FADA4FB881B4 /* WindowLevel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 54C3B48C88B2BD6AC5407307 /* WindowLevel.swift */; };
 		28918546E9AE109851807DA8 /* EmojiGridView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FFFDB5FB4C753F6AEDC7F91A /* EmojiGridView.swift */; };
 		2B32C93D8A2859E131F34B84 /* NotificationToken.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0C47EBB3D225F264CAC6825 /* NotificationToken.swift */; };
 		2C5CE27DEF8D4A07A8271113 /* CommandRegistry.swift in Sources */ = {isa = PBXBuildFile; fileRef = C6CCAFA1285E322F00F12165 /* CommandRegistry.swift */; };
@@ -177,6 +178,7 @@
 		4E22AE71B45DBB7485739198 /* PaletteDetailLayout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PaletteDetailLayout.swift; sourceTree = "<group>"; };
 		500BB7695C1113D18A44C4AB /* PaletteInlineArguments.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PaletteInlineArguments.swift; sourceTree = "<group>"; };
 		5386785E3005CEB050117CCD /* SnippetSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SnippetSettingsView.swift; sourceTree = "<group>"; };
+		54C3B48C88B2BD6AC5407307 /* WindowLevel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WindowLevel.swift; sourceTree = "<group>"; };
 		552B88B452A49B746957A344 /* SettingsSearchView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsSearchView.swift; sourceTree = "<group>"; };
 		56CDDD43B77CBB97C7DA2AF0 /* EdgeDissolve.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EdgeDissolve.swift; sourceTree = "<group>"; };
 		594250C08A58761A1AFF0878 /* OnboardingState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingState.swift; sourceTree = "<group>"; };
@@ -347,6 +349,7 @@
 				D8AA4ED848DC56C2DDC275E9 /* Permissions.swift */,
 				6A32A89638CE8A0B1CE4DCA5 /* RunningApps.swift */,
 				918EFF3C890F25F6F071AD28 /* ToastWindowController.swift */,
+				54C3B48C88B2BD6AC5407307 /* WindowLevel.swift */,
 			);
 			path = Platform;
 			sourceTree = "<group>";
@@ -805,6 +808,7 @@
 				CB4EFBB6791980BC8E765B97 /* WindowCommand.swift in Sources */,
 				EB3A6393CF2E93BA6A8DCEE5 /* WindowCommandCoordinator.swift in Sources */,
 				BE32E6E4A265FA24A26A1A4F /* WindowLayout.swift in Sources */,
+				28013514B768FADA4FB881B4 /* WindowLevel.swift in Sources */,
 				2CB280034CD9583282C3E272 /* WindowManagementSettingsView.swift in Sources */,
 				B9073CD2127CADA6926127D1 /* WindowMover.swift in Sources */,
 			);

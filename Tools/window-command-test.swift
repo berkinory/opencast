@@ -67,7 +67,7 @@ struct WindowCommandTests {
 
     static func testCatalog() {
         let commands = WindowCommandCatalog.all
-        expect(commands.count == 28, "catalog contains the focused command set")
+        expect(commands.count == 29, "catalog contains the focused command set")
         expect(Set(commands.map(\.id)).count == commands.count, "command IDs are unique")
         expect(Set(commands.map(\.entryID)).count == commands.count, "entry IDs are unique")
         expect(Set(commands.map { $0.name.lowercased() }).count == commands.count, "names are unique")
@@ -97,7 +97,7 @@ struct WindowCommandTests {
         )
         let grouped = WindowCommandCatalog.grouped()
         expect(grouped.flatMap(\.commands).count == commands.count, "grouping loses no command")
-        expect(grouped.first { $0.group == .sizing }?.commands.count == 6, "six sizing commands")
+        expect(grouped.first { $0.group == .sizing }?.commands.count == 7, "seven sizing commands")
         expect(grouped.first { $0.group == .fourths }?.commands.count == 2, "two three-fourths commands")
         expect(frame(.toggleFullscreen) == nil, "fullscreen has no synthetic geometry")
     }
@@ -120,6 +120,10 @@ struct WindowCommandTests {
         expectRect(frame(.maximizeWidth)!, CGRect(x: 0, y: 100, width: 1440, height: 400), "maximize width")
         expectRect(frame(.center)!, CGRect(x: 420, y: 250, width: 600, height: 400), "center")
         expectRect(frame(.centerHalf)!, CGRect(x: 360, y: 0, width: 720, height: 900), "center half")
+        expectRect(
+            frame(.centerTwoThirds)!, CGRect(x: 240, y: 0, width: 960, height: 900),
+            "center two thirds"
+        )
         expect(frame(.moveLeft)!.origin.x < 100, "move left")
         expect(frame(.moveRight)!.origin.x > 100, "move right")
         expect(frame(.moveUp)!.origin.y < 100, "move up")

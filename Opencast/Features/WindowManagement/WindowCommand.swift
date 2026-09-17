@@ -22,6 +22,7 @@ struct WindowCommand: Identifiable, Hashable, Sendable {
         case maximizeWidth = "maximize-width"
         case center
         case centerHalf = "center-half"
+        case centerTwoThirds = "center-two-thirds"
         case restore
         case moveLeft = "move-left"
         case moveRight = "move-right"
@@ -123,6 +124,7 @@ enum WindowCommandCatalog {
         case .maximizeWidth: return "Maximize Width"
         case .center: return "Center"
         case .centerHalf: return "Center Half"
+        case .centerTwoThirds: return "Center Two Thirds"
         case .restore: return "Restore Window"
         case .moveLeft: return "Move Left"
         case .moveRight: return "Move Right"
@@ -154,6 +156,7 @@ enum WindowCommandCatalog {
         case .maximizeWidth: return "arrow.left.and.right"
         case .center: return "rectangle.center.inset.filled"
         case .centerHalf: return "rectangle.split.3x1"
+        case .centerTwoThirds: return "rectangle.center.inset.filled"
         case .restore: return "arrow.uturn.backward"
         case .moveLeft: return "arrow.left"
         case .moveRight: return "arrow.right"
@@ -183,7 +186,7 @@ enum WindowCommandCatalog {
             return .thirds
         case .firstThreeFourths, .lastThreeFourths:
             return .fourths
-        case .maximize, .maximizeHeight, .maximizeWidth, .center, .centerHalf, .restore:
+        case .maximize, .maximizeHeight, .maximizeWidth, .center, .centerHalf, .centerTwoThirds, .restore:
             return .sizing
         case .moveLeft, .moveRight, .moveUp, .moveDown, .nextDisplay, .previousDisplay:
             return .moving
