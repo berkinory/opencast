@@ -138,7 +138,7 @@ struct SettingsRootView: View {
     }
 
     private var searchEntries: [SearchEntry] {
-        [
+        let settings = [
             SearchEntry(
                 record: .init(
                     id: "tab-general", title: "General", detail: "Startup and permissions", breadcrumb: "Preferences",
@@ -266,6 +266,20 @@ struct SettingsRootView: View {
                     breadcrumb: "Features", keywords: ["tiling", "resize", "move"]),
                 route: .init(tab: .windowManagement)),
         ]
+        let windowCommands = WindowCommandCatalog.all.map { command in
+            SearchEntry(
+                record: .init(
+                    id: command.entryID,
+                    title: command.name,
+                    detail: "Assign a shortcut or hide this window action",
+                    breadcrumb: "Commands · Window commands",
+                    keywords: ["window", "shortcut", "move", "resize"]),
+                route: .init(
+                    tab: .commands,
+                    destination: .shortcutEntry(
+                        entryID: command.entryID, kind: command.kind.rawValue)))
+        }
+        return settings + windowCommands
     }
 
     private var searchResults: [SearchEntry] {

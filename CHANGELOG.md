@@ -8,6 +8,7 @@
 - Improved timezone queries with source zones, place-first forms, and day-change labels.
 - Added a centered two-thirds window layout command.
 - Added search to Settings with direct navigation to matching controls.
+- Settings search now includes individual window commands.
 - Added keyboard and technical symbols to Emoji & Symbols.
 
 ### Fixed
