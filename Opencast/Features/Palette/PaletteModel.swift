@@ -117,6 +117,7 @@ final class PaletteViewModel: ObservableObject {
     var onCommandEnter: (() -> Bool)?
     var onInlineArgumentsTab: (() -> Bool)?
     var onInlineArgumentsEscape: (() -> Bool)?
+    var onInlineArgumentsHorizontalArrow: ((Int) -> Bool)?
     var onInlineArgumentsVerticalArrow: ((Int) -> Bool)?
     var onRowNavigation: ((PaletteRowNavigation) -> Bool)?
 

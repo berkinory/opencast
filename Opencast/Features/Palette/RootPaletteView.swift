@@ -402,12 +402,14 @@ struct RootPaletteView: View {
             searchFocused = vm.mode != .snippetEditor && vm.mode != .quicklinkEditor
             vm.onInlineArgumentsTab = handleInlineArgumentTab
             vm.onInlineArgumentsEscape = handleInlineArgumentEscape
+            vm.onInlineArgumentsHorizontalArrow = handleInlineArgumentHorizontalArrow
             vm.onInlineArgumentsVerticalArrow = handleInlineArgumentVerticalArrow
             vm.onRowNavigation = handleRowNavigation
         }
         .onDisappear {
             vm.onInlineArgumentsTab = nil
             vm.onInlineArgumentsEscape = nil
+            vm.onInlineArgumentsHorizontalArrow = nil
             vm.onInlineArgumentsVerticalArrow = nil
             vm.onRowNavigation = nil
         }
@@ -1204,6 +1206,21 @@ struct RootPaletteView: View {
     private func handleInlineArgumentEscape() -> Bool {
         guard (inlineArgumentFocus ?? inlineArgumentFocusRequest) != nil else { return false }
         leaveInlineArguments()
+        return true
+    }
+
+    private func handleInlineArgumentHorizontalArrow(_ delta: Int) -> Bool {
+        guard let focused = inlineArgumentFocus ?? inlineArgumentFocusRequest,
+            let editor = NSApp.keyWindow?.firstResponder as? NSTextView
+        else { return false }
+        let range = editor.selectedRange
+        let atBoundary = delta < 0
+            ? range.location == 0
+            : NSMaxRange(range) == editor.string.utf16.count
+        guard atBoundary else { return false }
+        let next = focused + delta
+        guard inlineArguments.indices.contains(next) else { return false }
+        inlineArgumentFocusRequest = next
         return true
     }
 

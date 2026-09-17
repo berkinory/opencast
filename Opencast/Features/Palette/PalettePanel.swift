@@ -103,6 +103,12 @@ final class PalettePanel: NSPanel {
             return
         }
         if event.type == .keyDown,
+            let delta = Self.horizontalArrowDelta(for: event),
+            paletteViewModel?.onInlineArgumentsHorizontalArrow?(delta) == true
+        {
+            return
+        }
+        if event.type == .keyDown,
             let delta = Self.verticalArrowDelta(for: event.keyCode),
             paletteViewModel?.onInlineArgumentsVerticalArrow?(delta) == true
         {
@@ -157,6 +163,16 @@ final class PalettePanel: NSPanel {
         switch Int(keyCode) {
         case kVK_UpArrow: return -1
         case kVK_DownArrow: return 1
+        default: return nil
+        }
+    }
+
+    private static func horizontalArrowDelta(for event: NSEvent) -> Int? {
+        guard event.modifierFlags.intersection([.command, .option, .control, .shift]).isEmpty
+        else { return nil }
+        switch Int(event.keyCode) {
+        case kVK_LeftArrow: return -1
+        case kVK_RightArrow: return 1
         default: return nil
         }
     }
