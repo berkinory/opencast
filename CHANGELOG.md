@@ -10,6 +10,7 @@
 ### Improved
 
 - Moved between inline argument fields with left and right arrow keys at their text boundaries.
+- Improved timezone queries with source zones, place-first forms, and day-change labels.
 
 ### Fixed
 

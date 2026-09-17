@@ -203,6 +203,11 @@ struct CalcTests {
         expectDisplayAt("5pm ldn in sf", "9:00 AM")
         expectDisplayAt("20:10 in pst", "12:10 PM")
         expectDisplayAt("12 AM in UTC+3", "3:00 AM")
+        expectDisplayAt("5:30 pm SF to London", "1:30 AM (tomorrow)")
+        expectDisplayAt("5:30 pm at SF to London", "1:30 AM (tomorrow)")
+        expectDisplayAt("5:30 pm SF", "12:30 AM (tomorrow)")
+        expectDisplayAt("SF time", "5:18 PM (yesterday)")
+        expectDisplayAt("Tokyo time", "9:18 AM")
         expectNilAt("4pm in utc+")  // incomplete fixed-offset zone must not crash while typing
         expectDisplayAt("time diff Paris", "2 hours")
         expectDisplayAt("4 hours from now", "Friday, 24 July at 4:18 AM")

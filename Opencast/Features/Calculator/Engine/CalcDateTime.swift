@@ -18,7 +18,10 @@ enum CalcDateTime {
         let hasSince = query.contains(" since ")
         let hasAgo = query.hasSuffix(" ago")
         let hasIn = query.hasPrefix("in ") || query.contains(" in ") || query.contains(" from now")
-        let hasTimeZone = query.hasPrefix("time in ") || query.hasPrefix("time diff ") || query.contains(" in ")
+        let hasTimeZone =
+            query.hasPrefix("time in ") || query.hasPrefix("time diff ")
+            || query.contains(" in ") || query.contains(" to ") || query.contains(" at ")
+            || query.hasSuffix(" time") || looksLikeClockWithZone(query)
         let hasArith = query.contains(" + ") || query.contains(" - ")
         let hasRelative =
             query.hasSuffix(" later") || query.contains(" after ") || query.contains(" before ")
@@ -184,25 +187,60 @@ enum CalcDateTime {
                 payload: .value(display: display, copyText: display))
         }
 
-        guard let connector = query.range(of: " in ") else { return nil }
-        let left = String(query[..<connector.lowerBound])
-        let targetName = String(query[connector.upperBound...])
-        guard let targetZone = timeZone(named: targetName) else { return nil }
+        let connector = [" in ", " at ", " to "]
+            .compactMap { query.range(of: $0, options: .backwards) }
+            .max { $0.lowerBound < $1.lowerBound }
+
+        let left: String
+        let targetZone: TimeZone
+        if let connector {
+            left = String(query[..<connector.lowerBound])
+            let targetName = String(query[connector.upperBound...])
+            guard let zone = timeZone(named: targetName) else { return nil }
+            targetZone = zone
+        } else if query.hasSuffix(" time") {
+            let place = String(query.dropLast(" time".count))
+            guard let zone = timeZone(named: place) else { return nil }
+            left = "time"
+            targetZone = zone
+        } else {
+            let atoms = query.split(whereSeparator: \.isWhitespace).map(String.init)
+            guard let source = zoneSuffix(in: atoms),
+                let parsedClock = parseClockPhrase(source.timePhrase)
+            else { return nil }
+            let sourceCalendar = calendarFor(source.zone, base: calendar)
+            guard let date = sourceCalendar.date(
+                bySettingHour: parsedClock.hour, minute: parsedClock.minute, second: 0,
+                of: sourceCalendar.startOfDay(for: now))
+            else { return nil }
+            let targetCalendar = calendarFor(calendar.timeZone, base: calendar)
+            let display = timeStringWithDayNote(
+                date, source: source.zone, target: targetCalendar.timeZone, calendar: calendar)
+            return CalcResult(
+                expression: echo,
+                sourceBadge: timeString(date, calendar: sourceCalendar),
+                targetBadge: targetCalendar.timeZone.identifier,
+                payload: .value(display: display, copyText: timeString(date, calendar: targetCalendar)))
+        }
+
         let targetCalendar = calendarFor(targetZone, base: calendar)
 
         let sourceCalendar: Calendar
         let sourceMoment: Moment
-        if left == "time" {
+        if left == "time" || left == "now" {
             sourceCalendar = calendar
             sourceMoment = Moment(date: now, hasTime: true)
         } else {
             let atoms = left.split(whereSeparator: \.isWhitespace).map(String.init)
-            if let parsedZone = atoms.last.flatMap(timeZone(named:)), atoms.count >= 2 {
-                let timePhrase = atoms.dropLast().joined(separator: " ")
-                sourceCalendar = calendarFor(parsedZone, base: calendar)
+            if var source = zoneSuffix(in: atoms) {
+                if source.timePhrase.hasSuffix(" in") || source.timePhrase.hasSuffix(" at") {
+                    source.timePhrase.removeLast(3)
+                    source.timePhrase = source.timePhrase.trimmingCharacters(in: .whitespaces)
+                }
+                sourceCalendar = calendarFor(source.zone, base: calendar)
                 guard
                     let parsed = clockMomentOnDate(
-                        timePhrase, now: now, calendar: sourceCalendar)
+                        source.timePhrase, now: now, calendar: sourceCalendar)
                 else { return nil }
                 sourceMoment = parsed
             } else {
@@ -213,12 +251,33 @@ enum CalcDateTime {
             }
         }
 
-        let display = timeString(sourceMoment.date, calendar: targetCalendar)
+        let display = timeStringWithDayNote(
+            sourceMoment.date, source: sourceCalendar.timeZone, target: targetZone,
+            calendar: calendar)
         return CalcResult(
             expression: echo,
             sourceBadge: timeString(sourceMoment.date, calendar: sourceCalendar),
             targetBadge: targetZone.identifier,
-            payload: .value(display: display, copyText: display))
+            payload: .value(
+                display: display,
+                copyText: timeString(sourceMoment.date, calendar: targetCalendar)))
+    }
+
+    private static func looksLikeClockWithZone(_ query: String) -> Bool {
+        let atoms = query.split(whereSeparator: \.isWhitespace).map(String.init)
+        guard let source = zoneSuffix(in: atoms) else { return false }
+        return parseClockPhrase(source.timePhrase) != nil
+    }
+
+    private static func zoneSuffix(in atoms: [String]) -> (timePhrase: String, zone: TimeZone)? {
+        guard atoms.count >= 2 else { return nil }
+        for length in stride(from: min(atoms.count - 1, 3), through: 1, by: -1) {
+            let place = atoms.suffix(length).joined(separator: " ")
+            guard let zone = timeZone(named: place) else { continue }
+            let timePhrase = atoms.dropLast(length).joined(separator: " ")
+            return (timePhrase, zone)
+        }
+        return nil
     }
 
     private static func timeZone(named name: String) -> TimeZone? {
@@ -250,6 +309,15 @@ enum CalcDateTime {
     private static func clockMomentOnDate(
         _ phrase: String, now: Date, calendar: Calendar
     ) -> Moment? {
+        guard let clock = parseClockPhrase(phrase),
+            let date = calendar.date(
+                bySettingHour: clock.hour, minute: clock.minute, second: 0,
+                of: calendar.startOfDay(for: now))
+        else { return nil }
+        return Moment(date: date, hasTime: true)
+    }
+
+    private static func parseClockPhrase(_ phrase: String) -> (hour: Int, minute: Int)? {
         let atoms = atomize(phrase)
         let clock: (hour: Int, minute: Int)?
         if atoms.count == 1 {
@@ -262,12 +330,9 @@ enum CalcDateTime {
         } else {
             clock = nil
         }
-        guard let clock,
-            let date = calendar.date(
-                bySettingHour: clock.hour, minute: clock.minute, second: 0,
-                of: calendar.startOfDay(for: now))
+        guard let clock, (0...23).contains(clock.hour), (0...59).contains(clock.minute)
         else { return nil }
-        return Moment(date: date, hasTime: true)
+        return clock
     }
 
     private static func calendarFor(_ timeZone: TimeZone, base: Calendar) -> Calendar {
@@ -716,6 +781,33 @@ enum CalcDateTime {
 
     private static func timeString(_ date: Date, calendar: Calendar) -> String {
         format(date, calendar: calendar, pattern: "h:mm a")
+    }
+
+    private static func timeStringWithDayNote(
+        _ date: Date, source: TimeZone, target: TimeZone, calendar: Calendar
+    ) -> String {
+        let time = timeString(date, calendar: calendarFor(target, base: calendar))
+        var sourceCalendar = calendar
+        sourceCalendar.timeZone = source
+        var targetCalendar = calendar
+        targetCalendar.timeZone = target
+        var dayCalendar = Calendar(identifier: .gregorian)
+        dayCalendar.locale = calendar.locale
+        dayCalendar.timeZone = .gmt
+        guard
+            let sourceDay = dayCalendar.date(
+                from: sourceCalendar.dateComponents([.era, .year, .month, .day], from: date)),
+            let targetDay = dayCalendar.date(
+                from: targetCalendar.dateComponents([.era, .year, .month, .day], from: date)),
+            let days = dayCalendar.dateComponents([.day], from: sourceDay, to: targetDay).day
+        else { return time }
+        switch days {
+        case 0: return time
+        case 1: return "\(time) (tomorrow)"
+        case -1: return "\(time) (yesterday)"
+        case ..<0: return "\(time) (\(-days) days ago)"
+        default: return "\(time) (in \(days) days)"
+        }
     }
 
     private static func format(_ date: Date, calendar: Calendar, pattern: String) -> String {
