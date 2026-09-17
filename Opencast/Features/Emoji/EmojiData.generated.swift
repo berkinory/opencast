@@ -1755,7 +1755,7 @@ enum EmojiData {
 🇬🇼|flag: guinea-bissau|fl|0|flag
 🇬🇾|flag: guyana|fl|0|flag
 🇭🇰|flag: hong kong sar china|fl|0|flag
-🇭🇲|flag: heard & mcdonald islands|fl|0|flag
+🇭🇲|flag: heard island & mcdonald islands|fl|0|flag
 🇭🇳|flag: honduras|fl|0|flag
 🇭🇷|flag: croatia|fl|0|flag
 🇭🇹|flag: haiti|fl|0|flag
@@ -1859,7 +1859,7 @@ enum EmojiData {
 🇸🇩|flag: sudan|fl|0|flag
 🇸🇪|flag: sweden|fl|0|flag
 🇸🇬|flag: singapore|fl|0|flag
-🇸🇭|flag: st. helena|fl|0|flag
+🇸🇭|flag: st. helena  ascension & tristan da cunha|fl|0|flag
 🇸🇮|flag: slovenia|fl|0|flag
 🇸🇯|flag: svalbard & jan mayen|fl|0|flag
 🇸🇰|flag: slovakia|fl|0|flag
@@ -1877,7 +1877,7 @@ enum EmojiData {
 🇹🇦|flag: tristan da cunha|fl|0|flag
 🇹🇨|flag: turks & caicos islands|fl|0|flag
 🇹🇩|flag: chad|fl|0|flag
-🇹🇫|flag: french southern territories|fl|0|flag
+🇹🇫|flag: french southern and antarctic lands|fl|0|flag
 🇹🇬|flag: togo|fl|0|flag
 🇹🇭|flag: thailand|fl|0|flag
 🇹🇯|flag: tajikistan|fl|0|flag
@@ -2008,6 +2008,29 @@ $|dollar sign|xc|0|usd money currency
 ½|vulgar fraction one half|xm|0|
 ¾|vulgar fraction three quarters|xm|0|
 ƒ|latin small letter f with hook|xm|0|function florin
+⌘|command key|xk|0|command cmd meta mac
+⌥|option key|xk|0|option alt
+⌃|control key|xk|0|control ctrl
+⎋|escape key|xk|0|escape esc
+⏎|return key|xk|0|return enter
+⌤|enter key|xk|0|enter return
+⌫|delete key|xk|0|delete backspace
+⌦|forward delete key|xk|0|delete forward
+⇥|tab key|xk|0|tab next
+⇤|back tab key|xk|0|tab previous
+⇱|home key|xk|0|home beginning
+⇲|end key|xk|0|end finish
+⇞|page up key|xk|0|page up previous
+⇟|page down key|xk|0|page down next
+⏏|eject key|xk|0|eject
+⌧|clear key|xk|0|clear cancel
+⎙|print screen key|xk|0|print screen screenshot
+␣|space key|xk|0|space
+⌀|diameter sign|xk|0|diameter technical
+⌂|home symbol|xk|0|home house
+⌨|keyboard|xk|0|keys input
+⚙|gear|xk|0|settings preferences
+|apple logo|xk|0|apple mac
 ■|black square|xs|0|shape filled
 □|white square|xs|0|shape outline
 ▪|black small square|xs|0|shape

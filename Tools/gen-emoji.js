@@ -139,6 +139,31 @@ const MATH = [
   ["¾", "vulgar fraction three quarters", ""],
   ["ƒ", "latin small letter f with hook", "function florin"],
 ];
+const KEYS = [
+  ["⌘", "command key", "command cmd meta mac"],
+  ["⌥", "option key", "option alt"],
+  ["⌃", "control key", "control ctrl"],
+  ["⎋", "escape key", "escape esc"],
+  ["⏎", "return key", "return enter"],
+  ["⌤", "enter key", "enter return"],
+  ["⌫", "delete key", "delete backspace"],
+  ["⌦", "forward delete key", "delete forward"],
+  ["⇥", "tab key", "tab next"],
+  ["⇤", "back tab key", "tab previous"],
+  ["⇱", "home key", "home beginning"],
+  ["⇲", "end key", "end finish"],
+  ["⇞", "page up key", "page up previous"],
+  ["⇟", "page down key", "page down next"],
+  ["⏏", "eject key", "eject"],
+  ["⌧", "clear key", "clear cancel"],
+  ["⎙", "print screen key", "print screen screenshot"],
+  ["␣", "space key", "space"],
+  ["⌀", "diameter sign", "diameter technical"],
+  ["⌂", "home symbol", "home house"],
+  ["⌨", "keyboard", "keys input"],
+  ["⚙", "gear", "settings preferences"],
+  ["", "apple logo", "apple mac"],
+];
 const SHAPES = [
   ["■", "black square", "shape filled"],
   ["□", "white square", "shape outline"],
@@ -193,6 +218,7 @@ const SYMBOL_SECTIONS = [
   ["xa", ARROWS],
   ["xc", CURRENCY],
   ["xm", MATH],
+  ["xk", KEYS],
   ["xs", SHAPES],
 ];
 
