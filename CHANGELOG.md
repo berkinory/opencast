@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.2.5]
+
+### Fixed
+
+- Selected the preserved palette query when the palette is summoned again.
+
 ## [0.2.4]
 
 ### Added

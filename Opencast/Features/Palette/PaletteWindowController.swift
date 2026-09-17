@@ -13,6 +13,7 @@ final class PaletteWindowController: NSObject, NSWindowDelegate {
     private var isPresentingConfirmation = false
     private var filePicker: NSOpenPanel?
     private var isPresentingFilePicker = false
+    private(set) var queryWasPreserved = false
     /// Left/top edge of the panel, resolved once per show and reused across compact↔expanded resizes so both states share an exact top edge (only the height changes). Cleared on hide so the next summon re-resolves for the current screen.
     private var anchor: (x: CGFloat, topEdgeY: CGFloat)?
 
@@ -46,12 +47,18 @@ final class PaletteWindowController: NSObject, NSWindowDelegate {
         // Flush the hosting view's first-mount layout while still off-screen, so the one-time safe-area settle of the `safeAreaInset` header doesn't nudge the search placeholder on the first visible frame.
         panel.contentView?.layoutSubtreeIfNeeded()
         // The `.nonactivatingPanel` takes key focus without activating the app, so summoning the palette never raises the app's Settings/onboarding windows behind it.
+        let selectQuery = queryWasPreserved
         panel.makeKeyAndOrderFront(nil)
         panel.orderFrontRegardless()
+        if selectQuery {
+            panel.selectAllFieldEditorText()
+            queryWasPreserved = false
+        }
         // A never-activated login-item process can drop the first key request before the window is registered with the window server; re-assert next turn once it is (same pattern as AuxWindowController).
         DispatchQueue.main.async { [weak panel] in
             guard let panel, panel.isVisible, !panel.isKeyWindow else { return }
             panel.makeKeyAndOrderFront(nil)
+            if selectQuery { panel.selectAllFieldEditorText() }
         }
     }
 
@@ -94,7 +101,9 @@ final class PaletteWindowController: NSObject, NSWindowDelegate {
 
     /// True when a hidden palette still holds pre-close state (pending pop-to-root); consuming cancels the reset either way — the caller decides whether to restore or re-prepare.
     func consumePreservedState() -> Bool {
+        queryWasPreserved = false
         guard let timer = popToRootTimer else { return false }
+        queryWasPreserved = !core.palette.query.isEmpty
         timer.invalidate()
         popToRootTimer = nil
         return true

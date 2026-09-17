@@ -149,6 +149,10 @@ final class PalettePanel: NSPanel {
         super.sendEvent(event)
     }
 
+    func selectAllFieldEditorText() {
+        (firstResponder as? NSTextView)?.selectAll(nil)
+    }
+
     private static func verticalArrowDelta(for keyCode: UInt16) -> Int? {
         switch Int(keyCode) {
         case kVK_UpArrow: return -1
