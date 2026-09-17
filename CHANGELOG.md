@@ -11,6 +11,10 @@
 
 - Moved between inline argument fields with left and right arrow keys at their text boundaries.
 
+### Fixed
+
+- Kept the palette above application modal windows.
+
 ## [0.2.4]
 
 ### Added
