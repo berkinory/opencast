@@ -2,6 +2,10 @@
 
 ## [0.2.7]
 
+### Improved
+
+- Reused existing clipboard text entries when copied again, preserving pins and moving ordinary entries to the top.
+
 ### Fixed
 
 - Prevented pending clipboard images from reappearing after clearing history or disabling capture.

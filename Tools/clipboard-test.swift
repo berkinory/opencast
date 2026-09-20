@@ -14,6 +14,7 @@ struct ClipboardTests {
 
     static func main() async {
         await staleImageCapture()
+        repeatedText()
         pinOrder()
         unpinRejoinsAsNewest()
         pasteLeavesPinsAlone()
@@ -99,6 +100,28 @@ struct ClipboardTests {
         expect(
             FilePathResolver.resolve("/path/that/does/not/exist") == nil,
             "missing paths are ignored")
+    }
+
+    static func repeatedText() {
+        withStore { store, _ in
+            store.addText("A", sourceBundleID: nil)
+            let original = store.items[0]
+            store.addText("B", sourceBundleID: nil)
+            store.addText("A", sourceBundleID: nil)
+            expect(texts(store) == ["A", "B"], "repeated text moves to the top without duplication")
+            expect(store.items[0].id == original.id, "repeated text preserves identity")
+            store.togglePinned(store.items[0])
+            store.addText("C", sourceBundleID: nil)
+            store.addText("A", sourceBundleID: nil)
+            expect(store.items.filter { $0.text == "A" }.count == 1, "copying a pin does not duplicate it")
+            expect(store.items.first { $0.text == "A" }?.isPinned == true, "copying preserves pins")
+            for index in 0..<1_010 { store.addText("filler \(index)", sourceBundleID: nil) }
+            store.addText("B", sourceBundleID: nil)
+            expect(store.items.first?.text == "B", "old text outside memory is promoted")
+            expect(store.search("B").filter { $0.text == "B" }.count == 1, "old text stays unique")
+            store.addText("B ", sourceBundleID: nil)
+            expect(store.items.first?.text == "B ", "different whitespace stays distinct")
+        }
     }
 
     // MARK: - Cases

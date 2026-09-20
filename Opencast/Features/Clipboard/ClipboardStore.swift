@@ -272,7 +272,26 @@ final class ClipboardStore: ObservableObject {
 
     func addText(_ text: String, sourceBundleID: String?) {
         if items.first?.kind == .text, items.first?.text == text { return }
+        if let existing = textItem(matching: text) {
+            promote(existing)
+            return
+        }
         insert(ClipboardItem(text: text, sourceBundleID: sourceBundleID))
+    }
+
+    private func textItem(matching text: String) -> ClipboardItem? {
+        guard db != nil else { return items.first { $0.kind == .text && $0.text == text } }
+        guard
+            let stmt = prepare(
+                """
+                SELECT id, kind, text, image_path, created_at, source_app, pinned_at FROM items
+                WHERE kind = 'text' AND text = ?
+                ORDER BY pinned_at IS NULL, created_at DESC LIMIT 1
+                """)
+        else { return nil }
+        defer { sqlite3_finalize(stmt) }
+        sqlite3_bind_text(stmt, 1, text, -1, SQLITE_TRANSIENT)
+        return sqlite3_step(stmt) == SQLITE_ROW ? Self.row(stmt) : nil
     }
 
     func invalidatePendingImages() {
@@ -573,6 +592,11 @@ final class ClipboardStore: ObservableObject {
             db,
             "CREATE INDEX IF NOT EXISTS items_pinned_at ON items(pinned_at) WHERE pinned_at IS NOT NULL",
             nil, nil, nil)
+        if sqlite3_exec(db, "CREATE INDEX IF NOT EXISTS items_text ON items(text) WHERE kind = 'text'", nil, nil, nil)
+            != SQLITE_OK
+        {
+            NSLog("Opencast: could not create clipboard text index")
+        }
         insertStmt = prepare(
             """
             INSERT INTO items(id, kind, text, image_path, created_at, source_app, pinned_at)
