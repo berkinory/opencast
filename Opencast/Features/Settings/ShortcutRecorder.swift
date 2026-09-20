@@ -96,7 +96,7 @@ struct ShortcutRecorder: View {
         .focusable()
         .focusEffectDisabled()
         .focused($focusedControl, equals: .recorder)
-        .onKeyPress(.return) {
+        .onKeyPress(keys: [.return, KeyEquivalent("\u{3}")]) { _ in
             startRecording()
             return .handled
         }

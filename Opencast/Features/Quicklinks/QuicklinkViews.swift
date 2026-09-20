@@ -70,7 +70,7 @@ struct QuicklinkEditorView: View {
             }
         }
         .onDisappear { palette.onCommandEnter = nil }
-        .onKeyPress(keys: [.return], phases: .down) { press in
+        .onKeyPress(keys: [.return, KeyEquivalent("\u{3}")], phases: .down) { press in
             guard press.modifiers.contains(.command) else { return .ignored }
             save()
             return .handled

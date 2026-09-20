@@ -482,7 +482,7 @@ struct RootPaletteView: View {
             return .handled
         }
         // With a menu open, plain ↵ activates its highlighted row. A modified ↵ always runs the selection's own action regardless of menu state: ⌘↵ the secondary copy action (each menu advertises it), ⌥↵ paste-in-place.
-        .onKeyPress(keys: [.return], phases: .down) { press in
+        .onKeyPress(keys: [.return, KeyEquivalent("\u{3}")], phases: .down) { press in
             handleModifiedReturn(press) ? .handled : .ignored
         }
         // ⌘F toggles the selected launcher's favorite state while its Actions menu is open.
