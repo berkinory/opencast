@@ -26,6 +26,7 @@
 - Collapsed pasted line breaks in quicklink and snippet names, keyword fields, and palette search, including Windows and Unicode separators.
 
 - Kept separate application installations independently searchable, favoritable, bindable, and targetable by quit/restart actions, even when they share a bundle ID.
+- Prevented macOS from substituting a running installation when opening another installation of the same application.
 
 - Discovered applications in symlinked search folders, ignored broken bundle links, and deduplicated physical installations.
 

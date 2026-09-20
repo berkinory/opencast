@@ -37,6 +37,7 @@ enum AppLauncher {
         let focusGuard = LaunchFocusGuard(workspace: workspace)
         let configuration = NSWorkspace.OpenConfiguration()
         configuration.activates = true
+        configuration.allowsRunningApplicationSubstitution = false
         let application = try await workspace.openApplication(at: url, configuration: configuration)
 
         guard (try? await Task.sleep(for: .milliseconds(500))) != nil,
