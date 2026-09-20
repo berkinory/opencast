@@ -973,6 +973,7 @@ struct RootPaletteView: View {
                     showActionsToggle:
                         resultCount > 0
                         && (vm.mode != .uninstall || uninstall.phase == .selecting)
+                        && !(vm.mode == .launcher && selection == directURLSelectionIndex)
                 )
             }
         }
