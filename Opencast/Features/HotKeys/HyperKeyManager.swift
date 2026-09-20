@@ -1,6 +1,7 @@
 @preconcurrency import ApplicationServices
 import AppKit
 import Carbon.HIToolbox
+import IOKit.hidsystem
 
 enum HyperKey: String, CaseIterable, Identifiable, Sendable {
     case capsLock
@@ -34,6 +35,15 @@ enum HyperKey: String, CaseIterable, Identifiable, Sendable {
         case .rightCommand: return "⌘"
         case .rightOption: return "⌥"
         case .rightControl: return "⌃"
+        }
+    }
+
+    func isPressed(in flags: CGEventFlags) -> Bool {
+        switch self {
+        case .capsLock: return flags.contains(.maskAlphaShift)
+        case .rightCommand: return flags.rawValue & UInt64(NX_DEVICERCMDKEYMASK) != 0
+        case .rightOption: return flags.rawValue & UInt64(NX_DEVICERALTKEYMASK) != 0
+        case .rightControl: return flags.rawValue & UInt64(NX_DEVICERCTLKEYMASK) != 0
         }
     }
 }
@@ -99,11 +109,11 @@ final class HyperKeyManager: ObservableObject, HealthCheckable {
                 place: .headInsertEventTap,
                 options: .defaultTap,
                 eventsOfInterest: eventMask,
-                callback: { proxy, type, event, userInfo in
+                callback: { _, type, event, userInfo in
                     guard let userInfo else { return Unmanaged.passUnretained(event) }
                     let manager = Unmanaged<HyperKeyManager>.fromOpaque(userInfo).takeUnretainedValue()
                     return MainActor.assumeIsolated {
-                        manager.handle(proxy: proxy, type: type, event: event)
+                        manager.handle(type: type, event: event)
                     }
                 },
                 userInfo: userInfo
@@ -145,8 +155,7 @@ final class HyperKeyManager: ObservableObject, HealthCheckable {
         start()
     }
 
-    private func handle(
-        proxy: CGEventTapProxy,
+    func handle(
         type: CGEventType,
         event: CGEvent
     ) -> Unmanaged<CGEvent>? {
@@ -154,18 +163,21 @@ final class HyperKeyManager: ObservableObject, HealthCheckable {
             return Unmanaged.passUnretained(event)
         }
         if type == .tapDisabledByTimeout || type == .tapDisabledByUserInput {
+            isHeld = false
+            usedAsModifier = false
             if let eventTap { CGEvent.tapEnable(tap: eventTap, enable: true) }
             return Unmanaged.passUnretained(event)
         }
 
         let keyCode = CGKeyCode(event.getIntegerValueField(.keyboardEventKeycode))
         if type == .flagsChanged, keyCode == settings.hyperKey.keyCode {
-            if isHeld {
+            let pressed = settings.hyperKey.isPressed(in: event.flags)
+            if isHeld && !pressed {
                 isHeld = false
                 let shouldReplay = !usedAsModifier
                 usedAsModifier = false
                 if shouldReplay { replayTap() }
-            } else {
+            } else if pressed && !isHeld {
                 isHeld = true
                 usedAsModifier = false
             }

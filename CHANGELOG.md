@@ -20,6 +20,8 @@
 
 ### Fixed
 
+- Cleared held Hyper modifiers after event-tap interruptions and stopped duplicate modifier events from reversing the held state.
+
 - Collapsed pasted line breaks in quicklink and snippet names, keyword fields, and palette search, including Windows and Unicode separators.
 
 - Kept separate application installations independently searchable, favoritable, bindable, and targetable by quit/restart actions, even when they share a bundle ID.
