@@ -382,7 +382,7 @@ struct RootPaletteView: View {
             inlineArgumentValues.removeAll(keepingCapacity: true)
             inlineArgumentFocus = nil
             inlineArgumentFocusRequest = nil
-            listScroll = ListScrollIntent(kind: .top)
+            listScroll = ListScrollIntent(kind: vm.mode == .clipboard ? .follow : .top)
         }
         .onChange(of: vm.mode) {
             searchFocused = vm.mode != .snippetEditor && vm.mode != .quicklinkEditor
@@ -392,19 +392,20 @@ struct RootPaletteView: View {
             vm.feedback = nil
             showActions = false
             showSortMenu = false
-            listScroll = ListScrollIntent(kind: .top)
+            listScroll = ListScrollIntent(kind: vm.mode == .clipboard ? .follow : .top)
             if vm.mode != .clipboard { clipboardFilter = .all }
         }
         // Pop-to-root can leave query and mode unchanged, so explicitly restore the content origin.
         .onChange(of: vm.resetToken) {
             if vm.mode == .clipboard { vm.selection = store.initialSelection(filter: clipboardFilter) }
-            listScroll = ListScrollIntent(kind: .top)
+            listScroll = ListScrollIntent(kind: vm.mode == .clipboard ? .follow : .top)
         }
         // Opening either menu highlights its first row and closes the other, so exactly one menu is ever open and always has a highlight.
         .onChange(of: menuOpen) { vm.menuOpen = menuOpen }
         .onAppear {
             if vm.mode == .clipboard && vm.query.isEmpty {
                 vm.selection = store.initialSelection(filter: clipboardFilter)
+                listScroll = ListScrollIntent(kind: .follow)
             }
             searchFocused = vm.mode != .snippetEditor && vm.mode != .quicklinkEditor
             vm.onInlineArgumentsTab = handleInlineArgumentTab
@@ -436,18 +437,32 @@ struct RootPaletteView: View {
                 listScroll = ListScrollIntent(kind: .top)
             }
         }
-        // ⌘1–⌘5 launch the compact bar's favorite slots (or expand, for the "…" overflow slot).
-        .onKeyPress(keys: ["1", "2", "3", "4", "5"], phases: .down) { press in
-            guard isCollapsed, settings.showFavoritesInCompactMode,
-                press.modifiers.contains(.command),
+        .onKeyPress(keys: ["1", "2", "3", "4", "5", "6", "7", "8", "9"], phases: .down) { press in
+            guard press.modifiers == .command, !menuOpen, !vm.searchIsComposing,
                 let digit = press.key.character.wholeNumberValue
             else { return .ignored }
-            let slots = compactFavoriteSlots
-            let index = digit - 1
-            guard slots.indices.contains(index) else { return .ignored }
-            switch slots[index] {
-            case .app(let app): core.launcher.launch(app)
-            case .more: core.expandFromCompact()
+            if isCollapsed {
+                guard settings.showFavoritesInCompactMode else { return .ignored }
+                let slots = compactFavoriteSlots
+                let index = digit - 1
+                guard slots.indices.contains(index) else { return .ignored }
+                switch slots[index] {
+                case .app(let app): core.launcher.launch(app)
+                case .more: core.expandFromCompact()
+                }
+                return .handled
+            }
+            guard vm.mode != .snippetEditor, vm.mode != .quicklinkEditor,
+                let index = selectionIndex.shortcutIndex(digit: digit)
+            else { return .ignored }
+            if index != selection { inlineArgumentValues.removeAll(keepingCapacity: true) }
+            vm.selection = index
+            listScroll = ListScrollIntent(kind: .follow)
+            if vm.mode == .uninstall {
+                guard uninstall.phase == .selecting else { return .ignored }
+                uninstall.toggle(uninstallResults[index])
+            } else {
+                activateSelection()
             }
             return .handled
         }

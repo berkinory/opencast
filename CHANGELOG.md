@@ -4,6 +4,8 @@
 
 ### Improved
 
+- Activated the first nine displayed results with Command-1 through Command-9 across palette lists and emoji; uninstall shortcuts toggle individual checkboxes.
+
 - Offered Open in Browser for valid HTTP and HTTPS addresses entered in launcher search.
 
 - Avoided a second launcher reset when reopening a palette already reset while hidden.

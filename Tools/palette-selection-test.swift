@@ -37,6 +37,16 @@ struct PaletteSelectionTests {
         expect(empty.count == 0, "empty sections have no selectable rows")
         expect(empty.clamped(Int.max) == 0, "empty selection clamps to zero")
         expect(empty.row(at: 0) == nil, "empty index resolves no row")
+        expect(empty.shortcutIndex(digit: 1) == nil, "empty results have no numeric shortcut")
+        let shortcuts = PaletteSelectionIndex(hasCalculator: true, sectionCounts: [4, 6])
+        for digit in 1...9 {
+            expect(shortcuts.shortcutIndex(digit: digit) == digit - 1, "shortcut follows flat visible result order")
+        }
+        expect(shortcuts.shortcutIndex(digit: 0) == nil, "Command-0 is not bound")
+        expect(shortcuts.shortcutIndex(digit: 10) == nil, "only nine shortcuts exist")
+        expect(
+            PaletteSelectionIndex(sectionCounts: [2]).shortcutIndex(digit: 3) == nil,
+            "shortcut cannot activate a missing row")
 
         let launcher = PaletteSelectionIndex(hasCalculator: true, sectionCounts: [3, 2])
         expect(launcher.count == 6, "calculator plus five rows")

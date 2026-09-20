@@ -22,6 +22,11 @@ struct PaletteSelectionIndex: Equatable {
         count == 0 ? 0 : min(max(selection, 0), count - 1)
     }
 
+    func shortcutIndex(digit: Int) -> Int? {
+        guard (1...9).contains(digit), digit <= count else { return nil }
+        return digit - 1
+    }
+
     func row(at index: Int) -> PaletteSelectionRow? {
         guard index >= 0, index < count else { return nil }
         if hasCalculator, index == 0 { return .calculator }
