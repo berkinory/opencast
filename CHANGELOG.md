@@ -4,6 +4,8 @@
 
 ### Improved
 
+- Avoided a second launcher reset when reopening a palette already reset while hidden.
+
 - Added an optional Space-triggered snippet expansion mode, preserving the space after the inserted text.
 
 - Opened clipboard images in a resizable Quick Look window from Actions or Command-Y.

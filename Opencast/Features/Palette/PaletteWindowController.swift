@@ -10,6 +10,7 @@ final class PaletteWindowController: NSObject, NSWindowDelegate {
     private(set) var previousApp: NSRunningApplication?
     private weak var previousOwnWindow: NSWindow?
     private var popToRootTimer: Timer?
+    private var preparedRootToken: UUID?
     private var isPresentingConfirmation = false
     private var filePicker: NSOpenPanel?
     private var isPresentingFilePicker = false
@@ -81,6 +82,8 @@ final class PaletteWindowController: NSObject, NSWindowDelegate {
     /// Pop to Root Search: reset immediately (also releases heavy sub-screens — a fully scrolled emoji grid is ~2k realized views), or keep state and reset after the configured delay unless a reopen consumes it first.
     private func schedulePopToRoot() {
         popToRootTimer?.invalidate()
+        popToRootTimer = nil
+        preparedRootToken = nil
         guard core.uninstall.target == nil else {
             popToRootTimer = nil
             return
@@ -88,6 +91,7 @@ final class PaletteWindowController: NSObject, NSWindowDelegate {
         let timeout = core.settings.popToRootTimeout
         guard timeout != .immediately else {
             core.resetPaletteToLauncher()
+            preparedRootToken = core.palette.resetToken
             return
         }
         popToRootTimer = Timer.scheduledTimer(withTimeInterval: timeout.interval, repeats: false) {
@@ -95,14 +99,17 @@ final class PaletteWindowController: NSObject, NSWindowDelegate {
             MainActor.assumeIsolated {
                 self?.popToRootTimer = nil
                 self?.core.resetPaletteToLauncher()
+                self?.preparedRootToken = self?.core.palette.resetToken
             }
         }
     }
 
-    /// True when a hidden palette still holds pre-close state (pending pop-to-root); consuming cancels the reset either way — the caller decides whether to restore or re-prepare.
     func consumePreservedState() -> Bool {
         queryWasPreserved = false
-        guard let timer = popToRootTimer else { return false }
+        defer { preparedRootToken = nil }
+        guard let timer = popToRootTimer else {
+            return preparedRootToken == core.palette.resetToken && core.palette.mode == .launcher
+        }
         queryWasPreserved = !core.palette.query.isEmpty
         timer.invalidate()
         popToRootTimer = nil
