@@ -29,6 +29,8 @@ struct ScopesTest {
         let host = apps.appendingPathComponent("Host.app")
         makeDirectory(host.appendingPathComponent("Contents/Applications/Child.app"))
         makeDirectory(host.appendingPathComponent("Contents/Resources/Noise.app"))
+        let developerApps = host.appendingPathComponent("Contents/Developer/Applications")
+        makeDirectory(developerApps.appendingPathComponent("Simulator.app"))
         makeDirectory(apps.appendingPathComponent("Notes.txt"))
         makeDirectory(apps.appendingPathComponent(".Hidden.app"))
         let nested = apps.appendingPathComponent("Sub")
@@ -40,6 +42,14 @@ struct ScopesTest {
             "direct .app children are indexed",
             Set(found).isSuperset(of: ["Alpha.app", "Beta.app", "Host.app"]))
         check("embedded apps in Contents/Applications are indexed", found.contains("Child.app"))
+        check("embedded developer apps are indexed", found.contains("Simulator.app"))
+        check(
+            "direct bundle scopes include developer apps",
+            SearchScopes.appBundles(in: [host.path]).map(\.lastPathComponent).contains("Simulator.app"))
+        let overlapping = SearchScopes.appBundles(in: [apps.path, host.path, developerApps.path])
+        check(
+            "overlapping scopes do not duplicate embedded apps",
+            overlapping.filter { $0.lastPathComponent == "Simulator.app" }.count == 1)
         check("non-app children are skipped", !found.contains("Notes.txt"))
         check("hidden bundles are skipped", !found.contains(".Hidden.app"))
         check("unrelated app contents are skipped", !found.contains("Noise.app"))

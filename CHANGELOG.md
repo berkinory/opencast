@@ -2,6 +2,10 @@
 
 ## [0.2.6]
 
+### Improved
+
+- Included embedded developer applications such as Simulator in app search and deduplicated overlapping search folders.
+
 ### Fixed
 
 - Made keypad Enter behave like Return in palette actions, quicklinks, snippets, and shortcut recording.

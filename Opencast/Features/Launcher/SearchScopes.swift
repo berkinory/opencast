@@ -70,17 +70,20 @@ enum SearchScopes {
                 }
             }
         }
-        return result
+        var seen = Set<String>()
+        return result.filter { seen.insert($0.standardizedFileURL.path).inserted }
     }
 
     private static func embeddedAppBundles(in app: URL) -> [URL] {
-        let directory = app.appendingPathComponent("Contents/Applications", isDirectory: true)
-        return
-            (try? FileManager.default.contentsOfDirectory(
-                at: directory,
-                includingPropertiesForKeys: nil,
-                options: [.skipsHiddenFiles]
-            ))?.filter { $0.pathExtension.lowercased() == "app" } ?? []
+        ["Contents/Applications", "Contents/Developer/Applications"].flatMap { path in
+            let directory = app.appendingPathComponent(path, isDirectory: true)
+            return
+                (try? FileManager.default.contentsOfDirectory(
+                    at: directory,
+                    includingPropertiesForKeys: nil,
+                    options: [.skipsHiddenFiles]
+                ))?.filter { $0.pathExtension.lowercased() == "app" } ?? []
+        }
     }
 
     private static func trimTrailingSlash(_ path: String) -> String {
