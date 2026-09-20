@@ -27,9 +27,10 @@ final class SystemCommandCoordinator {
     }
 
     func quit(_ app: AppEntry) {
-        guard app.kind == .application, let bundleID = app.bundleID else { return }
-        let quittingPreviousApp = previousApplication()?.bundleIdentifier == bundleID
-        guard AppLauncher.quit(bundleID: bundleID) else { return }
+        guard app.kind == .application else { return }
+        let quittingPreviousApp =
+            previousApplication()?.bundleURL.map(ApplicationIdentity.path) == ApplicationIdentity.path(app.url)
+        guard AppLauncher.quit(url: app.url) else { return }
         hidePalette(!quittingPreviousApp)
     }
 

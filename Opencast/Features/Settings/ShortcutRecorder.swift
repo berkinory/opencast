@@ -151,7 +151,7 @@ struct ShortcutRecorder: View {
         switch action {
         case .app(let bundleID):
             return AppCore.shared.appIndex.apps.first {
-                $0.kind == .application && $0.bundleID == bundleID
+                $0.kind == .application && $0.preferenceKey == bundleID
             }?.icon ?? NSApp.applicationIconImage
         case .settingsPane(let bundleID):
             return AppCore.shared.appIndex.apps.first {

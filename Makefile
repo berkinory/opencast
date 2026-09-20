@@ -45,6 +45,8 @@ unsigned-dmg:
 
 test: tools
 	@mkdir -p $(TEST_BIN_DIR)
+	swiftc -swift-version 6 Opencast/Features/Launcher/ApplicationIdentity.swift Tools/application-identity-test.swift -o $(TEST_BIN_DIR)/application-identity-test
+	$(TEST_BIN_DIR)/application-identity-test
 	cp Tools/fuzz-test.swift $(TEST_BIN_DIR)/main.swift
 	swiftc -swift-version 6 Opencast/Features/Launcher/Romanization.swift $(TEST_BIN_DIR)/main.swift -o $(TEST_BIN_DIR)/fuzz-test
 	$(TEST_BIN_DIR)/fuzz-test

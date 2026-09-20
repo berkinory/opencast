@@ -2,6 +2,23 @@ import AppKit
 
 enum AppLauncher {
 
+    @MainActor
+    static func running(at url: URL) -> [NSRunningApplication] {
+        let path = ApplicationIdentity.path(url)
+        return NSWorkspace.shared.runningApplications.filter {
+            $0.bundleURL.map(ApplicationIdentity.path) == path
+        }
+    }
+
+    @MainActor
+    static func toggle(url: URL) {
+        if let active = running(at: url).first(where: \.isActive) {
+            active.hide()
+        } else if FileManager.default.fileExists(atPath: url.path) {
+            Task { try? await launch(url) }
+        }
+    }
+
     enum RestartError: LocalizedError {
         case notRunning
         case didNotTerminate
@@ -84,20 +101,16 @@ enum AppLauncher {
     }
 
     @MainActor
-    static func restart(bundleID: String) async throws {
-        let running = NSRunningApplication.runningApplications(withBundleIdentifier: bundleID)
+    static func restart(url: URL) async throws {
+        let running = running(at: url)
         guard !running.isEmpty else { throw RestartError.notRunning }
-        guard
-            let url = running.compactMap({ $0.bundleURL }).first
-                ?? NSWorkspace.shared.urlForApplication(withBundleIdentifier: bundleID)
-        else { throw RestartError.notRunning }
 
         let processIDs = Set(running.map({ $0.processIdentifier }))
         for app in running { app.terminate() }
 
         let deadline = Date().addingTimeInterval(5)
         while true {
-            let remaining = NSRunningApplication.runningApplications(withBundleIdentifier: bundleID)
+            let remaining = Self.running(at: url)
                 .contains { processIDs.contains($0.processIdentifier) }
             if !remaining { break }
             guard Date() < deadline else { throw RestartError.didNotTerminate }
@@ -107,20 +120,18 @@ enum AppLauncher {
         try await launch(url)
     }
 
-    /// Asks every running instance of a bundle ID to quit — graceful, so an app with unsaved work still gets to put its own sheet up. False when nothing was running.
     @MainActor
     @discardableResult
-    static func quit(bundleID: String) -> Bool {
-        let running = NSRunningApplication.runningApplications(withBundleIdentifier: bundleID)
+    static func quit(url: URL) -> Bool {
+        let running = running(at: url)
         for app in running { app.terminate() }
         return !running.isEmpty
     }
 
-    /// Force-terminate every running instance of a bundle.
     @MainActor
     @discardableResult
-    static func forceQuit(bundleID: String) -> Bool {
-        let running = NSRunningApplication.runningApplications(withBundleIdentifier: bundleID)
+    static func forceQuit(url: URL) -> Bool {
+        let running = running(at: url)
         var terminated = false
         for app in running { terminated = app.forceTerminate() || terminated }
         return terminated

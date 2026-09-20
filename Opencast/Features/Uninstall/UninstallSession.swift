@@ -162,8 +162,8 @@ final class UninstallSession: ObservableObject {
         }
         phase = .removing(permanently: permanently)
         let targets = checkedItems
-        if targets.contains(where: { $0.kind == .bundle }), let bundleID = target?.bundleID {
-            await Self.quitAndWait(bundleID: bundleID)
+        if targets.contains(where: { $0.kind == .bundle }), let url = target?.url {
+            await Self.quitAndWait(url: url)
         }
         let failedPaths = await Task.detached(priority: .userInitiated) {
             AppLeftovers.remove(targets.map(\.url), permanently: permanently)
@@ -189,10 +189,10 @@ final class UninstallSession: ObservableObject {
         }
     }
 
-    private static func quitAndWait(bundleID: String) async {
-        guard AppLauncher.quit(bundleID: bundleID) else { return }
+    private static func quitAndWait(url: URL) async {
+        guard AppLauncher.quit(url: url) else { return }
         for _ in 0..<30 {
-            if NSRunningApplication.runningApplications(withBundleIdentifier: bundleID).isEmpty { return }
+            if AppLauncher.running(at: url).isEmpty { return }
             try? await Task.sleep(for: .milliseconds(100))
         }
     }

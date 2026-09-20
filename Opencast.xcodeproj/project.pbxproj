@@ -14,6 +14,7 @@
 		05C551B515D364F31C845F33 /* LaunchAtLogin.swift in Sources */ = {isa = PBXBuildFile; fileRef = 127EFC9A6EF236C31283D4FA /* LaunchAtLogin.swift */; };
 		085DEFA7A58F32AF5B4C43EB /* CalcFormatter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27F2FC2999A872CED0B69D3A /* CalcFormatter.swift */; };
 		0E24D5F720D6C0C99257F787 /* WindowActionMemory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E6FE517CCF9B2BB4E1B7825 /* WindowActionMemory.swift */; };
+		101A229BDFBA91AF573BC607 /* ApplicationIdentity.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76330BA2D2A0FE2D56E33E56 /* ApplicationIdentity.swift */; };
 		111452FAE652430B75D04887 /* PaletteScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 68A3114205263DF64A689621 /* PaletteScreen.swift */; };
 		1A5FEF19FE3C9B7B749B9574 /* EmojiData.generated.swift in Sources */ = {isa = PBXBuildFile; fileRef = 62F1B227B244CCBCD72C2CA9 /* EmojiData.generated.swift */; };
 		1B75FC557B5E5C027947B29E /* PalettePanel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0BE551CEE8B674FBB2DB49EA /* PalettePanel.swift */; };
@@ -202,6 +203,7 @@
 		704C4312B2D9701235899FD6 /* SnippetStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SnippetStore.swift; sourceTree = "<group>"; };
 		74640B41568BC7C7A90A3115 /* PaletteRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PaletteRow.swift; sourceTree = "<group>"; };
 		75436CB1E5583DCA4C5B448A /* QuicklinkSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuicklinkSettingsView.swift; sourceTree = "<group>"; };
+		76330BA2D2A0FE2D56E33E56 /* ApplicationIdentity.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ApplicationIdentity.swift; sourceTree = "<group>"; };
 		78B8F73B54E3A12653A07758 /* Theme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Theme.swift; sourceTree = "<group>"; };
 		7D7122D966A24A349FC8D147 /* QuicklinkStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuicklinkStore.swift; sourceTree = "<group>"; };
 		872EB9C1E78314EC5D47B785 /* UninstallPaletteScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UninstallPaletteScreen.swift; sourceTree = "<group>"; };
@@ -549,6 +551,7 @@
 			children = (
 				A77212F0AE7D2165193E9FA6 /* AppIndex.swift */,
 				16EF20D6D40812470F28F1A2 /* AppLauncher.swift */,
+				76330BA2D2A0FE2D56E33E56 /* ApplicationIdentity.swift */,
 				BE38B042EDB9B428B0371B97 /* CalculatorCardView.swift */,
 				BBE44AD7CADBDEDE80F3ACB7 /* CalculatorCoordinator.swift */,
 				C6CCAFA1285E322F00F12165 /* CommandRegistry.swift */,
@@ -692,6 +695,7 @@
 				9D3F92ACE5AFEF38FC4BAA4A /* AppLeftovers.swift in Sources */,
 				C279BED9932E0CDD175BB56C /* AppPaths.swift in Sources */,
 				3B0091B23F62C6BEF7D71CE3 /* AppSettings.swift in Sources */,
+				101A229BDFBA91AF573BC607 /* ApplicationIdentity.swift in Sources */,
 				B885B4D0925B9462776514EE /* Bundle+AppName.swift in Sources */,
 				05A23381D65E68F4AD6F2FD0 /* CalcCurrency.swift in Sources */,
 				2273EFCCB62BCA189B0DEFE1 /* CalcDateTime.swift in Sources */,

@@ -10,6 +10,8 @@
 
 ### Fixed
 
+- Kept separate application installations independently searchable, favoritable, bindable, and targetable by quit/restart actions, even when they share a bundle ID.
+
 - Discovered applications in symlinked search folders, ignored broken bundle links, and deduplicated physical installations.
 
 - Kept global shortcuts active when their entries or categories are hidden from launcher search; feature enablement still applies.

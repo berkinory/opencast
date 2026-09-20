@@ -15,6 +15,7 @@ struct AppEntry: Identifiable, Hashable, Sendable {
     let bundleID: String?
     let kind: Kind
     let searchAliases: [String]
+    let preferenceKey: String
 
     init(
         id: String,
@@ -22,7 +23,8 @@ struct AppEntry: Identifiable, Hashable, Sendable {
         url: URL,
         bundleID: String?,
         kind: Kind,
-        searchAliases: [String] = []
+        searchAliases: [String] = [],
+        preferenceKey: String? = nil
     ) {
         self.id = id
         self.name = name
@@ -30,10 +32,8 @@ struct AppEntry: Identifiable, Hashable, Sendable {
         self.bundleID = bundleID
         self.kind = kind
         self.searchAliases = searchAliases
+        self.preferenceKey = preferenceKey ?? bundleID ?? id
     }
-
-    /// Stable identity for learned ranking, favorites, and other per-entry preferences.
-    var preferenceKey: String { bundleID ?? id }
 
     var kindLabel: String {
         switch kind {
@@ -63,7 +63,7 @@ struct AppEntry: Identifiable, Hashable, Sendable {
     var hotKeyAction: HotKeyAction? {
         switch kind {
         case .application:
-            return bundleID.map(HotKeyAction.app)
+            return .app(bundleID: preferenceKey)
         case .systemSettings:
             return bundleID.map(HotKeyAction.settingsPane)
         case .command:
@@ -395,20 +395,27 @@ final class AppIndex: ObservableObject {
     }
 
     private nonisolated static func scanApps(_ urls: [URL]) -> [AppEntry] {
-        var seenBundleIDs = Set<String>()
+        var primaryPaths =
+            UserDefaults.standard.dictionary(forKey: ApplicationIdentity.defaultsKey) as? [String: String] ?? [:]
+        let previousPaths = primaryPaths
         var result: [AppEntry] = []
         for url in urls {
             let bundle = Bundle(url: url)
             let bundleID = bundle?.bundleIdentifier
-            // Dedup by bundle ID; the earliest scope wins.
-            if let bundleID, !seenBundleIDs.insert(bundleID).inserted { continue }
-
             let name = appName(bundle: bundle, url: url)
-            let aliases = Romanization.aliases(for: name) + alternateNames(for: url, displayName: name)
+            let filename = url.deletingPathExtension().lastPathComponent
+            let aliases = Romanization.aliases(for: name) + alternateNames(for: url, displayName: name) + [filename]
+            let key = ApplicationIdentity.key(for: url, bundleID: bundleID, primaryPaths: &primaryPaths)
+            let alternate = bundleID != nil && key != bundleID
+            let qualifier =
+                filename.caseInsensitiveCompare(name) == .orderedSame ? url.deletingLastPathComponent().path : filename
             result.append(
                 AppEntry(
-                    id: url.path, name: name, url: url, bundleID: bundleID,
-                    kind: .application, searchAliases: aliases))
+                    id: url.path, name: alternate ? "\(name) (\(qualifier))" : name, url: url, bundleID: bundleID,
+                    kind: .application, searchAliases: aliases + [name], preferenceKey: key))
+        }
+        if primaryPaths != previousPaths {
+            UserDefaults.standard.set(primaryPaths, forKey: ApplicationIdentity.defaultsKey)
         }
         return result.sorted {
             $0.name.localizedCaseInsensitiveCompare($1.name) == .orderedAscending

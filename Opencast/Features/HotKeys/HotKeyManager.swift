@@ -189,7 +189,7 @@ final class HotKeyManager: ObservableObject, HealthCheckable {
             return action.commandName ?? "Emoji & Symbols"
         case .app(let bundleID):
             let apps = entries()
-            return apps.first { $0.kind == .application && $0.bundleID == bundleID }?.name
+            return apps.first { $0.kind == .application && $0.preferenceKey == bundleID }?.name
                 ?? bundleID
         case .settingsPane(let bundleID):
             let apps = entries()
@@ -249,7 +249,19 @@ final class HotKeyManager: ObservableObject, HealthCheckable {
         case .togglePalette: onTogglePalette?()
         case .toggleClipboard: onToggleClipboard?()
         case .toggleEmoji: onToggleEmoji?()
-        case .app(let bundleID): AppLauncher.toggle(bundleID: bundleID)
+        case .app(let identity):
+            if let app = entries().first(where: { $0.kind == .application && $0.preferenceKey == identity }) {
+                AppLauncher.toggle(url: app.url)
+            } else if identity.hasPrefix("/") {
+                AppLauncher.toggle(url: URL(fileURLWithPath: identity))
+            } else if let path =
+                (UserDefaults.standard.dictionary(forKey: ApplicationIdentity.defaultsKey) as? [String: String])?[
+                    identity]
+            {
+                AppLauncher.toggle(url: URL(fileURLWithPath: path))
+            } else {
+                AppLauncher.toggle(bundleID: identity)
+            }
         case .settingsPane(let bundleID): AppLauncher.openSettingsPane(bundleID: bundleID)
         case .command(let id): onRunCommand?(id)
         case .windowCommand(let id): onRunWindowCommand?(id)

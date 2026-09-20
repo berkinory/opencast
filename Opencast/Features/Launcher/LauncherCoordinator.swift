@@ -105,23 +105,23 @@ final class LauncherCoordinator {
     }
 
     func restart(_ app: AppEntry) {
-        guard app.kind == .application, let bundleID = app.bundleID else { return }
+        guard app.kind == .application else { return }
         hidePalette(false)
         Task { [weak self] in
             do {
-                try await AppLauncher.restart(bundleID: bundleID)
+                try await AppLauncher.restart(url: app.url)
             } catch {
                 guard let self else { return }
                 showPalette(.launcher)
-                palette.postFeedback("Could not restart (app.name)", tone: .error)
+                palette.postFeedback("Could not restart \(app.name)", tone: .error)
             }
         }
     }
 
     func forceQuit(_ app: AppEntry) {
-        guard app.kind == .application, let bundleID = app.bundleID else { return }
+        guard app.kind == .application else { return }
         hidePalette(false)
-        _ = AppLauncher.forceQuit(bundleID: bundleID)
+        _ = AppLauncher.forceQuit(url: app.url)
     }
 
     private func runCommand(_ entry: AppEntry, inlineArgumentValues: [String]) {
