@@ -184,11 +184,15 @@ private struct QuicklinkNameField: View {
                 .font(Theme.Typography.sectionHeader)
                 .foregroundStyle(Theme.Colors.textSecondary)
             HStack(spacing: 0) {
-                TextField("Quicklink name", text: $text)
-                    .textFieldStyle(.plain)
-                    .font(Theme.Typography.callout)
-                    .padding(.leading, Theme.Spacing.md)
-                    .paletteTextInputCursor()
+                TextField(
+                    "Quicklink name",
+                    text: Binding(
+                        get: { text }, set: { text = SingleLineText.collapse($0) })
+                )
+                .textFieldStyle(.plain)
+                .font(Theme.Typography.callout)
+                .padding(.leading, Theme.Spacing.md)
+                .paletteTextInputCursor()
                 Divider()
                     .frame(height: 20)
                     .overlay(Theme.Colors.cardStroke)

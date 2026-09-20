@@ -96,7 +96,7 @@ final class SnippetStore: ObservableObject {
     @discardableResult
     func create(name: String, content: String, keyword: String, icon: String) throws -> Snippet {
         let snippet = Snippet(
-            name: name.trimmingCharacters(in: .whitespacesAndNewlines),
+            name: SingleLineText.collapse(name).trimmingCharacters(in: .whitespacesAndNewlines),
             content: content,
             keyword: keyword.trimmingCharacters(in: .whitespacesAndNewlines),
             icon: icon
@@ -116,7 +116,7 @@ final class SnippetStore: ObservableObject {
     @discardableResult
     func update(_ snippet: Snippet) throws -> Snippet {
         var updated = snippet
-        updated.name = updated.name.trimmingCharacters(in: .whitespacesAndNewlines)
+        updated.name = SingleLineText.collapse(updated.name).trimmingCharacters(in: .whitespacesAndNewlines)
         updated.keyword = updated.keyword.trimmingCharacters(in: .whitespacesAndNewlines)
         updated.modifiedAt = Date()
         try validate(updated, excluding: snippet.id)

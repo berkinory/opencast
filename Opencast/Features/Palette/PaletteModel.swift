@@ -183,10 +183,7 @@ final class PaletteViewModel: ObservableObject {
 
     @discardableResult
     func collapseQueryLineBreaks() -> Bool {
-        let collapsed = String(
-            query.map { character in
-                character == "\n" || character == "\r" ? " " : character
-            })
+        let collapsed = SingleLineText.collapse(query)
         guard collapsed != query else { return false }
         query = collapsed
         return true

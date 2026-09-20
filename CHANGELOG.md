@@ -20,6 +20,8 @@
 
 ### Fixed
 
+- Collapsed pasted line breaks in quicklink and snippet names, keyword fields, and palette search, including Windows and Unicode separators.
+
 - Kept separate application installations independently searchable, favoritable, bindable, and targetable by quit/restart actions, even when they share a bundle ID.
 
 - Discovered applications in symlinked search folders, ignored broken bundle links, and deduplicated physical installations.

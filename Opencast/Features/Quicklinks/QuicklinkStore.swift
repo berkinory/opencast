@@ -96,7 +96,7 @@ final class QuicklinkStore: ObservableObject {
         name: String, link: String, icon: String, openWithBundleID: String
     ) throws -> Quicklink {
         let quicklink = Quicklink(
-            name: name.trimmingCharacters(in: .whitespacesAndNewlines),
+            name: SingleLineText.collapse(name).trimmingCharacters(in: .whitespacesAndNewlines),
             link: link.trimmingCharacters(in: .whitespacesAndNewlines),
             icon: icon,
             openWithBundleID: openWithBundleID
@@ -116,7 +116,7 @@ final class QuicklinkStore: ObservableObject {
     @discardableResult
     func update(_ quicklink: Quicklink) throws -> Quicklink {
         var updated = quicklink
-        updated.name = updated.name.trimmingCharacters(in: .whitespacesAndNewlines)
+        updated.name = SingleLineText.collapse(updated.name).trimmingCharacters(in: .whitespacesAndNewlines)
         updated.link = updated.link.trimmingCharacters(in: .whitespacesAndNewlines)
         updated.modifiedAt = Date()
         try validate(updated)

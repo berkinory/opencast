@@ -25,6 +25,7 @@
 		2273EFCCB62BCA189B0DEFE1 /* CalcDateTime.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD5C33EA1F5AC03F4F27D7EC /* CalcDateTime.swift */; };
 		23E5DB23DDFA2DC54550D828 /* EmojiSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6CBDBDA7A914809B55FF32FE /* EmojiSettingsView.swift */; };
 		24AF6611A66DCFC99BA04CC7 /* SystemCommandCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 674FA64DC1FA50EF85C27C45 /* SystemCommandCoordinator.swift */; };
+		24EC3B4DBFBDB072570DD448 /* SingleLineText.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3ABB957A63A67CFDAB1B6F33 /* SingleLineText.swift */; };
 		25D52944D0E133CD108CB844 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B8243C4190704B957722DE7C /* Assets.xcassets */; };
 		268A0AA46BDD9288633D3EE0 /* ThinScrollbar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AFF513A7B07382D36DBC6DE /* ThinScrollbar.swift */; };
 		27DD0CBDACC2576D50361390 /* RootPaletteView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F207135F1CF766FD9A4491E0 /* RootPaletteView.swift */; };
@@ -174,6 +175,7 @@
 		3641C2AEB1E4DC3B3066DC2A /* DoubleCommandMonitor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DoubleCommandMonitor.swift; sourceTree = "<group>"; };
 		373D7E843D43668F40880006 /* WebURLResolver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebURLResolver.swift; sourceTree = "<group>"; };
 		38E70D3FB1E5A007C99B9945 /* FrequentEmojiStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FrequentEmojiStore.swift; sourceTree = "<group>"; };
+		3ABB957A63A67CFDAB1B6F33 /* SingleLineText.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SingleLineText.swift; sourceTree = "<group>"; };
 		3DCF9F9AB89A05201D459D5C /* CalcQuantity.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CalcQuantity.swift; sourceTree = "<group>"; };
 		3F2A51A0280BDE282048EDFA /* SearchScopes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchScopes.swift; sourceTree = "<group>"; };
 		3F6BACE99C5CB59D77200F49 /* EmojiIndex.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmojiIndex.swift; sourceTree = "<group>"; };
@@ -586,6 +588,7 @@
 				FE14EBBC60089E73C43859B0 /* ImageThumbnail.swift */,
 				0EF902187738222AFC9461A5 /* OverlayScroller.swift */,
 				B68673860967A4DAB1EA16FA /* RightClick.swift */,
+				3ABB957A63A67CFDAB1B6F33 /* SingleLineText.swift */,
 				78B8F73B54E3A12653A07758 /* Theme.swift */,
 				0AFF513A7B07382D36DBC6DE /* ThinScrollbar.swift */,
 				D11ED0BE89DE989696E6748A /* VisualEffectView.swift */,
@@ -799,6 +802,7 @@
 				A51481832B801FF992FDFEC9 /* SettingsSearchView.swift in Sources */,
 				87ADA5CF0D871BC1C12EB590 /* ShortcutRecorder.swift in Sources */,
 				F5201B807399F1C6E0863AE3 /* ShortcutsSettingsView.swift in Sources */,
+				24EC3B4DBFBDB072570DD448 /* SingleLineText.swift in Sources */,
 				EA7F39EE7D7D24BF1D23CD23 /* SnippetActionsMenu.swift in Sources */,
 				637E926418BC8A67C337C305 /* SnippetCoordinator.swift in Sources */,
 				A32684FB948AD66D788E8410 /* SnippetExpansionMatch.swift in Sources */,
