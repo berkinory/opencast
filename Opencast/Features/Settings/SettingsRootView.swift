@@ -219,7 +219,8 @@ struct SettingsRootView: View {
             SearchEntry(
                 record: .init(
                     id: "clipboard-clear-history", title: "Clear clipboard history",
-                    detail: "Permanently remove every saved clip and image", breadcrumb: "Clipboard · History",
+                    detail: "Remove unpinned clips and images. Pinned entries are kept.",
+                    breadcrumb: "Clipboard · History",
                     keywords: ["delete", "clear", "remove"]),
                 route: .init(tab: .clipboard, destination: .clipboardClearHistory)),
             SearchEntry(

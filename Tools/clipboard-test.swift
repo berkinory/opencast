@@ -20,10 +20,42 @@ struct ClipboardTests {
         pinsLeadFilteredSearches()
         filters()
         persistence()
+        clearHistoryPreservesPinnedImages()
         migrationFromShippedDatabase()
 
         print("\(passes)/\(passes + failures) passed")
         if failures > 0 { exit(1) }
+    }
+
+    static func clearHistoryPreservesPinnedImages() {
+        withStore { store, dir in
+            store.maxAge = .greatestFiniteMagnitude
+            let pinnedURL = dir.appendingPathComponent("images/pinned.png")
+            let oldURL = dir.appendingPathComponent("images/old.png")
+            let externalURL = dir.appendingPathComponent("external.png")
+            for url in [pinnedURL, oldURL, externalURL] {
+                try! Data([1, 2, 3]).write(to: url)
+            }
+            let pinned = ClipboardItem(imagePath: pinnedURL.path, sourceBundleID: nil)
+            store.importEntries([
+                pinned,
+                ClipboardItem(imagePath: oldURL.path, sourceBundleID: nil),
+                ClipboardItem(imagePath: externalURL.path, sourceBundleID: nil),
+            ])
+            store.togglePinned(pinned)
+            store.importEntries([ClipboardItem(imagePath: pinnedURL.path, sourceBundleID: nil)])
+            for index in 0..<1_010 { store.addText("history \(index)", sourceBundleID: nil) }
+            _ = store.search("history")
+            expect(store.clearHistory(), "clearing a large history succeeds")
+            expect(store.items.map(\.id) == [pinned.id], "only the pinned image remains")
+            expect(store.search("history").isEmpty, "clearing invalidates cached and FTS results")
+            expect(FileManager.default.fileExists(atPath: pinnedURL.path), "shared pinned image survives")
+            expect(!FileManager.default.fileExists(atPath: oldURL.path), "image outside memory window is removed")
+            expect(FileManager.default.fileExists(atPath: externalURL.path), "external images are untouched")
+            let reopened = ClipboardStore(directory: dir)
+            reopened.load()
+            expect(reopened.items.map(\.id) == [pinned.id], "pinned image survives reopening")
+        }
     }
 
     static func filters() {
@@ -183,8 +215,11 @@ struct ClipboardTests {
             reopened.togglePinned(item(reopened, "third"))
             expect(texts(reopened) == ["first", "third", "second"], "unpin after a reload")
 
-            reopened.clearAll()
-            expect(reopened.items.isEmpty, "Clear History takes pins too")
+            expect(reopened.clearHistory(), "Clear History succeeds")
+            expect(texts(reopened) == ["first"], "Clear History preserves pins")
+            let cleared = ClipboardStore(directory: dir)
+            cleared.load()
+            expect(texts(cleared) == ["first"], "cleared history stays cleared after reopening")
         }
     }
 

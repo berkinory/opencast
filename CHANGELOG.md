@@ -8,6 +8,8 @@
 
 ### Fixed
 
+- Preserved pinned clipboard entries and their images when clearing history, without a confirmation dialog.
+
 - Made keypad Enter behave like Return in palette actions, quicklinks, snippets, and shortcut recording.
 
 - Fixed Caffeinate allowing the display to sleep after five seconds instead of keeping the display and system awake until stopped or the selected duration expires.

@@ -109,18 +109,6 @@ final class PaletteWindowController: NSObject, NSWindowDelegate {
         return true
     }
 
-    /// Present a native confirmation dialog while keeping the floating palette visible.
-    func confirmDeleteAllClipboardEntries(onConfirmed: @escaping () -> Void) {
-        guard
-            presentConfirmation(
-                message: "Delete all clipboard entries?",
-                informativeText: "This can't be undone.",
-                confirmTitle: "Delete All Entries"
-            )
-        else { return }
-        onConfirmed()
-    }
-
     func presentConfirmation(
         message: String, informativeText: String, confirmTitle: String
     ) -> Bool {

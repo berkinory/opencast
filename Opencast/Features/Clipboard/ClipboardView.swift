@@ -167,7 +167,7 @@ enum ClipboardActionsMenu {
             })
         items.append(
             PopoverMenuItem(
-                title: "Delete All Entries", systemImage: "trash.fill", isDestructive: true
+                title: "Clear Unpinned History", systemImage: "trash.fill", isDestructive: true
             ) {
                 coordinator.deleteAll {
                     onFeedback("Deleted all entries")

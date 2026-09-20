@@ -316,11 +316,26 @@ final class ClipboardStore: ObservableObject {
         deleteBlob(item)
     }
 
-    func clearAll() {
-        if db != nil { sqlite3_exec(db, "DELETE FROM items", nil, nil, nil) }
-        try? FileManager.default.removeItem(at: imagesDir)
-        try? FileManager.default.createDirectory(at: imagesDir, withIntermediateDirectories: true)
-        items = []
+    @discardableResult
+    func clearHistory() -> Bool {
+        var paths = Set(items.filter { !$0.isPinned }.compactMap(\.imagePath))
+        if db != nil {
+            guard let stmt = prepare("DELETE FROM items WHERE pinned_at IS NULL RETURNING image_path")
+            else { return false }
+            defer { sqlite3_finalize(stmt) }
+            var status = sqlite3_step(stmt)
+            while status == SQLITE_ROW {
+                if let path = Self.columnString(stmt, 0) { paths.insert(path) }
+                status = sqlite3_step(stmt)
+            }
+            guard status == SQLITE_DONE else { return false }
+        }
+        items.removeAll { !$0.isPinned }
+        let pinnedPaths = Set(items.compactMap(\.imagePath))
+        for path in paths.subtracting(pinnedPaths) where owns(path) {
+            try? FileManager.default.removeItem(atPath: path)
+        }
+        return true
     }
 
     func imageURL(for item: ClipboardItem) -> URL? {

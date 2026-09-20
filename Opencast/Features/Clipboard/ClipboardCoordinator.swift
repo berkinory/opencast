@@ -7,22 +7,19 @@ final class ClipboardCoordinator {
     private let previousApplication: () -> NSRunningApplication?
     private let hidePalette: (Bool) -> Void
     private let pasteKeepingOpen: (ClipboardItem, ClipboardStore) -> Bool
-    private let confirmDeleteAll: (@escaping () -> Void) -> Void
 
     init(
         store: ClipboardStore,
         palette: PaletteViewModel,
         previousApplication: @escaping () -> NSRunningApplication?,
         hidePalette: @escaping (Bool) -> Void,
-        pasteKeepingOpen: @escaping (ClipboardItem, ClipboardStore) -> Bool,
-        confirmDeleteAll: @escaping (@escaping () -> Void) -> Void
+        pasteKeepingOpen: @escaping (ClipboardItem, ClipboardStore) -> Bool
     ) {
         self.store = store
         self.palette = palette
         self.previousApplication = previousApplication
         self.hidePalette = hidePalette
         self.pasteKeepingOpen = pasteKeepingOpen
-        self.confirmDeleteAll = confirmDeleteAll
     }
 
     func paste(_ item: ClipboardItem) {
@@ -67,11 +64,12 @@ final class ClipboardCoordinator {
         store.remove(item)
     }
 
-    func deleteAll(onConfirmed: @escaping () -> Void) {
-        confirmDeleteAll { [weak self] in
-            self?.store.clearAll()
-            onConfirmed()
+    func deleteAll(onCleared: () -> Void) {
+        guard store.clearHistory() else {
+            NSSound.beep()
+            return
         }
+        onCleared()
     }
 
     private func select(_ item: ClipboardItem) {

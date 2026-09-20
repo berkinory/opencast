@@ -64,22 +64,12 @@ struct ClipboardSettingsView: View {
 
                 SettingsStatusCard(
                     title: "Clear clipboard history",
-                    message: "Permanently remove every saved clip and image.",
+                    message: "Remove unpinned clips and images. Pinned entries are kept.",
                     systemImage: "trash",
                     tint: Theme.Colors.destructive
                 ) {
-                    Button("Clear…", role: .destructive) {
-                        guard
-                            AppCore.shared.presentDialog(
-                                message: "Clear clipboard history?",
-                                informativeText: "This can't be undone.",
-                                primaryTitle: "Clear History",
-                                secondaryTitle: "Cancel",
-                                style: .warning,
-                                primaryIsDestructive: true
-                            ) == .primary
-                        else { return }
-                        AppCore.shared.clipboardStore.clearAll()
+                    Button("Clear", role: .destructive) {
+                        if !AppCore.shared.clipboardStore.clearHistory() { NSSound.beep() }
                     }
                     .controlSize(.small)
                 }

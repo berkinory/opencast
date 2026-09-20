@@ -53,9 +53,6 @@ final class AppCore: ObservableObject {
         hidePalette: { [weak self] restoreFocus in self?.hidePalette(restoreFocus: restoreFocus) },
         pasteKeepingOpen: { [weak self] item, store in
             self?.windowController.pasteKeepingWindowOpen(item, store: store) ?? false
-        },
-        confirmDeleteAll: { [weak self] completion in
-            self?.windowController.confirmDeleteAllClipboardEntries(onConfirmed: completion)
         }
     )
     lazy var emojis = EmojiCoordinator(
