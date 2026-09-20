@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.2.7]
+
+### Fixed
+
+- Prevented pending clipboard images from reappearing after clearing history or disabling capture.
+
 ## [0.2.6]
 
 ### Improved

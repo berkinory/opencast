@@ -171,6 +171,7 @@ final class ClipboardStore: ObservableObject {
     private var searchCache: (query: String, filter: ClipboardFilter, result: [ClipboardItem])?
     /// Same memo for the empty query — every render reads the full display order, so the pinned/unpinned split runs once per mutation.
     private var orderedCache: [ClipboardItem]?
+    private(set) var imageCaptureGeneration = UUID()
 
     private static let memoryWindow = 1000
 
@@ -274,14 +275,23 @@ final class ClipboardStore: ObservableObject {
         insert(ClipboardItem(text: text, sourceBundleID: sourceBundleID))
     }
 
-    func addImage(_ data: Data, sourceBundleID: String?) {
+    func invalidatePendingImages() {
+        imageCaptureGeneration = UUID()
+    }
+
+    func addImage(_ data: Data, sourceBundleID: String?, generation: UUID) async {
+        guard generation == imageCaptureGeneration else { return }
         let url = imagesDir.appendingPathComponent(UUID().uuidString + ".png")
         let item = ClipboardItem(imagePath: url.path, sourceBundleID: sourceBundleID)
-        // The blob write is multi-MB disk I/O; only the row insert (a failed write inserts nothing) returns to the main actor.
-        Task.detached(priority: .utility) { [weak self] in
-            guard (try? data.write(to: url, options: .atomic)) != nil else { return }
-            await self?.insert(item)
+        let written = await Task.detached(priority: .utility) {
+            (try? data.write(to: url, options: .atomic)) != nil
+        }.value
+        guard written else { return }
+        guard generation == imageCaptureGeneration else {
+            await Task.detached(priority: .utility) { try? FileManager.default.removeItem(at: url) }.value
+            return
         }
+        insert(item)
     }
 
     @discardableResult
@@ -330,6 +340,7 @@ final class ClipboardStore: ObservableObject {
             }
             guard status == SQLITE_DONE else { return false }
         }
+        invalidatePendingImages()
         items.removeAll { !$0.isPinned }
         let pinnedPaths = Set(items.compactMap(\.imagePath))
         for path in paths.subtracting(pinnedPaths) where owns(path) {

@@ -12,7 +12,8 @@ struct ClipboardTests {
     static var failures = 0
     static var passes = 0
 
-    static func main() {
+    static func main() async {
+        await staleImageCapture()
         pinOrder()
         unpinRejoinsAsNewest()
         pasteLeavesPinsAlone()
@@ -56,6 +57,29 @@ struct ClipboardTests {
             reopened.load()
             expect(reopened.items.map(\.id) == [pinned.id], "pinned image survives reopening")
         }
+    }
+
+    static func staleImageCapture() async {
+        let dir = scratchDirectory()
+        defer { try? FileManager.default.removeItem(at: dir) }
+        let store = ClipboardStore(directory: dir)
+        let generation = store.imageCaptureGeneration
+        let pending = Task {
+            await store.addImage(
+                Data(repeating: 1, count: 4 * 1024 * 1024), sourceBundleID: nil, generation: generation)
+        }
+        await Task.yield()
+        store.clearHistory()
+        await pending.value
+        expect(store.items.isEmpty, "clear rejects an in-flight image")
+        let files = try! FileManager.default.contentsOfDirectory(atPath: dir.appendingPathComponent("images").path)
+        expect(files.isEmpty, "clear leaves no stale image files")
+        let disabledGeneration = store.imageCaptureGeneration
+        store.invalidatePendingImages()
+        await store.addImage(Data([1]), sourceBundleID: nil, generation: disabledGeneration)
+        expect(store.items.isEmpty, "disabled capture is discarded")
+        await store.addImage(Data([2]), sourceBundleID: nil, generation: store.imageCaptureGeneration)
+        expect(store.items.count == 1, "new captures still work")
     }
 
     static func filters() {

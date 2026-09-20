@@ -1,4 +1,5 @@
 import AppKit
+import Combine
 
 @MainActor
 final class ClipboardManager {
@@ -19,10 +20,14 @@ final class ClipboardManager {
     private let settings: AppSettings
     private var timer: Timer?
     private var lastChangeCount = 0
+    private var enabledSubscription: AnyCancellable?
 
     init(store: ClipboardStore, settings: AppSettings) {
         self.store = store
         self.settings = settings
+        enabledSubscription = settings.$clipboardEnabled.dropFirst().sink { [weak store] enabled in
+            if !enabled { store?.invalidatePendingImages() }
+        }
     }
 
     // Isolated so teardown can touch the main-actor timer; AppCore only releases the manager on the main actor, so no hop. The poll block is `[weak self]`, so this isn't fixing a leak — it stops a stray timer firing if the manager is ever recreated.
@@ -65,6 +70,7 @@ final class ClipboardManager {
         if let type = pb.availableType(from: [.png, .tiff]), let data = pb.data(forType: type) {
             let isPNG = type == .png
             let store = store
+            let generation = store.imageCaptureGeneration
             // A big copy's TIFF→PNG re-encode can take 100ms+; keep the poll (and the UI) off that path.
             Task.detached(priority: .utility) {
                 let png =
@@ -72,7 +78,7 @@ final class ClipboardManager {
                     ? data
                     : NSBitmapImageRep(data: data)?.representation(using: .png, properties: [:])
                 guard let png else { return }
-                await store.addImage(png, sourceBundleID: sourceBundleID)
+                await store.addImage(png, sourceBundleID: sourceBundleID, generation: generation)
             }
         }
     }
