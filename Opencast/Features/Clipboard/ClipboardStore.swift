@@ -393,6 +393,10 @@ final class ClipboardStore: ObservableObject {
         search(query).firstIndex { $0.id == item.id }
     }
 
+    func initialSelection(filter: ClipboardFilter = .all) -> Int {
+        search("", filter: filter).firstIndex { !$0.isPinned } ?? 0
+    }
+
     private func runSearch(_ q: String) -> [ClipboardItem] {
         // Trigram FTS needs ≥3 characters; shorter queries (and the no-database path) fall back to filtering the in-memory window.
         guard let stmt = searchStmt, q.count >= 3 else { return fallbackSearch(q) }

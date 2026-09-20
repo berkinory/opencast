@@ -15,6 +15,7 @@ struct ClipboardTests {
     static func main() async {
         await staleImageCapture()
         repeatedText()
+        initialClipboardSelection()
         pinOrder()
         unpinRejoinsAsNewest()
         pasteLeavesPinsAlone()
@@ -100,6 +101,21 @@ struct ClipboardTests {
         expect(
             FilePathResolver.resolve("/path/that/does/not/exist") == nil,
             "missing paths are ignored")
+    }
+
+    static func initialClipboardSelection() {
+        withStore { store, _ in
+            expect(store.initialSelection() == 0, "empty history selection is safe")
+            store.addText("pin", sourceBundleID: nil)
+            store.togglePinned(store.items[0])
+            expect(store.initialSelection() == 0, "pin-only history selects its first pin")
+            store.addText("newest", sourceBundleID: nil)
+            expect(
+                store.search("")[store.initialSelection()].text == "newest",
+                "initial selection skips pins for newest history")
+            expect(store.search("").first?.isPinned == true, "pins remain above history")
+            expect(store.initialSelection(filter: .image) == 0, "empty filtered history is safe")
+        }
     }
 
     static func repeatedText() {

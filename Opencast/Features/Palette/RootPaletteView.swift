@@ -376,7 +376,8 @@ struct RootPaletteView: View {
         }
         .onChange(of: vm.query) {
             if vm.collapseQueryLineBreaks() { return }
-            vm.selection = 0
+            vm.selection =
+                vm.mode == .clipboard && vm.query.isEmpty ? store.initialSelection(filter: clipboardFilter) : 0
             inlineArgumentValues.removeAll(keepingCapacity: true)
             inlineArgumentFocus = nil
             inlineArgumentFocusRequest = nil
@@ -384,7 +385,8 @@ struct RootPaletteView: View {
         }
         .onChange(of: vm.mode) {
             searchFocused = vm.mode != .snippetEditor && vm.mode != .quicklinkEditor
-            vm.selection = 0
+            vm.selection =
+                vm.mode == .clipboard && vm.query.isEmpty ? store.initialSelection(filter: clipboardFilter) : 0
             inlineArgumentValues.removeAll(keepingCapacity: true)
             vm.feedback = nil
             showActions = false
@@ -394,11 +396,15 @@ struct RootPaletteView: View {
         }
         // Pop-to-root can leave query and mode unchanged, so explicitly restore the content origin.
         .onChange(of: vm.resetToken) {
+            if vm.mode == .clipboard { vm.selection = store.initialSelection(filter: clipboardFilter) }
             listScroll = ListScrollIntent(kind: .top)
         }
         // Opening either menu highlights its first row and closes the other, so exactly one menu is ever open and always has a highlight.
         .onChange(of: menuOpen) { vm.menuOpen = menuOpen }
         .onAppear {
+            if vm.mode == .clipboard && vm.query.isEmpty {
+                vm.selection = store.initialSelection(filter: clipboardFilter)
+            }
             searchFocused = vm.mode != .snippetEditor && vm.mode != .quicklinkEditor
             vm.onInlineArgumentsTab = handleInlineArgumentTab
             vm.onInlineArgumentsEscape = handleInlineArgumentEscape
