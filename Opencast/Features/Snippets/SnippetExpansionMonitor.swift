@@ -87,27 +87,20 @@ final class SnippetExpansionMonitor: HealthCheckable {
     }
 
     private func expandMatchingSnippet() {
+        let afterSpace = settings.snippetExpandAfterSpace
         guard
-            let snippet = store.snippets
-                .filter({ !$0.keyword.isEmpty && typedBuffer.hasSuffix($0.keyword) })
-                .filter(isWordBoundaryMatch)
-                .max(by: { $0.keyword.count < $1.keyword.count })
+            let keyword = SnippetExpansionMatch.keyword(
+                in: typedBuffer, keywords: store.snippets.map(\.keyword), afterSpace: afterSpace
+            ),
+            let snippet = store.snippets.first(where: { $0.keyword == keyword })
         else { return }
         guard Permissions.ensureAccessibility() else {
             typedBuffer = ""
             return
         }
-        postBackspaces(snippet.keyword.count)
+        postBackspaces(snippet.keyword.count + (afterSpace ? 1 : 0))
         typedBuffer = ""
-        Paster.pasteString(snippet.content, previousApp: nil)
-    }
-
-    private func isWordBoundaryMatch(_ snippet: Snippet) -> Bool {
-        let prefixCount = typedBuffer.count - snippet.keyword.count
-        guard prefixCount > 0 else { return true }
-        let prefix = typedBuffer.dropLast(snippet.keyword.count)
-        guard let last = prefix.last else { return true }
-        return !last.isLetter && !last.isNumber
+        Paster.pasteString(snippet.content + (afterSpace ? " " : ""), previousApp: nil)
     }
 
     private func postBackspaces(_ count: Int) {

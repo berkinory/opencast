@@ -45,6 +45,8 @@ unsigned-dmg:
 
 test: tools
 	@mkdir -p $(TEST_BIN_DIR)
+	swiftc -swift-version 6 Opencast/Features/Snippets/SnippetExpansionMatch.swift Tools/snippet-expansion-test.swift -o $(TEST_BIN_DIR)/snippet-expansion-test
+	$(TEST_BIN_DIR)/snippet-expansion-test
 	swiftc -swift-version 6 Opencast/Features/Launcher/ApplicationIdentity.swift Tools/application-identity-test.swift -o $(TEST_BIN_DIR)/application-identity-test
 	$(TEST_BIN_DIR)/application-identity-test
 	cp Tools/fuzz-test.swift $(TEST_BIN_DIR)/main.swift

@@ -29,6 +29,11 @@ struct SnippetSettingsView: View {
                     tint: Theme.Colors.systemAccent
                 ) {
                     VStack(alignment: .leading, spacing: Theme.Spacing.md) {
+                        Toggle("Expand after Space", isOn: $settings.snippetExpandAfterSpace)
+                            .settingsToggle()
+                        Text("Wait for a space before expanding a keyword. The space is kept after the inserted text.")
+                            .font(Theme.Typography.caption)
+                            .foregroundStyle(Theme.Colors.textSecondary)
                         Text("Disabled applications")
                             .font(Theme.Typography.captionSemibold)
                             .foregroundStyle(Theme.Colors.textSecondary)

@@ -33,6 +33,7 @@ final class AppSettings: ObservableObject {
         static let clipboardEnabled = "clipboardEnabled"
         static let clipboardDisabledApps = "clipboardDisabledApps"
         static let snippetsEnabled = "snippetsEnabled"
+        static let snippetExpandAfterSpace = "snippetExpandAfterSpace"
         static let emojiSkinTone = "emojiSkinTone"
         static let emojiEnabled = "emojiEnabled"
         static let popToRootTimeout = "popToRootTimeout"
@@ -138,6 +139,10 @@ final class AppSettings: ObservableObject {
         didSet { defaults.set(snippetsEnabled, forKey: Key.snippetsEnabled) }
     }
 
+    @Published var snippetExpandAfterSpace: Bool {
+        didSet { defaults.set(snippetExpandAfterSpace, forKey: Key.snippetExpandAfterSpace) }
+    }
+
     /// Bundle IDs whose snippet keywords are never expanded.
     @Published var snippetDisabledApps: [String] {
         didSet { defaults.set(snippetDisabledApps, forKey: Key.snippetDisabledApps) }
@@ -209,6 +214,7 @@ final class AppSettings: ObservableObject {
             defaults.object(forKey: Key.snippetsEnabled) == nil
             || defaults.bool(forKey: Key.snippetsEnabled)
         snippetDisabledApps = defaults.stringArray(forKey: Key.snippetDisabledApps) ?? []
+        snippetExpandAfterSpace = defaults.bool(forKey: Key.snippetExpandAfterSpace)
         quicklinksEnabled =
             defaults.object(forKey: Key.quicklinksEnabled) == nil
             || defaults.bool(forKey: Key.quicklinksEnabled)

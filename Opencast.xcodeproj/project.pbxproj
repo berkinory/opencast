@@ -87,6 +87,7 @@
 		9A5F5FC52CC79A8FA9B95189 /* PaletteGridLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = BEE56DB2B6758ECB4018C45D /* PaletteGridLayout.swift */; };
 		9B8D64884367ACA4CE764B97 /* PaletteSelectionIndex.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C1555E09E35D697CD70133B /* PaletteSelectionIndex.swift */; };
 		9D3F92ACE5AFEF38FC4BAA4A /* AppLeftovers.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2B0AE140DC6852FFFDB7DF1 /* AppLeftovers.swift */; };
+		A32684FB948AD66D788E8410 /* SnippetExpansionMatch.swift in Sources */ = {isa = PBXBuildFile; fileRef = 749B129FE8AFD5BCDFF206EC /* SnippetExpansionMatch.swift */; };
 		A49DECCC1161194E88EABA36 /* Memo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4973359D768464832A31BF6A /* Memo.swift */; };
 		A51481832B801FF992FDFEC9 /* SettingsSearchView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 552B88B452A49B746957A344 /* SettingsSearchView.swift */; };
 		A584EFE4141003F5DAD76D4C /* CalculatorSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1231005DCD5DC3AC9DA5E76 /* CalculatorSettingsView.swift */; };
@@ -203,6 +204,7 @@
 		6EE41A3AF3116D7D65F0F12F /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		704C4312B2D9701235899FD6 /* SnippetStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SnippetStore.swift; sourceTree = "<group>"; };
 		74640B41568BC7C7A90A3115 /* PaletteRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PaletteRow.swift; sourceTree = "<group>"; };
+		749B129FE8AFD5BCDFF206EC /* SnippetExpansionMatch.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SnippetExpansionMatch.swift; sourceTree = "<group>"; };
 		75436CB1E5583DCA4C5B448A /* QuicklinkSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuicklinkSettingsView.swift; sourceTree = "<group>"; };
 		76330BA2D2A0FE2D56E33E56 /* ApplicationIdentity.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ApplicationIdentity.swift; sourceTree = "<group>"; };
 		78B8F73B54E3A12653A07758 /* Theme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Theme.swift; sourceTree = "<group>"; };
@@ -487,6 +489,7 @@
 			children = (
 				DD7828F8E8D06ABDF3E82E4A /* SnippetActionsMenu.swift */,
 				0A0F48BD3DCA94294DB5D51F /* SnippetCoordinator.swift */,
+				749B129FE8AFD5BCDFF206EC /* SnippetExpansionMatch.swift */,
 				0C3352BC466A860755602E1A /* SnippetExpansionMonitor.swift */,
 				704C4312B2D9701235899FD6 /* SnippetStore.swift */,
 				875391F4D0BC13ECB4B3D591 /* SnippetViews.swift */,
@@ -795,6 +798,7 @@
 				F5201B807399F1C6E0863AE3 /* ShortcutsSettingsView.swift in Sources */,
 				EA7F39EE7D7D24BF1D23CD23 /* SnippetActionsMenu.swift in Sources */,
 				637E926418BC8A67C337C305 /* SnippetCoordinator.swift in Sources */,
+				A32684FB948AD66D788E8410 /* SnippetExpansionMatch.swift in Sources */,
 				565E7BEE401B41804BBFB18B /* SnippetExpansionMonitor.swift in Sources */,
 				21381D073D89E1FC7A5182A9 /* SnippetSettingsView.swift in Sources */,
 				E833C99EB70A37D5B91F8A2A /* SnippetStore.swift in Sources */,

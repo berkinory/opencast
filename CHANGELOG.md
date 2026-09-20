@@ -4,6 +4,8 @@
 
 ### Improved
 
+- Added an optional Space-triggered snippet expansion mode, preserving the space after the inserted text.
+
 - Opened clipboard images in a resizable Quick Look window from Actions or Command-Y.
 
 - Selected the newest ordinary clipboard entry on a fresh opening while keeping pinned entries at the top.
