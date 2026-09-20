@@ -188,7 +188,7 @@ final class AppCore: ObservableObject {
         hotKeys.onRunCommand = { [weak self] id in self?.launcher.runHotKey(id: id) }
         hotKeys.onRunWindowCommand = { [weak self] id in self?.windowCommands.run(id) }
         hotKeys.allowsAction = { [weak self] action in
-            guard let self, self.visibility.allowsHotKey(action) else { return false }
+            guard let self else { return false }
             switch action {
             case .toggleClipboard:
                 return self.settings.clipboardEnabled
