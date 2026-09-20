@@ -14,6 +14,7 @@ enum SettingsDestination: Hashable, Sendable {
     case clipboardExcludedApps
     case clipboardClearHistory
     case snippetDisabledApps
+    case snippetExpandAfterSpace
     case quicklinksEnabled
     case emojiShortcut
     case emojiSkinTone
@@ -38,6 +39,7 @@ enum SettingsDestination: Hashable, Sendable {
         case .clipboardExcludedApps: return "clipboard-excluded-apps"
         case .clipboardClearHistory: return "clipboard-clear-history"
         case .snippetDisabledApps: return "snippet-disabled-apps"
+        case .snippetExpandAfterSpace: return "snippet-expand-after-space"
         case .quicklinksEnabled: return "quicklinks-enabled"
         case .emojiShortcut: return "emoji-shortcut"
         case .emojiSkinTone: return "emoji-skin-tone"

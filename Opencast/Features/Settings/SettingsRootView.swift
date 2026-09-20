@@ -229,6 +229,13 @@ struct SettingsRootView: View {
                     breadcrumb: "Features", keywords: ["text", "templates", "expansion"]), route: .init(tab: .snippets)),
             SearchEntry(
                 record: .init(
+                    id: "snippet-expand-after-space", title: "Expand after Space",
+                    detail: "Wait for a space before expanding a snippet keyword",
+                    breadcrumb: "Snippets · Keyword expansion",
+                    keywords: ["delimiter", "trigger", "keyword", "space"]),
+                route: .init(tab: .snippets, destination: .snippetExpandAfterSpace)),
+            SearchEntry(
+                record: .init(
                     id: "snippet-disabled-apps", title: "Disabled snippet applications",
                     detail: "Prevent keyword expansion in selected apps", breadcrumb: "Snippets · Privacy",
                     keywords: ["exclude", "ignore"]), route: .init(tab: .snippets, destination: .snippetDisabledApps)),
