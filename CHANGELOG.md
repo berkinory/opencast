@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.2.6]
+
+### Fixed
+
+- Fixed Caffeinate allowing the display to sleep after five seconds instead of keeping the display and system awake until stopped or the selected duration expires.
+
 ## [0.2.5]
 
 ### Improved

@@ -106,7 +106,7 @@ enum SystemCommandRunner {
     }
 
     static func caffeinate(for duration: Int? = nil) async throws {
-        var arguments = ["-u"]
+        var arguments = ["-di"]
         if let duration { arguments += ["-t", String(duration)] }
         try await decaffeinate()
         try await startProcess("/usr/bin/caffeinate", arguments: arguments)
