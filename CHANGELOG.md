@@ -4,6 +4,8 @@
 
 ### Improved
 
+- Offered Open in Browser for valid HTTP and HTTPS addresses entered in launcher search.
+
 - Avoided a second launcher reset when reopening a palette already reset while hidden.
 
 - Added an optional Space-triggered snippet expansion mode, preserving the space after the inserted text.

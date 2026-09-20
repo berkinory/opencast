@@ -3,10 +3,10 @@ import SwiftUI
 struct LauncherList: View {
     let results: [AppEntry]
     let quicklinks: [Quicklink]
-    let filePath: URL?
+    let directURL: URL?
     let selectedID: AppEntry.ID?
     let selectedQuicklinkID: Quicklink.ID?
-    let filePathSelected: Bool
+    let directURLSelected: Bool
     let favoriteCount: Int
     let pinnedQuicklinkCount: Int
     let favoriteQuicklinkCount: Int
@@ -22,7 +22,7 @@ struct LauncherList: View {
     let onActions: (AppEntry) -> Void
     let onActivateQuicklink: (Quicklink) -> Void
     let onActionsQuicklink: (Quicklink) -> Void
-    let onActivateFilePath: (URL) -> Void
+    let onActivateDirectURL: (URL) -> Void
     @EnvironmentObject private var runningApps: RunningAppsMonitor
 
     private nonisolated static let calcRowID = "calc-card"
@@ -48,14 +48,14 @@ struct LauncherList: View {
         var calcRows: [Row] = []
         if let calc { calcRows = [.header("Calculator"), .calc(calc)] }
         guard showSections else {
-            guard !results.isEmpty || !quicklinks.isEmpty || filePath != nil else { return calcRows }
+            guard !results.isEmpty || !quicklinks.isEmpty || directURL != nil else { return calcRows }
             var rows = calcRows
             if !results.isEmpty || !quicklinks.isEmpty {
                 rows += [.header("Results")] + results.map(Row.app) + quicklinks.map(Row.quicklink)
             }
-            if let filePath {
-                rows.append(.header("File"))
-                rows.append(.file(filePath))
+            if let directURL {
+                rows.append(.header(directURL.isFileURL ? "File" : "Web"))
+                rows.append(.file(directURL))
             }
             return rows
         }
@@ -92,9 +92,9 @@ struct LauncherList: View {
                 rows.append(contentsOf: restQuicklinks.map(Row.quicklink))
             }
         }
-        if let filePath {
-            rows.append(.header("File"))
-            rows.append(.file(filePath))
+        if let directURL {
+            rows.append(.header(directURL.isFileURL ? "File" : "Web"))
+            rows.append(.file(directURL))
         }
         return rows
     }
@@ -102,7 +102,7 @@ struct LauncherList: View {
     var body: some View {
         let rows = rows
         return Group {
-            if results.isEmpty && quicklinks.isEmpty && calc == nil && filePath == nil {
+            if results.isEmpty && quicklinks.isEmpty && calc == nil && directURL == nil {
                 EmptyResults(text: "No apps found")
             } else {
                 ScrollViewReader { proxy in
@@ -137,9 +137,9 @@ struct LauncherList: View {
                                         .onTapGesture { onActivateQuicklink(quicklink) }
                                         .onRightClick { onActionsQuicklink(quicklink) }
                                     case .file(let url):
-                                        FilePathRow(url: url, selected: filePathSelected)
+                                        DirectURLRow(url: url, selected: directURLSelected)
                                             .contentShape(Rectangle())
-                                            .onTapGesture { onActivateFilePath(url) }
+                                            .onTapGesture { onActivateDirectURL(url) }
                                     }
                                 }
                             }
@@ -162,8 +162,8 @@ struct LauncherList: View {
                             proxy.scrollTo(selectedID)
                         } else if let selectedQuicklinkID {
                             proxy.scrollTo(selectedQuicklinkID.uuidString)
-                        } else if filePathSelected, let filePath {
-                            proxy.scrollTo("file-" + filePath.path)
+                        } else if directURLSelected, let directURL {
+                            proxy.scrollTo("file-" + directURL.path)
                         }
                     }
                 }
@@ -172,7 +172,7 @@ struct LauncherList: View {
     }
 }
 
-private struct FilePathRow: View {
+private struct DirectURLRow: View {
     let url: URL
     let selected: Bool
 
@@ -180,19 +180,24 @@ private struct FilePathRow: View {
         PaletteRow(
             selected: selected,
             leading: {
-                CommandIcon(systemImage: "folder", tint: Theme.Colors.systemAccent, size: Theme.Size.rowIcon)
+                CommandIcon(
+                    systemImage: url.isFileURL ? "folder" : "globe", tint: Theme.Colors.systemAccent,
+                    size: Theme.Size.rowIcon)
             },
             content: {
-                Text(url.lastPathComponent.isEmpty ? url.path : url.lastPathComponent)
-                    .font(Theme.Typography.rowTitle)
-                    .lineLimit(1)
-                Text(url.path)
+                Text(
+                    url.isFileURL
+                        ? (url.lastPathComponent.isEmpty ? url.path : url.lastPathComponent) : "Open in Browser"
+                )
+                .font(Theme.Typography.rowTitle)
+                .lineLimit(1)
+                Text(url.isFileURL ? url.path : url.absoluteString)
                     .font(Theme.Typography.caption)
                     .foregroundStyle(.secondary)
                     .lineLimit(1)
             },
             trailing: {
-                Text("File")
+                Text(url.isFileURL ? "File" : "URL")
                     .font(Theme.Typography.rowTrailing)
                     .foregroundStyle(Theme.Colors.rowKind)
             }

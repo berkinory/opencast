@@ -94,9 +94,17 @@ final class LauncherCoordinator {
         AppLauncher.showInFinder(app.url)
     }
 
-    func revealFile(_ url: URL) {
-        hidePalette(false)
-        AppLauncher.showInFinder(url)
+    func openDirectURL(_ url: URL) {
+        if url.isFileURL {
+            hidePalette(false)
+            AppLauncher.showInFinder(url)
+        } else if WebURLResolver.resolve(url.absoluteString) != nil {
+            if NSWorkspace.shared.open(url) {
+                hidePalette(false)
+            } else {
+                palette.postFeedback("Could not open URL", tone: .error)
+            }
+        }
     }
 
     func copyPath(_ app: AppEntry) {

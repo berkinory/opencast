@@ -79,6 +79,7 @@
 		8752558F201BD5E1E51E6335 /* QuicklinkViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5AC3C9115B942FC4E9128168 /* QuicklinkViews.swift */; };
 		87ADA5CF0D871BC1C12EB590 /* ShortcutRecorder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0993325B754EBE41A8B80761 /* ShortcutRecorder.swift */; };
 		89696F5D0EFF68BC84533F45 /* SystemCommand.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92D4799C926C47AAFF99A4B0 /* SystemCommand.swift */; };
+		8B4E49D6107885382D936CB6 /* WebURLResolver.swift in Sources */ = {isa = PBXBuildFile; fileRef = 373D7E843D43668F40880006 /* WebURLResolver.swift */; };
 		8CB33C21B7D272598B1F4502 /* ClipboardImagePreview.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE358325E33EA18F5AEA4882 /* ClipboardImagePreview.swift */; };
 		8F10E95EFDAEE9E4598344BF /* ToastWindowController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 918EFF3C890F25F6F071AD28 /* ToastWindowController.swift */; };
 		9494037D81736229E0E92BA1 /* EmojiPaletteScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 68466DCC9DE38D272F199629 /* EmojiPaletteScreen.swift */; };
@@ -171,6 +172,7 @@
 		30278F74390991460390F76B /* PaletteListLayout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PaletteListLayout.swift; sourceTree = "<group>"; };
 		31A0FDBB98365DA92EA6AFE4 /* SettingsRootView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsRootView.swift; sourceTree = "<group>"; };
 		3641C2AEB1E4DC3B3066DC2A /* DoubleCommandMonitor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DoubleCommandMonitor.swift; sourceTree = "<group>"; };
+		373D7E843D43668F40880006 /* WebURLResolver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebURLResolver.swift; sourceTree = "<group>"; };
 		38E70D3FB1E5A007C99B9945 /* FrequentEmojiStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FrequentEmojiStore.swift; sourceTree = "<group>"; };
 		3DCF9F9AB89A05201D459D5C /* CalcQuantity.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CalcQuantity.swift; sourceTree = "<group>"; };
 		3F2A51A0280BDE282048EDFA /* SearchScopes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchScopes.swift; sourceTree = "<group>"; };
@@ -572,6 +574,7 @@
 				3F2A51A0280BDE282048EDFA /* SearchScopes.swift */,
 				C60728FA7ECBA4A6941894DA /* SettingsPaneScanner.swift */,
 				E9299D3A11818FC0597CACB6 /* VisibilityStore.swift */,
+				373D7E843D43668F40880006 /* WebURLResolver.swift */,
 			);
 			path = Launcher;
 			sourceTree = "<group>";
@@ -816,6 +819,7 @@
 				AE191E430303072047400E98 /* UpdateStore.swift in Sources */,
 				4D620051B1C2961C7AF55D58 /* VisibilityStore.swift in Sources */,
 				BC4DE96FAB6633B60633ACBA /* VisualEffectView.swift in Sources */,
+				8B4E49D6107885382D936CB6 /* WebURLResolver.swift in Sources */,
 				0E24D5F720D6C0C99257F787 /* WindowActionMemory.swift in Sources */,
 				CB4EFBB6791980BC8E765B97 /* WindowCommand.swift in Sources */,
 				EB3A6393CF2E93BA6A8DCEE5 /* WindowCommandCoordinator.swift in Sources */,
