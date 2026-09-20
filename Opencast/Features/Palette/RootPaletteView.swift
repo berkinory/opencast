@@ -438,7 +438,8 @@ struct RootPaletteView: View {
             }
         }
         .onKeyPress(keys: ["1", "2", "3", "4", "5", "6", "7", "8", "9"], phases: .down) { press in
-            guard press.modifiers == .command, !menuOpen, !vm.searchIsComposing,
+            guard press.modifiers.intersection([.command, .shift, .option, .control]) == .command,
+                !menuOpen, !vm.searchIsComposing,
                 let digit = press.key.character.wholeNumberValue
             else { return .ignored }
             if isCollapsed {
@@ -526,7 +527,8 @@ struct RootPaletteView: View {
             return .handled
         }
         .onKeyPress(keys: ["y"], phases: .down) { press in
-            guard vm.mode == .clipboard, press.modifiers == .command,
+            guard vm.mode == .clipboard,
+                press.modifiers.intersection([.command, .shift, .option, .control]) == .command,
                 clipResults.indices.contains(selection), clipResults[selection].kind == .image
             else { return .ignored }
             core.clipboard.previewImage(clipResults[selection])

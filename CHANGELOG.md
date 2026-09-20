@@ -5,6 +5,7 @@
 ### Improved
 
 - Activated the first nine displayed results with Command-1 through Command-9 across palette lists and emoji; uninstall shortcuts toggle individual checkboxes.
+- Kept numbered result shortcuts and Quick Look available with Caps Lock enabled.
 
 - Offered Open in Browser for valid HTTP and HTTPS addresses entered in launcher search.
 - Kept direct URL and file results free of an empty Actions button.
