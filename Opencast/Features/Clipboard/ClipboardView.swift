@@ -151,6 +151,10 @@ enum ClipboardActionsMenu {
         }
         if item.kind == .image {
             items.append(
+                PopoverMenuItem(title: "Quick Look", systemImage: "eye", shortcut: "⌘Y") {
+                    coordinator.previewImage(item)
+                })
+            items.append(
                 PopoverMenuItem(title: "Show in Finder", systemImage: "folder") {
                     coordinator.revealImage(item)
                 })

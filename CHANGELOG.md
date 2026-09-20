@@ -4,6 +4,8 @@
 
 ### Improved
 
+- Opened clipboard images in a resizable Quick Look window from Actions or Command-Y.
+
 - Selected the newest ordinary clipboard entry on a fresh opening while keeping pinned entries at the top.
 
 - Reused existing clipboard text entries when copied again, preserving pins and moving ordinary entries to the top.

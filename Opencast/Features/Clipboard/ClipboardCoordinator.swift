@@ -2,6 +2,7 @@ import AppKit
 
 @MainActor
 final class ClipboardCoordinator {
+    private let imagePreview = ClipboardImagePreview()
     private let store: ClipboardStore
     private let palette: PaletteViewModel
     private let previousApplication: () -> NSRunningApplication?
@@ -47,6 +48,12 @@ final class ClipboardCoordinator {
         guard let url = store.imageURL(for: item) else { return }
         hidePalette(false)
         AppLauncher.showInFinder(url)
+    }
+
+    func previewImage(_ item: ClipboardItem) {
+        guard let url = store.imageURL(for: item) else { return }
+        hidePalette(false)
+        imagePreview.show(url)
     }
 
     func revealFile(_ url: URL) {

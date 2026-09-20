@@ -79,6 +79,7 @@
 		8752558F201BD5E1E51E6335 /* QuicklinkViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5AC3C9115B942FC4E9128168 /* QuicklinkViews.swift */; };
 		87ADA5CF0D871BC1C12EB590 /* ShortcutRecorder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0993325B754EBE41A8B80761 /* ShortcutRecorder.swift */; };
 		89696F5D0EFF68BC84533F45 /* SystemCommand.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92D4799C926C47AAFF99A4B0 /* SystemCommand.swift */; };
+		8CB33C21B7D272598B1F4502 /* ClipboardImagePreview.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE358325E33EA18F5AEA4882 /* ClipboardImagePreview.swift */; };
 		8F10E95EFDAEE9E4598344BF /* ToastWindowController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 918EFF3C890F25F6F071AD28 /* ToastWindowController.swift */; };
 		9494037D81736229E0E92BA1 /* EmojiPaletteScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 68466DCC9DE38D272F199629 /* EmojiPaletteScreen.swift */; };
 		976716075FC16AFAFD86EE50 /* PaletteActionLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA59B54CFE9ECFC4E9BC59C3 /* PaletteActionLayout.swift */; };
@@ -247,6 +248,7 @@
 		C6CCAFA1285E322F00F12165 /* CommandRegistry.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommandRegistry.swift; sourceTree = "<group>"; };
 		CB566B7E5349ED5CABA4DAB7 /* DialogController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DialogController.swift; sourceTree = "<group>"; };
 		CD99123F24443E4E1F1A385E /* WindowCommand.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WindowCommand.swift; sourceTree = "<group>"; };
+		CE358325E33EA18F5AEA4882 /* ClipboardImagePreview.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClipboardImagePreview.swift; sourceTree = "<group>"; };
 		CE7065BEF9CE4DC91DF6AB79 /* ClipboardStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClipboardStore.swift; sourceTree = "<group>"; };
 		D11ED0BE89DE989696E6748A /* VisualEffectView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VisualEffectView.swift; sourceTree = "<group>"; };
 		D1231005DCD5DC3AC9DA5E76 /* CalculatorSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CalculatorSettingsView.swift; sourceTree = "<group>"; };
@@ -411,6 +413,7 @@
 			isa = PBXGroup;
 			children = (
 				FCC7F18143B7C379084A9555 /* ClipboardCoordinator.swift */,
+				CE358325E33EA18F5AEA4882 /* ClipboardImagePreview.swift */,
 				077C33CE32FBE4C75697A091 /* ClipboardManager.swift */,
 				671AAC20B63D46404D59C6F2 /* ClipboardPaletteScreen.swift */,
 				CE7065BEF9CE4DC91DF6AB79 /* ClipboardStore.swift */,
@@ -709,6 +712,7 @@
 				023EC9AA6FA53D68B5BFF515 /* CalculatorCoordinator.swift in Sources */,
 				A584EFE4141003F5DAD76D4C /* CalculatorSettingsView.swift in Sources */,
 				C23CF1344E41D598320856D8 /* ClipboardCoordinator.swift in Sources */,
+				8CB33C21B7D272598B1F4502 /* ClipboardImagePreview.swift in Sources */,
 				ABE8132D519C0FCBD96FAE49 /* ClipboardManager.swift in Sources */,
 				AA70967464636CA8C88F3DF9 /* ClipboardPaletteScreen.swift in Sources */,
 				4BE8F596C87E28C20A958FBF /* ClipboardSettingsView.swift in Sources */,

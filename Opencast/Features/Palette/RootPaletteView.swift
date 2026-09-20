@@ -509,6 +509,13 @@ struct RootPaletteView: View {
             closeMenus()
             return .handled
         }
+        .onKeyPress(keys: ["y"], phases: .down) { press in
+            guard vm.mode == .clipboard, press.modifiers == .command,
+                clipResults.indices.contains(selection), clipResults[selection].kind == .image
+            else { return .ignored }
+            core.clipboard.previewImage(clipResults[selection])
+            return .handled
+        }
         .onKeyPress(keys: ["c"], phases: .down) { press in
             guard showActions else { return .ignored }
             guard vm.mode == .launcher else { return .ignored }
