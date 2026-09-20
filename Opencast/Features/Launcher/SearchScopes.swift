@@ -27,43 +27,31 @@ enum SearchScopes {
     }
 
     static func appBundles(in scopes: [String]) -> [URL] {
-        let fileManager = FileManager.default
         var result: [URL] = []
 
         for scope in scopes {
             let url = URL(fileURLWithPath: expand(scope))
             if url.pathExtension.lowercased() == "app" {
-                guard fileManager.fileExists(atPath: url.path) else { continue }
+                guard isDirectory(url) else { continue }
                 result.append(url)
                 result.append(contentsOf: embeddedAppBundles(in: url))
                 continue
             }
 
-            guard
-                let items = try? fileManager.contentsOfDirectory(
-                    at: url,
-                    includingPropertiesForKeys: nil,
-                    options: [.skipsHiddenFiles]
-                )
-            else { continue }
-            let apps = items.filter { $0.pathExtension.lowercased() == "app" }
+            let items = children(of: url)
+            let apps = items.filter { $0.pathExtension.lowercased() == "app" && isDirectory($0) }
             result.append(contentsOf: apps)
             for app in apps {
                 result.append(contentsOf: embeddedAppBundles(in: app))
             }
 
             let groupedDirectories = items.filter {
-                $0.hasDirectoryPath && $0.pathExtension.lowercased() != "app"
+                $0.pathExtension.lowercased() != "app" && isDirectory($0)
             }
             for directory in groupedDirectories {
-                guard
-                    let groupedItems = try? fileManager.contentsOfDirectory(
-                        at: directory,
-                        includingPropertiesForKeys: nil,
-                        options: [.skipsHiddenFiles]
-                    )
-                else { continue }
-                let groupedApps = groupedItems.filter { $0.pathExtension.lowercased() == "app" }
+                let groupedApps = children(of: directory).filter {
+                    $0.pathExtension.lowercased() == "app" && isDirectory($0)
+                }
                 result.append(contentsOf: groupedApps)
                 for app in groupedApps {
                     result.append(contentsOf: embeddedAppBundles(in: app))
@@ -71,19 +59,27 @@ enum SearchScopes {
             }
         }
         var seen = Set<String>()
-        return result.filter { seen.insert($0.standardizedFileURL.path).inserted }
+        return result.filter { seen.insert($0.resolvingSymlinksInPath().standardizedFileURL.path).inserted }
     }
 
     private static func embeddedAppBundles(in app: URL) -> [URL] {
         ["Contents/Applications", "Contents/Developer/Applications"].flatMap { path in
             let directory = app.appendingPathComponent(path, isDirectory: true)
-            return
-                (try? FileManager.default.contentsOfDirectory(
-                    at: directory,
-                    includingPropertiesForKeys: nil,
-                    options: [.skipsHiddenFiles]
-                ))?.filter { $0.pathExtension.lowercased() == "app" } ?? []
+            return children(of: directory).filter { $0.pathExtension.lowercased() == "app" && isDirectory($0) }
         }
+    }
+
+    private static func children(of directory: URL) -> [URL] {
+        let resolved = directory.resolvingSymlinksInPath()
+        let children =
+            (try? FileManager.default.contentsOfDirectory(
+                at: resolved, includingPropertiesForKeys: [.isDirectoryKey], options: [.skipsHiddenFiles])) ?? []
+        if resolved.path == directory.path { return children }
+        return children.map { directory.appendingPathComponent($0.lastPathComponent) }
+    }
+
+    private static func isDirectory(_ url: URL) -> Bool {
+        (try? url.resolvingSymlinksInPath().resourceValues(forKeys: [.isDirectoryKey]))?.isDirectory == true
     }
 
     private static func trimTrailingSlash(_ path: String) -> String {

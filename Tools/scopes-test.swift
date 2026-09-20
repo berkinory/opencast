@@ -76,6 +76,23 @@ struct ScopesTest {
                 == "Deep.app")
 
         let home = fileManager.homeDirectoryForCurrentUser.path
+        let managed = root.appendingPathComponent("Managed")
+        makeDirectory(managed.appendingPathComponent("Managed.app"))
+        let linked = apps.appendingPathComponent("Linked")
+        try! fileManager.createSymbolicLink(at: linked, withDestinationURL: managed)
+        let broken = apps.appendingPathComponent("Broken.app")
+        try! fileManager.createSymbolicLink(at: broken, withDestinationURL: root.appendingPathComponent("Missing.app"))
+        check(
+            "linked folders are scanned",
+            SearchScopes.appBundles(in: [apps.path]).contains {
+                $0.lastPathComponent == "Managed.app" && $0.deletingLastPathComponent().lastPathComponent == "Linked"
+            })
+        check("direct linked scopes are scanned", SearchScopes.appBundles(in: [linked.path]).count == 1)
+        check("broken bundles are ignored", !SearchScopes.appBundles(in: [apps.path]).contains(broken))
+        check(
+            "physical and linked scopes deduplicate",
+            SearchScopes.appBundles(in: [linked.path, managed.path]).count == 1)
+
         check("expand resolves a tilde", SearchScopes.expand("~/Applications") == home + "/Applications")
         check(
             "abbreviate restores the tilde",

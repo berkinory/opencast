@@ -10,6 +10,8 @@
 
 ### Fixed
 
+- Discovered applications in symlinked search folders, ignored broken bundle links, and deduplicated physical installations.
+
 - Kept global shortcuts active when their entries or categories are hidden from launcher search; feature enablement still applies.
 
 - Prevented pending clipboard images from reappearing after clearing history or disabling capture.
