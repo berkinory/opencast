@@ -21,6 +21,7 @@
 		1C0C3CB88AABBA8F4AA04046 /* PaletteRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 74640B41568BC7C7A90A3115 /* PaletteRow.swift */; };
 		1DC8A0DE53EBAA6EB2F36259 /* CurrencyRateStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 65C25106F5FCF77837811B97 /* CurrencyRateStore.swift */; };
 		1EC6DCB6001A538375C06F6C /* CurrencyData.generated.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7BA64F1EDCEFA645DF92079 /* CurrencyData.generated.swift */; };
+		20689286B4EB1250C85BE11A /* ApplicationMetadata.swift in Sources */ = {isa = PBXBuildFile; fileRef = F376AE973561BB5DD89CA682 /* ApplicationMetadata.swift */; };
 		21381D073D89E1FC7A5182A9 /* SnippetSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5386785E3005CEB050117CCD /* SnippetSettingsView.swift */; };
 		2273EFCCB62BCA189B0DEFE1 /* CalcDateTime.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD5C33EA1F5AC03F4F27D7EC /* CalcDateTime.swift */; };
 		23E5DB23DDFA2DC54550D828 /* EmojiSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6CBDBDA7A914809B55FF32FE /* EmojiSettingsView.swift */; };
@@ -276,6 +277,7 @@
 		EFB627B29E6DD1FE01D27B00 /* PaletteFooterControls.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PaletteFooterControls.swift; sourceTree = "<group>"; };
 		F207135F1CF766FD9A4491E0 /* RootPaletteView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RootPaletteView.swift; sourceTree = "<group>"; };
 		F2B0AE140DC6852FFFDB7DF1 /* AppLeftovers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppLeftovers.swift; sourceTree = "<group>"; };
+		F376AE973561BB5DD89CA682 /* ApplicationMetadata.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ApplicationMetadata.swift; sourceTree = "<group>"; };
 		F48F4C32ACE0359047A8CD3B /* LauncherSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LauncherSettingsView.swift; sourceTree = "<group>"; };
 		F9B757ECE8217E75C25E12B2 /* GeneralSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GeneralSettingsView.swift; sourceTree = "<group>"; };
 		FCC7F18143B7C379084A9555 /* ClipboardCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClipboardCoordinator.swift; sourceTree = "<group>"; };
@@ -562,6 +564,7 @@
 				A77212F0AE7D2165193E9FA6 /* AppIndex.swift */,
 				16EF20D6D40812470F28F1A2 /* AppLauncher.swift */,
 				76330BA2D2A0FE2D56E33E56 /* ApplicationIdentity.swift */,
+				F376AE973561BB5DD89CA682 /* ApplicationMetadata.swift */,
 				BE38B042EDB9B428B0371B97 /* CalculatorCardView.swift */,
 				BBE44AD7CADBDEDE80F3ACB7 /* CalculatorCoordinator.swift */,
 				C6CCAFA1285E322F00F12165 /* CommandRegistry.swift */,
@@ -708,6 +711,7 @@
 				C279BED9932E0CDD175BB56C /* AppPaths.swift in Sources */,
 				3B0091B23F62C6BEF7D71CE3 /* AppSettings.swift in Sources */,
 				101A229BDFBA91AF573BC607 /* ApplicationIdentity.swift in Sources */,
+				20689286B4EB1250C85BE11A /* ApplicationMetadata.swift in Sources */,
 				B885B4D0925B9462776514EE /* Bundle+AppName.swift in Sources */,
 				05A23381D65E68F4AD6F2FD0 /* CalcCurrency.swift in Sources */,
 				2273EFCCB62BCA189B0DEFE1 /* CalcDateTime.swift in Sources */,

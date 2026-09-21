@@ -45,6 +45,8 @@ unsigned-dmg:
 
 test: tools
 	@mkdir -p $(TEST_BIN_DIR)
+	swiftc -swift-version 6 Opencast/Features/Launcher/ApplicationMetadata.swift Tools/application-metadata-test.swift -o $(TEST_BIN_DIR)/application-metadata-test
+	$(TEST_BIN_DIR)/application-metadata-test
 	swiftc -swift-version 6 Opencast/Platform/HealthTicker.swift Opencast/Features/HotKeys/HyperKeyManager.swift Tools/hyper-key-test.swift -o $(TEST_BIN_DIR)/hyper-key-test
 	$(TEST_BIN_DIR)/hyper-key-test
 	swiftc -swift-version 6 Opencast/DesignSystem/SingleLineText.swift Tools/single-line-test.swift -o $(TEST_BIN_DIR)/single-line-test

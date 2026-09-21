@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.2.8]
+
+### Fixed
+
+- Refreshed application names and identities after installations and updates while Opencast is running, including localized names and same-path reinstalls, without retaining temporary installer metadata.
+
 ## [0.2.7]
 
 ### Improved

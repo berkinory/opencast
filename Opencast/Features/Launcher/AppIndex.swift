@@ -198,6 +198,7 @@ final class AppIndex: ObservableObject {
         let path: String
         let modified: Date?
         let size: Int64?
+        let metadata: ApplicationMetadata?
     }
 
     private struct AppScanCache: Sendable {
@@ -341,7 +342,7 @@ final class AppIndex: ObservableObject {
         if let appCache, appCache.scopes == scopes, appCache.fingerprint == fingerprint {
             apps = appCache.apps
         } else {
-            apps = scanApps(appURLs)
+            apps = scanApps(appURLs, fingerprint: fingerprint)
         }
 
         let systemCommands = SystemCommandCatalog.all.map { command in
@@ -394,15 +395,19 @@ final class AppIndex: ObservableObject {
             appCache: AppScanCache(scopes: scopes, fingerprint: fingerprint, apps: apps))
     }
 
-    private nonisolated static func scanApps(_ urls: [URL]) -> [AppEntry] {
+    private nonisolated static func scanApps(_ urls: [URL], fingerprint: [AppFingerprint]) -> [AppEntry] {
+        let metadataByPath = Dictionary(
+            uniqueKeysWithValues: fingerprint.compactMap { entry in
+                entry.metadata.map { (entry.path, $0) }
+            })
         var primaryPaths =
             UserDefaults.standard.dictionary(forKey: ApplicationIdentity.defaultsKey) as? [String: String] ?? [:]
         let previousPaths = primaryPaths
         var result: [AppEntry] = []
         for url in urls {
-            let bundle = Bundle(url: url)
-            let bundleID = bundle?.bundleIdentifier
-            let name = appName(bundle: bundle, url: url)
+            guard let metadata = metadataByPath[url.path] else { continue }
+            let bundleID = metadata.bundleID
+            let name = metadata.name
             let filename = url.deletingPathExtension().lastPathComponent
             let aliases = Romanization.aliases(for: name) + alternateNames(for: url, displayName: name) + [filename]
             let key = ApplicationIdentity.key(for: url, bundleID: bundleID, primaryPaths: &primaryPaths)
@@ -429,21 +434,9 @@ final class AppIndex: ObservableObject {
             return AppFingerprint(
                 path: url.path,
                 modified: values?.contentModificationDate,
-                size: values?.fileSize.map(Int64.init))
+                size: values?.fileSize.map(Int64.init),
+                metadata: ApplicationMetadata.read(at: url))
         }.sorted { $0.path < $1.path }
-    }
-
-    private nonisolated static func appName(bundle: Bundle?, url: URL) -> String {
-        let candidates: [String?] = [
-            bundle?.object(forInfoDictionaryKey: "CFBundleDisplayName") as? String,
-            bundle?.object(forInfoDictionaryKey: "CFBundleName") as? String,
-            url.deletingPathExtension().lastPathComponent,
-        ]
-        return candidates.compactMap { candidate -> String? in
-            guard let candidate else { return nil }
-            let trimmed = candidate.trimmingCharacters(in: .whitespacesAndNewlines)
-            return trimmed.isEmpty ? nil : trimmed
-        }.first ?? url.deletingPathExtension().lastPathComponent
     }
 
     private nonisolated static func alternateNames(for url: URL, displayName: String) -> [String] {
